@@ -209,7 +209,8 @@ t_token	*word_token(char *line, int *start, int len)
 	i++;
 	while (i < len - 1 && !is_meta(line[i]))
 		i++;
-
+	if (is_meta(line[i]))
+		i--;
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
