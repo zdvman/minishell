@@ -169,6 +169,7 @@ t_token	*redirect_token(char *line, int *start, int len)
 		token->type++;
 		(*start)++;
 	}
+	(*start)++;
 	return (token);
 }
 
@@ -183,7 +184,7 @@ t_token	*end_token(void)
 	return (token);
 }
 
-t_token	*bracket_token(char *line, int i)
+t_token	*bracket_token(char *line, int *start, int i)
 {
 	t_token	*token;
 
@@ -192,6 +193,7 @@ t_token	*bracket_token(char *line, int i)
 		token->type = OPEN_BRACKET;
 	else
 		token->type = CLOSE_BRACKET;
+	(*start)++;
 	return (token);
 }
 
@@ -207,12 +209,11 @@ t_token	*word_token(char *line, int *start, int len)
 	i++;
 	while (i < len - 1 && !is_meta(line[i]))
 		i++;
-	if (i < len && is_meta(line[i]))
-		i--;
+
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
-	*start = i;
+	*start = i + 1;
 	return (token);
 }
 
@@ -236,7 +237,7 @@ t_token	*quote_word_token(char *line, int *start, int len)
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
-	*start = i;
+	*start = i + 1;
 	return (token);
 }
 
@@ -259,6 +260,7 @@ t_token	*control_token(char *line, int *start, int len)
 		token->type = CONTROL;
 	if (token->type == CONTROL)
 		(*start)++;
+	(*start)++;
 	return (token);
 }
 
@@ -278,18 +280,19 @@ t_token	*get_tokens(char *line, int start, int len)
 	else if (!line[i])
 		return (end_token ());
 	else if (is_bracket(line[i]))
-		token = bracket_token (line, i);
+		token = bracket_token (line, &i, i);
 	else if (is_quote(line[i]))
 		token = quote_word_token (line, &i, len);
 	else if (is_word(line[i]))
 		token = word_token(line, &i, len);
 	else if (is_control(line[i]))
 		token = control_token(line, &i, len);
-	else{
-		printf("%c not recognised\n", line[i]);
-	//	exit (2);
+	else
+	{
+		printf("%c not recognised\n", line[i++]);
+		return (get_tokens(line, i, len));
 	}
-	token->right = get_tokens(line, i + 1, len);
+	token->right = get_tokens(line, i, len);
 	return (token);
 }
 
