@@ -116,16 +116,19 @@ int	is_bracket(char c)
 	return (0);
 }
 
-int	is_meta(char c)
-{
-	if (is_control(c) || is_redirect(c) || is_space(c) || is_bracket(c))
-		return (1);
-	return (0);
-}
 
 int	is_quote(char c)
 {
 	if (c == '\'' || c == '\"')
+		return (1);
+	return (0);
+}
+
+int	is_meta(char c)
+{
+	if (is_control(c) || is_redirect(c) || is_space(c) || is_bracket(c))
+		return (1);
+	if (is_quote(c))
 		return (1);
 	return (0);
 }
@@ -202,6 +205,8 @@ t_token	*word_token(char *line, int *start, int len)
 	i++;
 	while (i < len - 1 && !is_meta(line[i]))
 		i++;
+	if (is_meta(line[i]))
+		i--;
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
