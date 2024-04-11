@@ -130,6 +130,8 @@ int	is_meta(char c)
 		return (1);
 	if (is_quote(c))
 		return (1);
+	if (c == 0)
+		return (1);
 	return (0);
 }
 
@@ -139,7 +141,7 @@ int	is_word(char c)
 		return (1);
 	if (c >= 'A' && c <= 'Z')
 		return (1);
-	if (c >= '0' && c <= '1')
+	if (c >= '0' && c <= '9')
 		return (1);
 	if (c == '.' || c == '_')
 		return (1);
@@ -205,7 +207,7 @@ t_token	*word_token(char *line, int *start, int len)
 	i++;
 	while (i < len - 1 && !is_meta(line[i]))
 		i++;
-	if (is_meta(line[i]))
+	if (i < len && is_meta(line[i]))
 		i--;
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
@@ -229,7 +231,7 @@ t_token	*quote_word_token(char *line, int *start, int len)
 	if (i == len || line[i] != line[*start])
 	{
 		printf("error - unclosed quote %c\n", line[*start]);
-		exit (1);
+	//	exit (1);
 	}
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
@@ -251,8 +253,8 @@ t_token	*control_token(char *line, int *start, int len)
 		else
 			token->type = PIPE;
 	}
-	else if (*start == len - 1 || line[*start + 1] != '&')
-		exit (2);    // need to add exit error function
+	//else if (*start == len - 1 || line[*start + 1] != '&')
+	//	exit (2);    // need to add exit error function
 	else
 		token->type = CONTROL;
 	if (token->type == CONTROL)
@@ -273,6 +275,8 @@ t_token	*get_tokens(char *line, int start, int len)
 		i++;
 	if (is_redirect(line[i]))
 		token = redirect_token(line, &i, len);
+	else if (!line[i])
+		return (end_token ());
 	else if (is_bracket(line[i]))
 		token = bracket_token (line, i);
 	else if (is_quote(line[i]))
@@ -283,7 +287,7 @@ t_token	*get_tokens(char *line, int start, int len)
 		token = control_token(line, &i, len);
 	else{
 		printf("%c not recognised\n", line[i]);
-		exit (2);
+	//	exit (2);
 	}
 	token->right = get_tokens(line, i + 1, len);
 	return (token);
