@@ -27,12 +27,15 @@ typedef enum
 	COMMAND,
 	ARGUMENT,
 	FLAG,
-	REDIRECT,
-	OPERATOR,
-	SINGLE_QUOTE,
-	DOUBLE_QUOTE,
+	REDIR_IN,
+	REDIR_IN_DBL,
+	REDIR_OUT,
+	REDIR_OUT_DBL,
+	PIPE,
+	CONTROL,
 	OPEN_BRACKET,
 	CLOSE_BRACKET,
+	VARIABLE,
 	END
 } t_token_type;
 
@@ -68,7 +71,7 @@ char	*ft_strdup(char *str)
 	{
 		res[i] = str[i];
 		i++;
-	}y management to free allocated resources (e.g., co
+	}
 	res[i] = 0;
 	return (res);
 }
@@ -99,33 +102,35 @@ int	is_redirect(char c)
 
 int	is_control(char c)
 {
-	if (c == '!' || c == '&')
+	if (c == '|' || c == '&')
 		return (1);
 	return (0);
 }
 
 int	is_bracket(char c)
 {
-	if (c == '(' || c == ')')
+	if (c == '(')
 		return (1);
+	if (c == ')')
+		return (2);
 	return (0);
 }
 
 int	is_meta(char c)
 {
-	if (is_control || is_redirect || is_space || is_bracket)
+	if (is_control(c) || is_redirect(c) || is_space(c) || is_bracket(c))
 		return (1);
 	return (0);
 }
 
-int	check_double_redirect(char *line, int start, int len, char c)
+int	is_quote(char c)
 {
-	if (start < len && line[start + 1] == c)
+	if (c == '\'' || c == '\"')
 		return (1);
 	return (0);
 }
 
-int	is_char(char c)
+int	is_word(char c)
 {
 	if (c >= 'a' && c <= 'z')
 		return (1);
@@ -134,6 +139,12 @@ int	is_char(char c)
 	if (c >= '0' && c <= '1')
 		return (1);
 	if (c == '.' || c == '_')
+		return (1);
+	if (c == '-')
+		return (1);
+	if (c == '~')
+		return (1);
+	if (c == '$')
 		return (1);
 	return (0);
 }
@@ -144,21 +155,103 @@ t_token	*redirect_token(char *line, int *start, int len)
 
 	token = malloc(sizeof(t_token));
 	token->left = NULL;
-	token->type = REDIRECT;
-	if (c == '<')
+	if (line[*start] == '<')
+		token->type = REDIR_IN;
+	if (line[*start] == '>')
+		token->type = REDIR_OUT;
+	if (*start < len - 1 && line[*start] == line[*start + 1])
 	{
-		if (start < len && line[start + 1] == c)
-			token->string = ft_strdup("<<");
-		else
-			token->string = ft_strdup("<");
+		token->type++;
+		(*start)++;
 	}
-	if (c == '>')
+	return (token);
+}
+
+t_token	*end_token(void)
+{
+	t_token	*token;
+	int		i;
+
+	token = malloc(sizeof(t_token));
+	token->type = END;
+	token->right = NULL;
+	return (token);
+}
+
+t_token	*bracket_token(char *line, int i)
+{
+	t_token	*token;
+
+	token = malloc(sizeof(t_token));
+	if (line[i] == '(')
+		token->type = OPEN_BRACKET;
+	else
+		token->type = CLOSE_BRACKET;
+	return (token);
+}
+
+t_token	*word_token(char *line, int *start, int len)
+{
+	t_token	*token;
+	int		i;
+
+	token = malloc(sizeof(t_token));
+	token->type = WORD;
+	token->left = NULL;
+	i = *start;
+	i++;
+	while (i < len - 1 && !is_meta(line[i]))
+		i++;
+	token->string = malloc(sizeof(char) * (i - *start + 1));
+	strncpy(token->string, &line[*start], (i - *start + 1));
+	token->string[i - *start + 1] = 0;
+	*start = i;
+	return (token);
+}
+
+t_token	*quote_word_token(char *line, int *start, int len)
+{
+	t_token	*token;
+	int		i;
+
+	token = malloc(sizeof(t_token));
+	token->type = WORD;
+	token->left = NULL;
+	i = *start;
+	i++;
+	while (i < len - 1 && line[i] != line[*start])
+		i++;
+	if (i == len || line[i] != line[*start])
 	{
-		if (start < len && line[start + 1] == c)
-			token->string = ft_strdup(">>");
-		else
-			token->string = ft_strdup(">");
+		printf("error - unclosed quote %c\n", line[*start]);
+		exit (1);
 	}
+	token->string = malloc(sizeof(char) * (i - *start + 1));
+	strncpy(token->string, &line[*start], (i - *start + 1));
+	token->string[i - *start + 1] = 0;
+	*start = i;
+	return (token);
+}
+
+t_token	*control_token(char *line, int *start, int len)
+{
+	t_token	*token;
+
+	token = malloc(sizeof(t_token));
+	token->left = NULL;
+	if (line[*start] == '|')
+	{
+		if (*start < (len - 1) && line[*start + 1] == '|')
+			token->type = CONTROL;
+		else
+			token->type = PIPE;
+	}
+	else if (*start == len - 1 || line[*start + 1] != '&')
+		exit (2);    // need to add exit error function
+	else
+		token->type = CONTROL;
+	if (token->type == CONTROL)
+		(*start)++;
 	return (token);
 }
 
@@ -168,24 +261,68 @@ t_token	*get_tokens(char *line, int start, int len)
 	int	i;
 	int	j;
 
+	if (start == len)
+		return (end_token ());
 	i = start;
 	while (is_space(line[i]))
 		i++;
 	if (is_redirect(line[i]))
 		token = redirect_token(line, &i, len);
-	else if (is_char)
+	else if (is_bracket(line[i]))
+		token = bracket_token (line, i);
+	else if (is_quote(line[i]))
+		token = quote_word_token (line, &i, len);
+	else if (is_word(line[i]))
+		token = word_token(line, &i, len);
+	else if (is_control(line[i]))
+		token = control_token(line, &i, len);
+	else{
+		printf("%c not recognised\n", line[i]);
+		exit (2);
+	}
+	token->right = get_tokens(line, i + 1, len);
+	return (token);
+}
+
+void	print_tokens(t_token *tokens)
+{
+	while (tokens)
+	{
+		if (tokens->type == WORD)
+			printf("WORD: %s\n", tokens->string);
+		if (tokens->type == REDIR_IN)
+			printf("REDIR_IN\n");
+		if (tokens->type == REDIR_IN_DBL)
+			printf("REDIR_IN_DBL\n");
+		if (tokens->type == REDIR_OUT)
+			printf("REDIR_OUT\n");
+		if (tokens->type == REDIR_OUT_DBL)
+			printf("REDIR_OUT_DBL\n");
+		if (tokens->type == PIPE)
+			printf("PIPE\n");
+		if (tokens->type == OPEN_BRACKET)
+			printf("OPEN_BRACKET\n");
+		if (tokens->type == CLOSE_BRACKET)
+			printf("CLOSE_BRACKET\n");
+		if (tokens->type == END)
+			printf("END\n");
+		tokens = tokens->right;
+	}
 }
 
 char	*get_input (char **env)
 {
+	t_token	*tokens;
 	char	*res;
-	char	*prompt;
+//	char	*prompt;
 		
-	prompt = get_prompt(env);
-	res = readline(prompt);
+//	prompt = get_prompt(env);
+	res = readline("> ");
 	if (res && *res)
 		add_history(res);
-	free (prompt);
+	tokens = get_tokens(res, 0, ft_strlen(res));
+	print_tokens(tokens);
+//	free (prompt);
 	return (res);
 }
 
@@ -197,6 +334,4 @@ int main(int ac, char **av, char **env)
 
 	i = 0;
 	line = get_input(env);
-	parse_input(line, 0);
-	printf("%s\n", line);
 }	
