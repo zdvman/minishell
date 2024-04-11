@@ -305,6 +305,8 @@ void	print_tokens(t_token *tokens)
 			printf("REDIR_OUT_DBL\n");
 		if (tokens->type == PIPE)
 			printf("PIPE\n");
+		if (tokens->type == CONTROL)
+			printf("CONTROL\n");
 		if (tokens->type == OPEN_BRACKET)
 			printf("OPEN_BRACKET\n");
 		if (tokens->type == CLOSE_BRACKET)
