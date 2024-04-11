@@ -322,12 +322,16 @@ char	*get_input (char **env)
 //	char	*prompt;
 		
 //	prompt = get_prompt(env);
-	res = readline("> ");
-	if (res && *res)
-		add_history(res);
-	tokens = get_tokens(res, 0, ft_strlen(res));
-	print_tokens(tokens);
-//	free (prompt);
+	printf("type end to exit\n");
+	while (strcmp(res, "end"))
+	{
+		res = readline("> ");
+		if (res && *res)
+			add_history(res);
+		tokens = get_tokens(res, 0, ft_strlen(res));
+		print_tokens(tokens);
+	//	free (prompt);
+	}
 	return (res);
 }
 
