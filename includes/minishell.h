@@ -17,21 +17,28 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <string.h>
+# include <ctype.h>
 
-
-# define PROMPT "minishell$ "
-# define MAX_CMD 1024
-
-typedef struct	s_cmd
+typedef enum
 {
-	char		*cmd;
-	char		**args;
-}				t_cmd;
+	TOKEN_WORD,
+	TOKEN_REDIR_INPUT,
+	TOKEN_REDIR_OUTPUT,
+	TOKEN_REDIR_APPEND,
+	TOKEN_PIPE,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_SEMI,
+	TOKEN_ILLEGAL,
+	TOKEN_EOF
+}				token_type;
 
-void			init_shell(void);
-void			prompt(void);
-void			parse_cmd(char *cmd);
-void			exec_cmd(t_cmd *cmd);
-void			free_cmd(t_cmd *cmd);
+typedef struct s_token
+{
+	token_type	type;
+	char	*value;
+	struct s_token	*next;
+}				t_token;
+
 
 #endif
