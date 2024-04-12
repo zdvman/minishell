@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/04/10 16:02:44 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/04/12 18:09:56 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,30 +33,64 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "../includes/minishell.h"
+// #ifdef BONUS
+// # include "../includes/minishell_bonus.h"
+// #endif
+// #include "../includes/minishell.h"
 
-#ifdef BONUS
-# include "../includes/minishell_bonus.h"
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-int	main(int ac, char **av, char **env)
+void	handle_sigint(int sig)
 {
-	(void)ac;
-	(void)av;
-	// Инициализация общих частей приложения
-	common_init();
+	(void)sig;
+	write(STDIN_FILENO, "\nminishell> ", 12);
+	fflush(stdout);
+}
 
-	// Расширенная инициализация, реализация которой будет отличаться
-	// в зависимости от того, компилируется ли основная или бонусная часть
-	extension_feature();
+void	set_sig_actions(void)
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-	// Основной цикл оболочки
-	while (1) {
-		// Взаимодействие с пользователем, выполнение команд и т.д.
+	memset(&sa_int, 0, sizeof(sa_int));
+	sa_int.sa_handler = handle_sigint;
+	sigaction(SIGINT, &sa_int, NULL);
+	memset(&sa_quit, 0, sizeof(sa_quit));
+	sa_quit.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa_quit, NULL);
+}
+
+int	main(void)
+{
+	char	*input;
+
+	printf("\033[?12h");
+	set_sig_actions();
+	input = NULL;
+	while (1)
+	{
+		input = readline("minishell> ");
+		if (input == NULL)
+		{
+			printf("exit\n");
+			printf("\033[?12l");
+			break ;
+		}
+		if (input && *input)
+		{
+			add_history(input);
+			tokenize(input);
+		}
+		if (input)
+			free(input);
 	}
-
-	// Очистка ресурсов
-	cleanup();
-
+	printf("\033[?12l");
+	rl_clear_history();
 	return (0);
 }

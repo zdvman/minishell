@@ -16,15 +16,22 @@ char	*ft_strdup(const char *str)
 {
 	char	*dup;
 	int		i;
+	int		len;
 
-	dup = (char *)malloc(sizeof(char) * (ft_strlen(str) + 1));
+	len = 0;
+	dup = NULL;
+	len = ft_strlen(str);
+	dup = (char *)malloc(sizeof(char) * (len + 1));
 	if (!dup)
 		return (NULL);
 	i = 0;
-	while (str[i])
+	if (str)
 	{
-		dup[i] = str[i];
-		i++;
+		while (str[i])
+		{
+			dup[i] = str[i];
+			i++;
+		}
 	}
 	dup[i] = '\0';
 	return (dup);
