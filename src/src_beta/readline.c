@@ -10,71 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <strings.h>
-#include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <linux/limits.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <wait.h>
-
-typedef enum
-{	
-	WORD,
-	COMMAND,
-	ARGUMENT,
-	FLAG,
-	REDIR_IN,
-	REDIR_IN_DBL,
-	REDIR_OUT,
-	REDIR_OUT_DBL,
-	PIPE,
-	CONTROL,
-	OPEN_BRACKET,
-	CLOSE_BRACKET,
-	VARIABLE,
-	END
-} t_token_type;
-
-typedef struct s_token
-{
-	struct s_token *left;
-	struct s_token *right;
-	t_token_type	type;
-	char			*string;
-	int				val;
-}	t_token;
-
-int	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
-char	*ft_strdup(char *str)
-{
-	char	*res;
-	int		i;
-
-	if (!str)
-		return (NULL);
-	res = malloc(sizeof(char) * (ft_strlen(str) + 1));
-	i = 0;
-	while (i < ft_strlen(str))
-	{
-		res[i] = str[i];
-		i++;
-	}
-	res[i] = 0;
-	return (res);
-}
+#include "minishell.h"
 
 char	*get_prompt(char **env)
 {
@@ -319,38 +255,60 @@ void	print_tokens(t_token *tokens)
 			printf("OPEN_BRACKET\n");
 		if (tokens->type == CLOSE_BRACKET)
 			printf("CLOSE_BRACKET\n");
+		if (tokens->type == COMMAND)
+		{
+			printf("COMMAND\n");
+			int i = 0;
+			while (tokens->args[i])
+			{
+				printf("arg %d: %s\n", i, tokens->args[i]);
+				i++;
+			}
+			printf("path %s\n", tokens->command_path);
+		}
 		if (tokens->type == END)
 			printf("END\n");
 		tokens = tokens->right;
 	}
 }
 
-char	*get_input (char **env)
+char	*get_input (t_env *env)
 {
-	t_token	*tokens;
 	char	*res;
-//	char	*prompt;
 		
-//	prompt = get_prompt(env);
+	res = calloc(sizeof(char), 1);
 	printf("type end to exit\n");
-	while (strcmp(res, "end"))
-	{
+//	while (strcmp(res, "end"))
+//	{
 		res = readline("> ");
 		if (res && *res)
 			add_history(res);
-		tokens = get_tokens(res, 0, ft_strlen(res));
-		print_tokens(tokens);
-	//	free (prompt);
-	}
+		env->tokens = get_tokens(res, 0, ft_strlen(res));
+//	}
 	return (res);
 }
 
-int main(int ac, char **av, char **env)
+int main(int ac, char **av, char **environ)
 {
 	char	*line;
 	int 	i;
 	int 	j;
+	t_env	env;
 
 	i = 0;
-	line = get_input(env);
+	env.env = environ;
+
+	line = get_input(&env);
+	env.token_head = &env.tokens;
+	i = 0;
+	env.paths = NULL;
+	env.paths = ft_split(get_path (&env), ':');
+	if (env.paths)
+		add_slash(env.paths);
+	parse_tokens(&env);
+	env.tokens = *env.token_head;
+	print_tokens(env.tokens);
+		env.tokens = *env.token_head;
+
+	execve(env.tokens->command_path, env.tokens->args, NULL);
 }	
