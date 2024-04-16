@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../42-minishell"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"signal.h": "c",
+			"string.h": "c",
+			"history.h": "c",
+			"unistd.h": "c"
+		}
+	}
+}
