@@ -58,6 +58,12 @@ void	check_path(t_env *env)
 void	add_path(t_env *env)
 {
 	env->tokens->command_path = NULL;
+
+	if (!strcmp(env->tokens->string, "exit"))
+	{
+		env->tokens->type = EXIT;
+		return ;
+	}
 	if (access(env->tokens->string, F_OK) == -1)
 		check_path(env);
 	else

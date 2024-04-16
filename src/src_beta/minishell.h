@@ -36,6 +36,8 @@ typedef enum
 	OPEN_BRACKET,
 	CLOSE_BRACKET,
 	VARIABLE,
+	EXIT,
+	DONE,
 	END
 } t_token_type;
 
@@ -62,7 +64,7 @@ typedef struct s_env
 	char	**paths;
 	char	**env;
 	t_token	*tokens;
-	t_token	**token_head;
+	t_token	*token_head;
 }	t_env;
 
 void	add_path(t_env *env);

@@ -81,6 +81,8 @@ int	is_word(char c)
 		return (1);
 	if (c == '.' || c == '_')
 		return (1);
+	if (c == '/')
+		return (1);
 	if (c == '-')
 		return (1);
 	if (c == '~')
@@ -125,6 +127,7 @@ t_token	*bracket_token(char *line, int *start, int i)
 	t_token	*token;
 
 	token = malloc(sizeof(t_token));
+	token->left = NULL;
 	if (line[i] == '(')
 		token->type = OPEN_BRACKET;
 	else
@@ -150,6 +153,8 @@ t_token	*word_token(char *line, int *start, int len)
 	token->string = malloc(sizeof(char) * (i - *start + 1));
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
+	if (!strcmp(token->string, "exit"))
+		token->type = EXIT;
 	*start = i + 1;
 	return (token);
 }
@@ -212,10 +217,10 @@ t_token	*get_tokens(char *line, int start, int len)
 	i = start;
 	while (is_space(line[i]))
 		i++;
-	if (is_redirect(line[i]))
-		token = redirect_token(line, &i, len);
-	else if (!line[i])
+	if (!line[i])
 		return (end_token ());
+	else if (is_redirect(line[i]))
+		token = redirect_token(line, &i, len);
 	else if (is_bracket(line[i]))
 		token = bracket_token (line, &i, i);
 	else if (is_quote(line[i]))
@@ -251,6 +256,10 @@ void	print_tokens(t_token *tokens)
 			printf("PIPE\n");
 		if (tokens->type == CONTROL)
 			printf("CONTROL\n");
+		if (tokens->type == DONE)
+			printf("DONE\n");
+		if (tokens->type == EXIT)
+			printf("EXIT\n");
 		if (tokens->type == OPEN_BRACKET)
 			printf("OPEN_BRACKET\n");
 		if (tokens->type == CLOSE_BRACKET)
@@ -272,43 +281,75 @@ void	print_tokens(t_token *tokens)
 	}
 }
 
+void	link_tokens_left(t_token *tokens)
+{
+	t_token	*prev;
+
+	prev = tokens;
+	tokens = tokens->right;
+	while (tokens->type != END)
+	{
+		tokens->left = prev;
+		prev = tokens;
+		tokens = tokens->right;
+	}
+	tokens->left = prev;
+	while (tokens->left)
+		(tokens = tokens->left);
+}
+
 char	*get_input (t_env *env)
 {
 	char	*res;
 		
-	res = calloc(sizeof(char), 1);
-	printf("type end to exit\n");
-//	while (strcmp(res, "end"))
-//	{
-		res = readline("> ");
-		if (res && *res)
-			add_history(res);
-		env->tokens = get_tokens(res, 0, ft_strlen(res));
-//	}
+	res = readline("> ");
+	if (res && *res)
+		add_history(res);
+	env->tokens = get_tokens(res, 0, ft_strlen(res));
+	env->token_head = env->tokens;
+	link_tokens_left(env->tokens);
 	return (res);
 }
 
 int main(int ac, char **av, char **environ)
 {
 	char	*line;
-	int 	i;
-	int 	j;
+	int 	status;
 	t_env	env;
+	pid_t	pid;
 
-	i = 0;
 	env.env = environ;
-
-	line = get_input(&env);
-	env.token_head = &env.tokens;
-	i = 0;
 	env.paths = NULL;
 	env.paths = ft_split(get_path (&env), ':');
 	if (env.paths)
 		add_slash(env.paths);
+	line = get_input(&env);
 	parse_tokens(&env);
-	env.tokens = *env.token_head;
+	while (env.tokens->type != END && env.tokens->type != EXIT)
+	{
+		pid = fork ();
+		if (!pid)
+		{
+			if (env.tokens->type == COMMAND)
+				execve(env.tokens->command_path, env.tokens->args, environ);
+			exit (0);
+		}
+		else
+		{
+			waitpid(pid, &status, 0);
+			if (env.tokens->type == COMMAND)
+			{
+				env.tokens->type = DONE;
+				env.tokens->val = status;
+				env.tokens = env.tokens->right;
+			}
+		}
+		if (env.tokens->type != END)
+			env.tokens = env.tokens->right;
+		else
+			break ;
+	}
+	env.tokens = env.token_head;
 	print_tokens(env.tokens);
-		env.tokens = *env.token_head;
-
-	execve(env.tokens->command_path, env.tokens->args, NULL);
+	printf("%d\n", env.tokens->val);
 }	
