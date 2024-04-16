@@ -55,34 +55,33 @@ void	check_path(t_env *env)
 	}
 }
 
+
+void	free_paths(t_env *env)
+{
+	int	i;
+
+	i = 0;
+	while (env->paths && env->paths[i])
+		free (env->paths[i++]);
+	if (env->paths)
+		free (env->paths);
+}
+
 void	add_path(t_env *env)
 {
 	env->tokens->command_path = NULL;
 
-	if (!strcmp(env->tokens->string, "exit"))
+	if (env->tokens->string && !strcmp(env->tokens->string, "exit"))
 	{
 		env->tokens->type = EXIT;
 		return ;
 	}
-	if (access(env->tokens->string, F_OK) == -1)
-		check_path(env);
-	else
-		env->tokens->command_path = ft_strdup(env->tokens->string);
+	check_path(env);
 	if (!env->tokens->command_path)
 	{
-		free_paths (env->paths);
+		free_paths (env);
 		perror(env->tokens->string);
 		exit (2);
 	}
 }
 
-void	free_paths(char **paths)
-{
-	int	i;
-
-	i = 0;
-	while (paths && paths[i])
-		free (paths[i++]);
-	if (paths)
-		free (paths);
-}

@@ -34,7 +34,10 @@ void	build_command(t_env *env)
 	command = env->tokens;
 	add_path(env);
 	if (!env->tokens->command_path)
+	{
+		printf("bad filename\n");
 		exit (1);	// need to add exit_error - bad filename
+	}
 	i = 0;
 	command->args = malloc(sizeof(char *) * (count_args(env) + 1));
 	env->tokens = command;
@@ -45,9 +48,11 @@ void	build_command(t_env *env)
 	{
 		command->args[i++] = ft_strdup(env->tokens->string);
 		free (env->tokens->string);
+		env->tokens->string = NULL;
 		tmp = env->tokens;
 		env->tokens = env->tokens->right;
 		free (tmp);
+		tmp = NULL;
 	}
 	command->args[i] = 0;
 	command->right = env->tokens;
