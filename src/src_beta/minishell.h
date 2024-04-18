@@ -38,6 +38,13 @@ typedef enum
 	END
 } t_token_type;
 
+typedef struct s_redirect
+{
+	struct s_redirect		*next;
+	t_token_type			type;
+	char					*file;
+} t_redirect;
+
 typedef struct s_token
 {
 	struct s_token *left;
@@ -47,19 +54,13 @@ typedef struct s_token
 	int				val;
 	char			**args;
 	char			*command_path;
-	int				line_index;
-	int				in_fd[2];
-	int				out_fd[2];
-}	t_token;
-
-typedef struct s_cmd
-{
-	struct s_cmd	*next;
-	char			**cmd;
-	char			*path;
 	int				in_fd;
 	int				out_fd;
-}	t_cmd;
+	int				pipe;
+	char			control;
+	t_redirect		*redirects;
+	t_redirect		*redirects_head;
+}	t_token;
 
 typedef struct s_env
 {
@@ -71,6 +72,7 @@ typedef struct s_env
 
 void	add_path(t_env *env);
 void	add_slash(char **paths);
+void	clear_env(t_env *env);
 void	free_paths(t_env *env);
 void	ft_bzero(void *s, size_t n);
 void	*ft_calloc(size_t nmemb, size_t size);
@@ -85,5 +87,14 @@ size_t	ft_strlen(const char *str);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*get_path(t_env *env);
 t_token	*get_tokens(char *line, int start, int len);
-void	link_tokens_left(t_token *tokens);
+int		is_bracket(char c);
+int		is_control(char c);
+int		is_meta(char c);
+int		is_quote(char c);
+int		is_redirect(char c);
+int		is_space(char c);
+int		is_word(char c);
+void	link_tokens_left(t_env *env);
 int		parse_tokens(t_env *env);
+void	print_tokens(t_token *tokens);
+void	reset_tokens(t_env *env);
