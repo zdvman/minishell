@@ -373,6 +373,13 @@ void	evaluate(t_env *env)
 			else
 				env->tokens = env->tokens->right->right;
 		}
+		if (status != 0 && env->tokens->type == CONTROL)
+		{
+			if (env->tokens->control == '&')
+				env->tokens = env->tokens->right->right;
+			else
+				env->tokens = env->tokens->right;
+		}
 	}
 	env->tokens = env->token_head;
 }
