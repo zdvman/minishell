@@ -142,8 +142,8 @@ void	get_redirects_on_left(t_env *env)
 		}
 		else
 		{
-			command->redirects->next = new;
-			command->redirects = command->redirects->next;
+			new->next = command->redirects_head;
+			command->redirects_head = new;
 		}
 		tmp = env->tokens;
 		if (env->tokens->left)
