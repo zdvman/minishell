@@ -26,7 +26,7 @@ t_token	*redirect_token(char *line, int *start, int len)
 {
 	t_token	*token;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	if (line[*start] == '<')
 		token->type = REDIR_IN;
 	if (line[*start] == '>')
@@ -37,12 +37,6 @@ t_token	*redirect_token(char *line, int *start, int len)
 		(*start)++;
 	}
 	(*start)++;
-	token->left = NULL;
-	token->args = NULL;
-	token->command_path = NULL;
-	token->args = NULL;
-	token->string = NULL;
-	token->redirects = NULL;
 	return (token);
 }
 
@@ -51,9 +45,8 @@ t_token	*end_token(void)
 	t_token	*token;
 	int		i;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	token->type = END;
-	token->right = NULL;
 	return (token);
 }
 
@@ -61,18 +54,12 @@ t_token	*bracket_token(char *line, int *start, int i)
 {
 	t_token	*token;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	if (line[i] == '(')
 		token->type = OPEN_BRACKET;
 	else
 		token->type = CLOSE_BRACKET;
-		(*start)++;
-		token->left = NULL;
-	token->args = NULL;
-	token->command_path = NULL;
-	token->args = NULL;
-	token->string = NULL;
-	token->redirects = NULL;
+	(*start)++;
 	return (token);
 }
 
@@ -81,23 +68,17 @@ t_token	*word_token(char *line, int *start, int len)
 	t_token	*token;
 	int		i;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	token->type = WORD;
-	token->left = NULL;
 	i = *start;
 	while (!is_meta(line[i]))
 		i++;
-	token->string = malloc(sizeof(char) * (i - *start + 1));
+	token->string = ft_calloc(sizeof(char) * (i - *start + 1), 1);
 	strncpy(token->string, &line[*start], (i - *start));
 	token->string[i - *start] = 0;
 	if (!strcmp(token->string, "exit"))
 		token->type = EXIT;
 	*start = i;
-		token->left = NULL;
-	token->args = NULL;
-	token->redirects_head = NULL;
-	token->command_path = NULL;
-	token->redirects = NULL;
 	return (token);
 }
 
@@ -106,7 +87,7 @@ t_token	*quote_word_token(char *line, int *start, int len)
 	t_token	*token;
 	int		i;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	token->type = WORD;
 	i = *start;
 	i++;
@@ -117,15 +98,10 @@ t_token	*quote_word_token(char *line, int *start, int len)
 		printf("error - unclosed quote %c   %c\n", line[*start], line[i]);
 	//	exit (1);
 	}
-	token->string = malloc(sizeof(char) * (i - *start + 2));
+	token->string = ft_calloc(sizeof(char) * (i - *start + 2), 1);
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
 	*start = i + 1;
-	token->left = NULL;
-	token->args = NULL;
-	token->command_path = NULL;
-	token->args = NULL;
-	token->redirects = NULL;
 	return (token);
 }
 
@@ -133,7 +109,7 @@ t_token	*control_token(char *line, int *start, int len)
 {
 	t_token	*token;
 
-	token = malloc(sizeof(t_token));
+	token = ft_calloc(sizeof(t_token), 1);
 	if (line[*start] == '|')
 	{
 		if (*start < len - 1 && line[*start + 1] == '|')
@@ -142,8 +118,6 @@ t_token	*control_token(char *line, int *start, int len)
 			token->type = PIPE;
 		token->control = '|';
 	}
-	//else if (*start == len - 1 || line[*start + 1] != '&')
-	//	exit (2);    // need to add exit error function
 	else
 	{
 		token->type = CONTROL;
@@ -152,11 +126,6 @@ t_token	*control_token(char *line, int *start, int len)
 	if (token->type == CONTROL)
 		(*start)++;
 	(*start)++;
-	token->left = NULL;
-	token->string = NULL;
-	token->command_path = NULL;
-	token->args = NULL;
-	token->redirects = NULL;
 	return (token);
 }
 
@@ -186,11 +155,8 @@ t_token	*get_tokens(char *line, int start, int len)
 	else
 	{
 		//printf("%c not recognised\n", line[i++]);
-		return (get_tokens(line, len, len));
+		return (end_token ());
 	}
-	token->args = NULL;
-	token->command_path = NULL;
-	token->left = NULL;
 	token->right = get_tokens(line, i, len);
 	return (token);
 }
@@ -199,6 +165,7 @@ void	link_tokens_left(t_env *env)
 {
 	t_token	*prev;
 
+	env->tokens = env->token_head;
 	prev = env->tokens;
 	env->tokens = env->tokens->right;
 	while (env->tokens->type != END)
@@ -208,8 +175,7 @@ void	link_tokens_left(t_env *env)
 		env->tokens = env->tokens->right;
 	}
 	env->tokens->left = prev;
-	while (env->tokens->left)
-		(env->tokens = env->tokens->left);
+	env->tokens = env->token_head;
 }
 
 char	*get_input (t_env *env)
@@ -254,6 +220,22 @@ char	*build_line_from_av(int ac, char **av, t_env *env)
 	return (res);
 }
 
+void	open_redirect_file(t_redirect *tmp)
+{
+	int	file;
+
+	if (tmp->type == REDIR_IN)
+	{
+		file = open(tmp->file, O_RDONLY);
+		dup2(file, STDIN_FILENO);
+	}
+	if (tmp->type == REDIR_OUT)
+	{
+		file = open(tmp->file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+		dup2(file, STDOUT_FILENO);
+	}
+}
+
 void	pipe_child(t_env *env, int fd[2])
 {
 	t_redirect *tmp;
@@ -267,23 +249,14 @@ void	pipe_child(t_env *env, int fd[2])
 		tmp = env->tokens->redirects_head;
 		while (tmp)
 		{
-			if (tmp->type == REDIR_IN)
-			{
-				file = open(tmp->file, O_RDONLY);
-				dup2(file, STDIN_FILENO);
-			}
-			if (tmp->type == REDIR_OUT)
-			{
-				file = open(tmp->file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-				dup2(file, STDOUT_FILENO);
-			}
+			open_redirect_file(tmp);
 			tmp = tmp->next;
 		}
 	}
 	execve (env->tokens->command_path, env->tokens->args, env->env);
 }
 
-void	single_child(t_env *env, int fd[2])
+void	single_child(t_env *env)
 {
 	t_redirect *tmp;
 	int			file;
@@ -293,16 +266,7 @@ void	single_child(t_env *env, int fd[2])
 		tmp = env->tokens->redirects_head;
 		while (tmp)
 		{
-			if (tmp->type == REDIR_IN)
-			{
-				file = open(tmp->file, O_RDONLY);
-				dup2(file, STDIN_FILENO);
-			}
-			if (tmp->type == REDIR_OUT)
-			{
-				file = open(tmp->file, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-				dup2(file, STDOUT_FILENO);
-			}
+			open_redirect_file(tmp);
 			tmp = tmp->next;
 		}
 	}
@@ -316,78 +280,82 @@ void	pipe_parent(int fd[2])
 	close (fd[0]);
 }
 
-void	single_parent(int fd[2])
+void	pipe_command(t_env *env)
 {
-	int	file;
+	pid_t	pid;
+	int		fd[2];
 
-	file = open(".temp_file", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-	
-	close (fd[1]);
-	dup2 (STDOUT_FILENO, STDIN_FILENO);
-	close (fd[0]);
+	while (env->tokens->pipe == 1)
+	{
+		pipe(fd);
+		pid = fork ();
+		if (!pid)
+			pipe_child(env, fd);
+		else
+			pipe_parent(fd);
+		env->tokens = env->tokens->right;
+	}
+}
+
+int	single_command(t_env *env)
+{
+	pid_t	pid;
+	int		fd[2];
+	int		return_val;
+
+	pid = fork ();
+	if (!pid)
+		single_child(env);
+	else
+	{
+		if (env->tokens->left && env->tokens->left->pipe)
+			dup2 (STDOUT_FILENO, STDIN_FILENO);
+		waitpid(pid, &return_val, 0);
+	}
+	env->tokens = env->tokens->right;
+	return (return_val);
+}
+
+void	check_control(t_env *env, int return_val)
+{
+	if (return_val == 0 && env->tokens->type == CONTROL)
+	{
+		if (env->tokens->control == '&')
+			env->tokens = env->tokens->right;
+		else
+			env->tokens = env->tokens->right->right;
+	}
+	if (return_val != 0 && env->tokens->type == CONTROL)
+	{
+		if (env->tokens->control == '&')
+			env->tokens = env->tokens->right->right;
+		else
+			env->tokens = env->tokens->right;
+	}
 }
 
 int	evaluate(t_env *env)
 {
-	pid_t	pid;
-	int		fd[2];
-	int		status;
+	int	return_val;
 
 	while (env->tokens->type != END && env->tokens->type != CLOSE_BRACKET)
 	{
 		if (env->tokens->type == OPEN_BRACKET)
 			{
 				env->tokens = env->tokens->right;
-				status = evaluate(env);
+				return_val = evaluate(env);
 			}
 		else if (env->tokens->type == COMMAND)
 		{
 			if (env->tokens->pipe == 1)
-			{
-				while (env->tokens->pipe == 1)
-				{
-					pipe(fd);
-					pid = fork ();
-					if (!pid)
-						pipe_child(env, fd);
-					else
-						pipe_parent(fd);
-					env->tokens = env->tokens->right;
-				}
-			}
+				pipe_command(env);
 			else
-			{
-				pid = fork ();
-				if (!pid)
-					single_child(env, fd);
-				else
-				{
-					if (env->tokens->left && env->tokens->left->pipe)
-						single_parent(fd);
-					waitpid(pid, &status, 0);
-					env->tokens->type = DONE;
-					env->tokens->val = status;
-				}
-				env->tokens = env->tokens->right;
-			}
+				return_val = single_command(env);
 		}
-		if (status == 0 && env->tokens->type == CONTROL)
-		{
-			if (env->tokens->control == '&')
-				env->tokens = env->tokens->right;
-			else
-				env->tokens = env->tokens->right->right;
-		}
-		if (status != 0 && env->tokens->type == CONTROL)
-		{
-			if (env->tokens->control == '&')
-				env->tokens = env->tokens->right->right;
-			else
-				env->tokens = env->tokens->right;
-		}
+		check_control(env, return_val);
 	}
 	env->tokens = env->tokens->right;
-	return (status);
+	return (return_val);
 }
 
 void	shell_loop(t_env *env, int ac, char **av)
@@ -406,7 +374,6 @@ void	shell_loop(t_env *env, int ac, char **av)
 			break ;
 		parse_tokens(env);
 		evaluate(env);
-		env->tokens = env->token_head;
 		env->tokens = env->token_head;
 		//print_tokens(env->tokens);
 		free (line);

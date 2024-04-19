@@ -59,8 +59,6 @@ void	build_command(t_env *env)
 	env->tokens->args = malloc(sizeof(char *) * (count_args(env) + 1));
 	env->tokens->args[0] = ft_strdup(env->tokens->string);	
 	env->tokens->type = COMMAND;
-	env->tokens->in_fd = STDIN_FILENO;
-	env->tokens->out_fd = STDOUT_FILENO;
 	env->tokens->pipe = 0;
 	env->tokens->out_fd = -1;
 	env->tokens->in_fd = -1;
@@ -201,6 +199,7 @@ void	check_pipes(t_env *env)
 {
 	t_token *tmp;
 
+	env->tokens = env->token_head;
 	while (env->tokens->type != END)
 	{
 		if (env->tokens->type == COMMAND)
@@ -233,7 +232,6 @@ int	parse_tokens(t_env *env)
 			build_command(env);
 		env->tokens = env->tokens->right;
 	}
-	env->tokens = env->token_head;
 	link_tokens_left(env);
 	env->tokens = env->token_head;
 	while (env->tokens->type != END)
@@ -247,7 +245,6 @@ int	parse_tokens(t_env *env)
 			env->tokens = env->tokens->right;
 		}
 	}
-	env->tokens = env->token_head;
 	check_pipes(env);
 	return (0);
 }
