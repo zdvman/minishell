@@ -43,7 +43,6 @@ t_token	*redirect_token(char *line, int *start, int len)
 t_token	*end_token(void)
 {
 	t_token	*token;
-	int		i;
 
 	token = ft_calloc(sizeof(t_token), 1);
 	token->type = END;
@@ -129,19 +128,14 @@ t_token	*control_token(char *line, int *start, int len)
 	return (token);
 }
 
-t_token	*get_tokens(char *line, int start, int len)
+t_token	*get_tokens(char *line, int i, int len)
 {
 	t_token	*token;
-	int	i;
-	int	j;
 
-	if (start == len)
+	if (i == len)
 		return (end_token ());
-	i = start;
 	while (line[i] && is_space(line[i]))
 		i++;
-	if (i >= len)
-		return (get_tokens(line, len, len));
 	if (is_redirect(line[i]))
 		token = redirect_token(line, &i, len);
 	else if (is_bracket(line[i]))
@@ -153,10 +147,7 @@ t_token	*get_tokens(char *line, int start, int len)
 	else if (is_control(line[i]))
 		token = control_token(line, &i, len);
 	else
-	{
-		//printf("%c not recognised\n", line[i++]);
-		return (end_token ());
-	}
+		return (end_token ());                  /// what do we do when unrecognised token
 	token->right = get_tokens(line, i, len);
 	return (token);
 }
@@ -308,8 +299,7 @@ int	single_command(t_env *env)
 		single_child(env);
 	else
 	{
-		if (env->tokens->left && env->tokens->left->pipe)
-			dup2 (STDOUT_FILENO, STDIN_FILENO);
+		dup2 (STDOUT_FILENO, STDIN_FILENO);
 		waitpid(pid, &return_val, 0);
 	}
 	env->tokens = env->tokens->right;
@@ -341,10 +331,10 @@ int	evaluate(t_env *env)
 	while (env->tokens->type != END && env->tokens->type != CLOSE_BRACKET)
 	{
 		if (env->tokens->type == OPEN_BRACKET)
-			{
-				env->tokens = env->tokens->right;
-				return_val = evaluate(env);
-			}
+		{
+			env->tokens = env->tokens->right;
+			return_val = evaluate(env);
+		}
 		else if (env->tokens->type == COMMAND)
 		{
 			if (env->tokens->pipe == 1)
