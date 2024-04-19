@@ -1,0 +1,2 @@
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
+	size_t	ft_strlen(const char *str)

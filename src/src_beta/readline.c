@@ -216,7 +216,7 @@ char	*get_input (t_env *env)
 {
 	char	*res;
 		
-	res = readline("\n> ");
+	res = readline("> ");
 	if (res && *res)
 	{
 		add_history(res);
@@ -327,15 +327,20 @@ void	single_parent(int fd[2])
 	close (fd[0]);
 }
 
-void	evaluate(t_env *env)
+int	evaluate(t_env *env)
 {
 	pid_t	pid;
 	int		fd[2];
 	int		status;
 
-	while (env->tokens->type != END)
+	while (env->tokens->type != END && env->tokens->type != CLOSE_BRACKET)
 	{
-		if (env->tokens->type == COMMAND)
+		if (env->tokens->type == OPEN_BRACKET)
+			{
+				env->tokens = env->tokens->right;
+				status = evaluate(env);
+			}
+		else if (env->tokens->type == COMMAND)
 		{
 			if (env->tokens->pipe == 1)
 			{
@@ -381,7 +386,8 @@ void	evaluate(t_env *env)
 				env->tokens = env->tokens->right;
 		}
 	}
-	env->tokens = env->token_head;
+	env->tokens = env->tokens->right;
+	return (status);
 }
 
 void	shell_loop(t_env *env, int ac, char **av)
@@ -400,6 +406,7 @@ void	shell_loop(t_env *env, int ac, char **av)
 			break ;
 		parse_tokens(env);
 		evaluate(env);
+		env->tokens = env->token_head;
 		env->tokens = env->token_head;
 		//print_tokens(env->tokens);
 		free (line);
