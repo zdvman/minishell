@@ -35,7 +35,6 @@ int	is_bracket(char c)
 	return (0);
 }
 
-
 int	is_quote(char c)
 {
 	if (c == '\'' || c == '\"')

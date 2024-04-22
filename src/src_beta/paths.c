@@ -46,7 +46,7 @@ void	check_path(t_env *env)
 	while (env->paths && !env->tokens->command_path && env->paths[i])
 	{
 		tmp = ft_strjoin(env->paths[i++], env->tokens->string);
-		if (access(tmp, F_OK | X_OK) == 0)
+		if (access(tmp, X_OK) == 0)
 		{
 			env->tokens->command_path = ft_strdup(tmp);
 			free (tmp);
@@ -54,7 +54,7 @@ void	check_path(t_env *env)
 		}
 		free (tmp);
 	}
-	if (access(env->tokens->string, F_OK | X_OK) == 0)
+	if (!env->tokens->command_path && access(env->tokens->string, X_OK) == 0)
 	{
 		env->tokens->command_path = ft_strdup(env->tokens->string);
 		return ;

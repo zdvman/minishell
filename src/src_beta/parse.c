@@ -27,25 +27,20 @@ int	count_args(t_env *env)
 	return (i);
 }
 
-void	get_args(t_env *env)
+t_list	*get_args_list(t_token *token, t_env *env)
 {
-	t_token	*throw_away;
+	t_list	*new;
 	t_token	*tmp;
-	int		i;
 
-	i = 1;
-	tmp = env->tokens;
-	tmp = tmp->right;
-	while (tmp && tmp->type == WORD)
-	{
-		env->tokens->args[i++] = ft_strdup(tmp->string);
-		free (tmp->string);
-		throw_away = tmp;
-		tmp = tmp->right;
-		free (throw_away);
-	}
-	env->tokens->args[i] = 0;
-	env->tokens->right = tmp;
+	env->tokens->right = token;
+	if (token->type != WORD)
+		return (NULL);
+	new = malloc(sizeof(t_list));
+	new->entry = ft_strdup(token->string);
+	tmp = token->right;
+	free (token);
+	new->next = get_args_list(tmp, env);
+	return (new);
 }
 
 void	build_command(t_env *env)
@@ -56,13 +51,11 @@ void	build_command(t_env *env)
 		printf("bad filename\n");
 		exit (1);	// need to add exit_error - bad filename
 	}
-	env->tokens->args = malloc(sizeof(char *) * (count_args(env) + 1));
-	env->tokens->args[0] = ft_strdup(env->tokens->string);	
+	env->tokens->args_list = ft_calloc(sizeof(t_list), 1);
+	env->tokens->args_list->entry = ft_strdup(env->tokens->string);
+	env->tokens->args_head = env->tokens->args_list;
 	env->tokens->type = COMMAND;
-	env->tokens->pipe = 0;
-	env->tokens->out_fd = -1;
-	env->tokens->in_fd = -1;
-	get_args(env);
+	env->tokens->args_list->next = get_args_list(env->tokens->right, env);
 }
 
 void	check_brackets(t_env *env)
@@ -210,7 +203,6 @@ void	check_pipes(t_env *env)
 				tmp = env->tokens->right;
 				env->tokens->right = tmp->right;
 				tmp->right->left = env->tokens;
-				free (tmp);
 			}
 		}
 		env->tokens = env->tokens->right;
@@ -245,6 +237,5 @@ int	parse_tokens(t_env *env)
 			env->tokens = env->tokens->right;
 		}
 	}
-	check_pipes(env);
 	return (0);
 }

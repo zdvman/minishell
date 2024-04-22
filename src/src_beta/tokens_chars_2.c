@@ -29,7 +29,7 @@ int	is_word(char c)
 		return (1);
 	if (c == '.' || c == '_')
 		return (1);
-	if (c == '/')
+	if (c == '/' || c == '*')
 		return (1);
 	if (c == '-')
 		return (1);

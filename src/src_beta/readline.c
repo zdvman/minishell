@@ -275,6 +275,7 @@ void	pipe_command(t_env *env)
 {
 	pid_t	pid;
 	int		fd[2];
+	int		res;
 
 	while (env->tokens->pipe == 1)
 	{
@@ -283,7 +284,10 @@ void	pipe_command(t_env *env)
 		if (!pid)
 			pipe_child(env, fd);
 		else
+		{
 			pipe_parent(fd);
+			waitpid(pid, &res, WNOHANG);
+		}
 		env->tokens = env->tokens->right;
 	}
 }
@@ -306,21 +310,52 @@ int	single_command(t_env *env)
 	return (return_val);
 }
 
+
+void	get_next_token(t_env *env)
+{
+	int	brackets;
+
+	brackets = 1;
+	while (brackets && env->tokens->type != END)
+	{
+		env->tokens = env->tokens->right;
+		if (env->tokens->type == OPEN_BRACKET)
+			brackets++;
+		if (env->tokens->type == CLOSE_BRACKET)
+			brackets--;
+	}
+}
+
 void	check_control(t_env *env, int return_val)
 {
-	if (return_val == 0 && env->tokens->type == CONTROL)
+	if (env->tokens->type == CONTROL)
 	{
-		if (env->tokens->control == '&')
-			env->tokens = env->tokens->right;
-		else
-			env->tokens = env->tokens->right->right;
-	}
-	if (return_val != 0 && env->tokens->type == CONTROL)
-	{
-		if (env->tokens->control == '&')
-			env->tokens = env->tokens->right->right;
-		else
-			env->tokens = env->tokens->right;
+		if (return_val == 0)
+		{
+			if (env->tokens->control == '&')
+				env->tokens = env->tokens->right;
+			else
+			{
+				env->tokens = env->tokens->right;
+				if (env->tokens->type == OPEN_BRACKET)
+					get_next_token(env);
+				else
+					env->tokens = env->tokens->right;
+			}
+		}
+		if (return_val != 0)
+		{
+			if (env->tokens->control == '|')
+				env->tokens = env->tokens->right;
+			else
+			{
+				env->tokens = env->tokens->right;
+				if (env->tokens->type == OPEN_BRACKET)
+					get_next_token(env);
+				else
+					env->tokens = env->tokens->right;
+			}
+		}
 	}
 }
 
@@ -330,9 +365,11 @@ int	evaluate(t_env *env)
 
 	while (env->tokens->type != END && env->tokens->type != CLOSE_BRACKET)
 	{
+		check_control(env, return_val);
 		if (env->tokens->type == OPEN_BRACKET)
 		{
-			env->tokens = env->tokens->right;
+			// if (env->tokens->left && env->tokens->left->type == CONTROL)
+				env->tokens = env->tokens->right;
 			return_val = evaluate(env);
 		}
 		else if (env->tokens->type == COMMAND)
@@ -342,10 +379,249 @@ int	evaluate(t_env *env)
 			else
 				return_val = single_command(env);
 		}
-		check_control(env, return_val);
+
 	}
+	env->exit_status = return_val;
 	env->tokens = env->tokens->right;
 	return (return_val);
+}
+
+void	check_grammar(t_env *env)
+{
+	while (env->tokens)
+	{
+		if (env->tokens->type == CONTROL)
+		{
+			if (!env->tokens->left && env->tokens->left->type != CLOSE_BRACKET && env->tokens->left->type != COMMAND)
+			{
+				printf("unexpected token \'%c\'  %d\n", env->tokens->control, env->tokens->left->type);
+				exit (1);
+			}
+			if (env->tokens->right->type != COMMAND && env->tokens->right->type != OPEN_BRACKET)
+			{
+				printf("::unexpected token \'%c\'\n", env->tokens->control);
+				exit (1);
+			}
+		}
+		env->tokens = env->tokens->right;
+	}
+	env->tokens = env->token_head;
+}
+
+t_list	*new_dir_entry(char *entry_name)
+{
+	t_list	*new;
+
+	new = ft_calloc(sizeof(t_list), 1);
+	new->entry = ft_strdup(entry_name);
+	return (new);
+}
+
+int	glob(char *pattern, char *file_name, int i, int j)
+{
+	int	path1;
+	int	path2;
+	int	path3;
+
+	if (!pattern[i] && !file_name[j])
+		return (1);
+	else if (!pattern[i] || !file_name[j])
+		return (0);
+	else if (pattern[i] == '*')
+	{
+		path1 = glob(pattern, file_name, i + 1, j);
+		path2 = glob(pattern, file_name, i, j + 1);
+		path3 = glob(pattern, file_name, i + 1, j + 1);
+		return (path1 || path2 || path3);
+	}
+	else if (pattern[i] && file_name[j] && pattern[i] == file_name[j])
+		return (glob(pattern, file_name, i + 1, j + 1));
+	return (0);
+}
+
+
+int	contains(char *str, char target)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == target)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+int	count_list(t_list *list)
+{
+	int	i;
+
+	i = 1;
+	if (!list)
+		return (0);
+	while (list)
+	{
+		i++;
+		list = list->next;
+	}
+	return (i);
+}
+
+void	get_current_dir(t_env *env)
+{
+	struct dirent	*entry;
+	char			*dir_name;
+	DIR				*current;
+
+	dir_name = malloc(256);
+	dir_name = getcwd(dir_name, 256);
+	current = opendir(dir_name);
+	free (dir_name);
+	while ((entry = readdir(current)))
+	{
+		if (env->tokens->args_list->entry[0] != '.' && entry->d_type == DT_DIR)
+			continue ;
+		if (!env->dir_head)
+		{
+			env->directory_list = new_dir_entry(entry->d_name);
+			env->dir_head = env->directory_list;
+		}
+		else
+		{
+			env->directory_list->next = new_dir_entry(entry->d_name);
+			env->directory_list = env->directory_list->next;
+		}
+	}
+	closedir(current);
+}
+
+t_list	*expand_args(t_env *env, char *pattern, t_list *next)
+{
+	t_list	*prev;
+	t_list	*matched;
+	t_list	*matched_head;
+
+	matched = NULL;
+	matched_head = NULL;
+	env->directory_list = env->dir_head;
+	while (env->directory_list)
+	{
+		if (glob(pattern, env->directory_list->entry, 0, 0))
+		{
+			if (!matched)
+			{
+				matched = new_dir_entry(env->directory_list->entry);
+				matched_head = matched;
+			}
+			else
+			{
+				matched->next = new_dir_entry(env->directory_list->entry);
+				matched = matched->next;
+			}
+		}
+		env->directory_list = env->directory_list->next;
+	}
+	if (matched)
+		matched->next = next;
+	return (matched_head);
+}
+
+void	free_dir(t_env *env)
+{
+	t_list	*tmp;
+
+	env->directory_list = env->dir_head;
+	while (env->directory_list)
+	{
+		tmp = env->directory_list;
+		free (env->directory_list->entry);
+		env->directory_list = env->directory_list->next;
+		free (tmp);
+	}
+	env->directory_list = NULL;
+	env->dir_head = NULL;
+}
+
+void	process_entries(t_env *env, t_list *prev)
+{
+	t_list	*next;
+	t_list	*tmp;
+	t_list	*get_args;
+
+	get_current_dir(env);
+	if (contains(env->tokens->args_list->entry, '*'))
+	{
+		next = env->tokens->args_list->next;
+		tmp = env->tokens->args_list;
+		get_args = expand_args(env, env->tokens->args_list->entry, next);
+		if (get_args)
+		{
+			prev->next = get_args;
+			free (tmp->entry);
+			tmp->entry = NULL;
+		}
+		else
+			prev->next = tmp;
+	}
+	prev = env->tokens->args_list;
+	free_dir(env);	
+}
+
+void	expand_wildcards(t_env *env)
+{
+	t_list	*prev;
+
+	while (env->tokens->type != END)
+	{
+		if (env->tokens->type == COMMAND)
+		{
+			prev = env->tokens->args_list;
+			env->tokens->args_list = env->tokens->args_head;
+			// env->tokens->args_list = env->tokens->args_list->next;
+			while ((env->tokens->args_list = env->tokens->args_list->next))
+				process_entries(env, prev);
+			env->tokens->args_list = env->tokens->args_head;
+		}
+		env->tokens = env->tokens->right;
+	}
+	env->tokens = env->token_head;
+}
+
+void	make_args_arrays(t_env *env)
+{
+	t_list	*tmp;
+	int		i;
+
+	env->tokens = env->token_head;
+	while (env->tokens)
+	{
+		i = 0;
+		if (env->tokens->args_list)
+			env->tokens->args = ft_calloc(sizeof(char *) * count_list(env->tokens->args_list), 1);
+		while (env->tokens->args_list)
+		{
+			env->tokens->args[i++] = ft_strdup(env->tokens->args_list->entry);
+			tmp = env->tokens->args_list;
+			free (tmp->entry);
+			env->tokens->args_list = env->tokens->args_list->next;
+			free (tmp);
+		}
+		env->tokens = env->tokens->right;
+	}
+}
+
+void	parse_and_expand(t_env *env)
+{
+	parse_tokens(env);
+	check_pipes(env);
+	env->tokens = env->token_head;
+	link_tokens_left(env);
+	check_grammar(env);
+	expand_wildcards(env);
+	make_args_arrays(env);
+	env->tokens = env->token_head;
 }
 
 void	shell_loop(t_env *env, int ac, char **av)
@@ -362,12 +638,11 @@ void	shell_loop(t_env *env, int ac, char **av)
 			line = get_input(env);
 		if (env->tokens->type == EXIT)
 			break ;
-		parse_tokens(env);
+		parse_and_expand(env);
 		evaluate(env);
-		env->tokens = env->token_head;
-		//print_tokens(env->tokens);
 		free (line);
 		line = NULL;
+		env->tokens = env->token_head;
 		reset_tokens(env);
 		env->tokens = NULL;
 		if (ac > 1)
@@ -382,6 +657,7 @@ int main(int ac, char **av, char **environ)
 
 	env.tokens = NULL;
 	env.paths = NULL;
+	env.dir_head = NULL;
 	env.env = environ;
 	env.paths = ft_split(get_path (&env), ':');
 	if (env.paths)

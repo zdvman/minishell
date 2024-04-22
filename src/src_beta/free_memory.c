@@ -35,6 +35,7 @@ void	reset_tokens(t_env *env)
 			while (env->tokens->args[i])
 				free (env->tokens->args[i++]);
 			free (env->tokens->args);
+			env->tokens->args = NULL;
 		}
 		tmp = env->tokens->right;
 		free (env->tokens);
