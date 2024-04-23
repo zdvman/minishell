@@ -43,22 +43,24 @@ t_list	*get_args_list(t_token *token, t_env *env)
 	return (new);
 }
 
-void	build_command(t_env *env)
+int	build_command(t_env *env)
 {
-	add_path(env);
-	if (!env->tokens->command_path)
-	{
-		printf("bad filename\n");
-		exit (1);	// need to add exit_error - bad filename
-	}
+	// if (add_path(env))
+	// 	return (1);
+	// if (!env->tokens->command_path)
+	// {
+	// 	printf("bad filename\n");
+	// 	return (1);	// need to add exit_error - bad filename
+	// }
 	env->tokens->args_list = ft_calloc(sizeof(t_list), 1);
 	env->tokens->args_list->entry = ft_strdup(env->tokens->string);
 	env->tokens->args_head = env->tokens->args_list;
 	env->tokens->type = COMMAND;
 	env->tokens->args_list->next = get_args_list(env->tokens->right, env);
+	return (0);
 }
 
-void	check_brackets(t_env *env)
+int	check_brackets(t_env *env)
 {
 	t_token	*current;
 	int 	brackets;
@@ -72,7 +74,7 @@ void	check_brackets(t_env *env)
 		if (brackets < 0)
 		{
 			printf("brackets\n");
-			exit (1);        //need to decide how to handle this
+			return (1);        //need to decide how to handle this
 		}
 		if (current->type == OPEN_BRACKET)
 			brackets++;
@@ -81,18 +83,19 @@ void	check_brackets(t_env *env)
 	if (brackets)
 	{
 		printf ("brackets\n");
-		exit (1);      //need to decide how to handle this
+		return (1);      //need to decide how to handle this
 	}
+	return (0);
 }
 
-void	get_redirect_string(t_env *env)
+int	get_redirect_string(t_env *env)
 {
 	t_token *current;
 
 	if (env->tokens->right->type != WORD)
 	{
 		printf("bad redirect");
-		exit (1);
+		return (1);
 	}
 	current = env->tokens;
 	current = current->right;
@@ -100,6 +103,7 @@ void	get_redirect_string(t_env *env)
 	free (current->string);
 	env->tokens->right = current->right;
 	free (current);
+	return (0);
 }
 
 int	is_redirect_token(int type)
@@ -203,6 +207,7 @@ void	check_pipes(t_env *env)
 				tmp = env->tokens->right;
 				env->tokens->right = tmp->right;
 				tmp->right->left = env->tokens;
+				free (tmp);
 			}
 		}
 		env->tokens = env->tokens->right;
@@ -215,13 +220,16 @@ int	parse_tokens(t_env *env)
 	t_token	*current;
 
 	current = env->tokens;
-	check_brackets(env);
+	if (check_brackets(env))
+		return (1);
 	while (env->tokens->type != END)
 	{
 		if (is_redirect_token(env->tokens->type))
-		 	get_redirect_string(env);
+		 	if ((get_redirect_string(env)) == 1)
+				return (1);
 		if (env->tokens->type == WORD)
-			build_command(env);
+			if ((build_command(env)) == 1)
+				return (1);
 		env->tokens = env->tokens->right;
 	}
 	link_tokens_left(env);

@@ -15,8 +15,10 @@
 void	reset_tokens(t_env *env)
 {
 	t_token	*tmp;
+	t_list	*tmp_list;
 	int		i;
 
+	env->tokens = env->token_head;
 	while (env->tokens->type != END)
 	{
 		if (env->tokens->command_path)
@@ -37,6 +39,17 @@ void	reset_tokens(t_env *env)
 			free (env->tokens->args);
 			env->tokens->args = NULL;
 		}
+		// env->tokens->args_list = env->tokens->args_head;
+		// if (env->tokens->args_list)
+		// {
+		// 	while (env->tokens->args_list)
+		// 	{
+		// 		free (env->tokens->args_list->entry);
+		// 		tmp_list = env->tokens->args_list;
+		// 		env->tokens->args_list = env->tokens->args_list->next;
+		// 		free (tmp_list);
+		// 	}
+		// }
 		tmp = env->tokens->right;
 		free (env->tokens);
 		env->tokens = tmp;

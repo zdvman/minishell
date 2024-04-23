@@ -92,11 +92,11 @@ t_token	*quote_word_token(char *line, int *start, int len)
 	i++;
 	while (i < len && line[i] != line[*start])
 		i++;
-	if (line[i] != line[*start])
-	{
-		printf("error - unclosed quote %c   %c\n", line[*start], line[i]);
-	//	exit (1);
-	}
+	// if (line[i] != line[*start])
+	// {
+	// 	printf("error - unclosed quote %c   %c\n", line[*start], line[i]);
+	// 	return (NULL);
+	// }
 	token->string = ft_calloc(sizeof(char) * (i - *start + 2), 1);
 	strncpy(token->string, &line[*start], (i - *start + 1));
 	token->string[i - *start + 1] = 0;
@@ -173,6 +173,7 @@ char	*get_input (t_env *env)
 {
 	char	*res;
 		
+	rl_on_new_line ();
 	res = readline("> ");
 	if (res && *res)
 	{
@@ -286,7 +287,7 @@ void	pipe_command(t_env *env)
 		else
 		{
 			pipe_parent(fd);
-			waitpid(pid, &res, WNOHANG);
+			// waitpid(pid, &res, WNOHANG);
 		}
 		env->tokens = env->tokens->right;
 	}
@@ -362,31 +363,41 @@ void	check_control(t_env *env, int return_val)
 int	evaluate(t_env *env)
 {
 	int	return_val;
+	int	i;
+
 
 	while (env->tokens->type != END && env->tokens->type != CLOSE_BRACKET)
 	{
+		i = 1;
 		check_control(env, return_val);
 		if (env->tokens->type == OPEN_BRACKET)
 		{
-			// if (env->tokens->left && env->tokens->left->type == CONTROL)
-				env->tokens = env->tokens->right;
+			env->tokens = env->tokens->right;
 			return_val = evaluate(env);
 		}
 		else if (env->tokens->type == COMMAND)
 		{
+			if (add_path(env))
+			{
+				while (env->tokens->type != END)
+					env->tokens = env->tokens->right;
+				return (1);
+			}
+			i++;
 			if (env->tokens->pipe == 1)
 				pipe_command(env);
 			else
 				return_val = single_command(env);
 		}
-
 	}
+	while (waitpid(0, NULL, 0) != -1);
+
 	env->exit_status = return_val;
 	env->tokens = env->tokens->right;
 	return (return_val);
 }
 
-void	check_grammar(t_env *env)
+int	check_grammar(t_env *env)
 {
 	while (env->tokens)
 	{
@@ -395,17 +406,18 @@ void	check_grammar(t_env *env)
 			if (!env->tokens->left && env->tokens->left->type != CLOSE_BRACKET && env->tokens->left->type != COMMAND)
 			{
 				printf("unexpected token \'%c\'  %d\n", env->tokens->control, env->tokens->left->type);
-				exit (1);
+				return (1);
 			}
 			if (env->tokens->right->type != COMMAND && env->tokens->right->type != OPEN_BRACKET)
 			{
 				printf("::unexpected token \'%c\'\n", env->tokens->control);
-				exit (1);
+				return (1);
 			}
 		}
 		env->tokens = env->tokens->right;
 	}
 	env->tokens = env->token_head;
+	return (0);
 }
 
 t_list	*new_dir_entry(char *entry_name)
@@ -427,6 +439,10 @@ int	glob(char *pattern, char *file_name, int i, int j)
 		return (1);
 	else if (!pattern[i] || !file_name[j])
 		return (0);
+	else if (pattern[0] == '*' && pattern[1] == '.' && !pattern[2])
+		return (0);
+	else if (pattern[0] == '*' && !pattern[1] && file_name[0] == '.')
+		return (0);
 	else if (pattern[i] == '*')
 	{
 		path1 = glob(pattern, file_name, i + 1, j);
@@ -434,8 +450,14 @@ int	glob(char *pattern, char *file_name, int i, int j)
 		path3 = glob(pattern, file_name, i + 1, j + 1);
 		return (path1 || path2 || path3);
 	}
-	else if (pattern[i] && file_name[j] && pattern[i] == file_name[j])
-		return (glob(pattern, file_name, i + 1, j + 1));
+	else if (pattern[i] && file_name[j] && pattern[i] == file_name[j] && pattern[i + 1])
+	{
+		path1 = glob(pattern, file_name, i + 1, j + 1);
+		path2 = 0;
+		if (pattern[i + 1] == '*')
+			path2 = glob(pattern, file_name, i + 1, j);
+		return (path1 || path2);
+	}
 	return (0);
 }
 
@@ -481,8 +503,6 @@ void	get_current_dir(t_env *env)
 	free (dir_name);
 	while ((entry = readdir(current)))
 	{
-		if (env->tokens->args_list->entry[0] != '.' && entry->d_type == DT_DIR)
-			continue ;
 		if (!env->dir_head)
 		{
 			env->directory_list = new_dir_entry(entry->d_name);
@@ -595,6 +615,7 @@ void	make_args_arrays(t_env *env)
 	int		i;
 
 	env->tokens = env->token_head;
+	env->tokens->args_list = env->tokens->args_head;
 	while (env->tokens)
 	{
 		i = 0;
@@ -612,16 +633,43 @@ void	make_args_arrays(t_env *env)
 	}
 }
 
-void	parse_and_expand(t_env *env)
+int	check_commands_not_directories(t_env *env)
 {
-	parse_tokens(env);
+	struct stat	file;
+
+	env->tokens = env->token_head;
+	while (env->tokens)
+	{
+		if (env->tokens->type == COMMAND)
+		{
+			if (!(stat(env->tokens->args_list->entry, &file)))
+				if ((file.st_mode & S_IFMT) == S_IFDIR)
+				{
+					printf("%s is a directory\n", env->tokens->args_list->entry);
+					return (1);
+				}
+		}
+		env->tokens = env->tokens->right;
+	}
+	env->tokens = env->token_head;
+	return (0);
+}
+
+int	parse_and_expand(t_env *env)
+{
+	if ((parse_tokens(env)) == 1)
+		return (1);
 	check_pipes(env);
 	env->tokens = env->token_head;
 	link_tokens_left(env);
-	check_grammar(env);
+	if ((check_grammar(env)) == 1)
+		return (1);
 	expand_wildcards(env);
+	if ((check_commands_not_directories(env)) == 1)
+		return (1);
 	make_args_arrays(env);
 	env->tokens = env->token_head;
+	return (0);
 }
 
 void	shell_loop(t_env *env, int ac, char **av)
@@ -638,8 +686,8 @@ void	shell_loop(t_env *env, int ac, char **av)
 			line = get_input(env);
 		if (env->tokens->type == EXIT)
 			break ;
-		parse_and_expand(env);
-		evaluate(env);
+		if (env->tokens->type != END && !(parse_and_expand(env)))
+			evaluate(env);
 		free (line);
 		line = NULL;
 		env->tokens = env->token_head;

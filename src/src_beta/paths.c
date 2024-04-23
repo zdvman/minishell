@@ -72,21 +72,22 @@ void	free_paths(t_env *env)
 		free (env->paths);
 }
 
-void	add_path(t_env *env)
+int	add_path(t_env *env)
 {
 	env->tokens->command_path = NULL;
 
 	if (env->tokens->string && !strcmp(env->tokens->string, "exit"))
 	{
 		env->tokens->type = EXIT;
-		return ;
+		return (1);
 	}
 	check_path(env);
 	if (!env->tokens->command_path)
 	{
-		free_paths (env);
-		perror(env->tokens->string);
-		exit (2);
+		errno = 127;
+		printf("%s: command not found\n", env->tokens->string);
+		return (127);
 	}
+	return (0);
 }
 

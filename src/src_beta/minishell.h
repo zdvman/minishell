@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <wait.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 typedef enum
 {	
@@ -81,7 +83,7 @@ typedef struct s_env
 	int		exit_status;
 }	t_env;
 
-void	add_path(t_env *env);
+int		add_path(t_env *env);
 void	add_slash(char **paths);
 void	check_pipes(t_env *env);
 void	clear_env(t_env *env);
