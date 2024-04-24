@@ -293,7 +293,7 @@ void	pipe_command(t_env *env)
 	}
 }
 
-int	single_command(t_env *env)
+int	 single_command(t_env *env)
 {
 	pid_t	pid;
 	int		fd[2];
@@ -429,35 +429,57 @@ t_list	*new_dir_entry(char *entry_name)
 	return (new);
 }
 
+int	file_has_less_dots(char *s1, char *s2)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	j = 0;
+	while (*s1)
+		if (*s1++ == '.')
+			i++;
+	while (*s2)
+		if (*s2++ == '.')
+			j++;
+	if (j < i)
+		return (1);
+	return (0);
+}
+
 int	glob(char *pattern, char *file_name, int i, int j)
 {
 	int	path1;
 	int	path2;
 	int	path3;
 
-	if (!pattern[i] && !file_name[j])
+	if (pattern[i] == 0 && file_name[j] == 0)
 		return (1);
-	else if (!pattern[i] || !file_name[j])
+	if (file_name[j] == 0 && pattern[i] == '*')
+		return (glob(pattern, file_name, i + 1, j));
+	if (pattern[i] == 0 || file_name[j] == 0)
 		return (0);
-	else if (pattern[0] == '*' && pattern[1] == '.' && !pattern[2])
+
+	if (pattern[i] != '*' && pattern[i] != file_name[j])
 		return (0);
-	else if (pattern[0] == '*' && !pattern[1] && file_name[0] == '.')
-		return (0);
-	else if (pattern[i] == '*')
-	{
-		path1 = glob(pattern, file_name, i + 1, j);
-		path2 = glob(pattern, file_name, i, j + 1);
-		path3 = glob(pattern, file_name, i + 1, j + 1);
-		return (path1 || path2 || path3);
-	}
-	else if (pattern[i] && file_name[j] && pattern[i] == file_name[j] && pattern[i + 1])
+	if (pattern[0] == '*' && !pattern[1] && file_name[0] == '.')
+		return(0);
+	if (pattern[0] == '*' && pattern[1] == '.' && file_name[0] == '.')
+		return(0);
+	if (pattern[0] == '.' && pattern[1] == '*' && file_name[0] == '.')
+		return(1);
+	path1 = 0;
+	path2 = 0;
+	path3 = 0;
+	if (pattern[i] == '*')
 	{
 		path1 = glob(pattern, file_name, i + 1, j + 1);
-		path2 = 0;
-		if (pattern[i + 1] == '*')
-			path2 = glob(pattern, file_name, i + 1, j);
-		return (path1 || path2);
+		path2 = glob(pattern, file_name, i, j + 1);
+		path3 = glob(pattern, file_name, i + 1, j);
+		return (path1 || path2 || path3);
 	}
+	else
+		return (glob(pattern, file_name, i + 1, j + 1));
 	return (0);
 }
 
@@ -645,7 +667,13 @@ int	check_commands_not_directories(t_env *env)
 			if (!(stat(env->tokens->args_list->entry, &file)))
 				if ((file.st_mode & S_IFMT) == S_IFDIR)
 				{
-					printf("%s is a directory\n", env->tokens->args_list->entry);
+					if (contains(env->tokens->args_list->entry, '/'))
+					{
+						printf("bash: %s: Is a directory\n", env->tokens->args_list->entry);
+						env->exit_status = 126;
+					}
+					else
+						printf("%s: command not found\n", env->tokens->args_list->entry);
 					return (1);
 				}
 		}
