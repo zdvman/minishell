@@ -70,11 +70,18 @@ int	check_brackets(t_env *env)
 	while (current->type != END)
 	{
 		if (current->type == CLOSE_BRACKET)
+		{
+			if (!current->left || current->left->type != WORD)
+			{
+				printf("bash: syntax error near unexpected token `)\'\n");
+				return (2);        
+			}
 			brackets--;
+		}
 		if (brackets < 0)
 		{
-			printf("brackets\n");
-			return (1);        //need to decide how to handle this
+			printf("bash: syntax error near unexpected token `(\'\n");
+			return (2);
 		}
 		if (current->type == OPEN_BRACKET)
 			brackets++;
@@ -82,8 +89,8 @@ int	check_brackets(t_env *env)
 	}
 	if (brackets)
 	{
-		printf ("brackets\n");
-		return (1);      //need to decide how to handle this
+		printf ("bash: syntax error near unexpected token `(\'\n");
+		return (2);
 	}
 	return (0);
 }
@@ -219,6 +226,7 @@ int	parse_tokens(t_env *env)
 {
 	t_token	*current;
 
+	link_tokens_left(env);
 	current = env->tokens;
 	if (check_brackets(env))
 		return (1);
@@ -233,7 +241,6 @@ int	parse_tokens(t_env *env)
 		env->tokens = env->tokens->right;
 	}
 	link_tokens_left(env);
-	env->tokens = env->token_head;
 	while (env->tokens->type != END)
 	{
 		while (env->tokens->type != END && env->tokens->type != COMMAND)

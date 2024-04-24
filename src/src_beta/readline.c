@@ -413,6 +413,7 @@ int	check_grammar(t_env *env)
 				printf("::unexpected token \'%c\'\n", env->tokens->control);
 				return (1);
 			}
+			
 		}
 		env->tokens = env->tokens->right;
 	}
