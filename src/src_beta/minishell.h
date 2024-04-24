@@ -55,6 +55,10 @@ typedef struct s_list
 	char			*entry;
 }	t_list;
 
+// struct s_env t_env;
+
+// typedef int (*t_function)(t_env *env);
+
 typedef struct s_token
 {
 	struct s_token *left;
@@ -62,6 +66,8 @@ typedef struct s_token
 	t_token_type	type;
 	char			*string;
 	int				val;
+	int				is_builtin;
+	// t_function		builtin;
 	t_list			*args_list;
 	t_list			*args_head;
 	char			**args;
@@ -85,6 +91,8 @@ typedef struct s_env
 
 int		add_path(t_env *env);
 void	add_slash(char **paths);
+int		change_dir(t_env *env);
+int		check_if_builtin(char *str);
 void	check_pipes(t_env *env);
 void	clear_env(t_env *env);
 void	free_paths(t_env *env);
@@ -110,6 +118,7 @@ int		is_redirect(char c);
 int		is_space(char c);
 int		is_word(char c);
 void	link_tokens_left(t_env *env);
+void	open_redirect_file(t_redirect *tmp);
 int		parse_tokens(t_env *env);
 void	print_tokens(t_token *tokens);
 void	reset_tokens(t_env *env);

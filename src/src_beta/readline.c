@@ -81,28 +81,28 @@ t_token	*word_token(char *line, int *start, int len)
 	return (token);
 }
 
-t_token	*quote_word_token(char *line, int *start, int len)
-{
-	t_token	*token;
-	int		i;
+// t_token	*quote_word_token(char *line, int *start, int len)
+// {
+// 	t_token	*token;
+// 	int		i;
 
-	token = ft_calloc(sizeof(t_token), 1);
-	token->type = WORD;
-	i = *start;
-	i++;
-	while (i < len && line[i] != line[*start])
-		i++;
-	// if (line[i] != line[*start])
-	// {
-	// 	printf("error - unclosed quote %c   %c\n", line[*start], line[i]);
-	// 	return (NULL);
-	// }
-	token->string = ft_calloc(sizeof(char) * (i - *start + 2), 1);
-	strncpy(token->string, &line[*start], (i - *start + 1));
-	token->string[i - *start + 1] = 0;
-	*start = i + 1;
-	return (token);
-}
+// 	token = ft_calloc(sizeof(t_token), 1);
+// 	token->type = WORD;
+// 	i = *start;
+// 	i++;
+// 	while (i < len && line[i] != line[*start])
+// 		i++;
+// 	// if (line[i] != line[*start])
+// 	// {
+// 	// 	printf("error - unclosed quote %c   %c\n", line[*start], line[i]);
+// 	// 	return (NULL);
+// 	// }
+// 	token->string = ft_calloc(sizeof(char) * (i - *start + 2), 1);
+// 	strncpy(token->string, &line[*start], (i - *start + 1));
+// 	token->string[i - *start + 1] = 0;
+// 	*start = i + 1;
+// 	return (token);
+// }
 
 t_token	*control_token(char *line, int *start, int len)
 {
@@ -140,14 +140,15 @@ t_token	*get_tokens(char *line, int i, int len)
 		token = redirect_token(line, &i, len);
 	else if (is_bracket(line[i]))
 		token = bracket_token (line, &i, i);
-	else if (is_quote(line[i]))
-		token = quote_word_token (line, &i, len);
-	else if (is_word(line[i]))
-		token = word_token(line, &i, len);
 	else if (is_control(line[i]))
 		token = control_token(line, &i, len);
-	else
-		return (end_token ());                  /// what do we do when unrecognised token
+	// else if (is_quote(line[i]))
+	// 	token = quote_word_token (line, &i, len);
+	else //if (is_word(line[i]))
+		token = word_token(line, &i, len);
+
+	// else
+	// 	return (end_token ());                  /// what do we do when unrecognised token
 	token->right = get_tokens(line, i, len);
 	return (token);
 }
@@ -189,7 +190,7 @@ char	*get_input (t_env *env)
 	}
 	return (res);
 }
-
+/*
 char	*build_line_from_av(int ac, char **av, t_env *env)
 {
 	char	*tmp;
@@ -211,6 +212,7 @@ char	*build_line_from_av(int ac, char **av, t_env *env)
 	link_tokens_left(env);
 	return (res);
 }
+*/
 
 void	open_redirect_file(t_redirect *tmp)
 {
@@ -360,6 +362,13 @@ void	check_control(t_env *env, int return_val)
 	}
 }
 
+int	check_if_builtin(char *str)
+{
+	if (ft_strncmp(str, "cd", 3))
+		return (0);
+	return (1);
+}
+
 int	evaluate(t_env *env)
 {
 	int	return_val;
@@ -377,12 +386,17 @@ int	evaluate(t_env *env)
 		}
 		else if (env->tokens->type == COMMAND)
 		{
-			if (add_path(env))
+			if (!check_if_builtin(env->tokens->string))
 			{
-				while (env->tokens->type != END)
-					env->tokens = env->tokens->right;
-				return (1);
+				if (add_path(env))
+				{
+					while (env->tokens->type != END)
+						env->tokens = env->tokens->right;
+					return (1);
+				}
 			}
+			else
+				return (change_dir(env));
 			i++;
 			if (env->tokens->pipe == 1)
 				pipe_command(env);
@@ -413,7 +427,7 @@ int	check_grammar(t_env *env)
 				printf("::unexpected token \'%c\'\n", env->tokens->control);
 				return (1);
 			}
-			
+
 		}
 		env->tokens = env->tokens->right;
 	}
@@ -430,55 +444,34 @@ t_list	*new_dir_entry(char *entry_name)
 	return (new);
 }
 
-int	file_has_less_dots(char *s1, char *s2)
+int	good_pattern(char *pattern, char *file_name, int i, int j)
 {
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	while (*s1)
-		if (*s1++ == '.')
-			i++;
-	while (*s2)
-		if (*s2++ == '.')
-			j++;
-	if (j < i)
-		return (1);
-	return (0);
-}
-
-int	glob(char *pattern, char *file_name, int i, int j)
-{
-	int	path1;
-	int	path2;
-	int	path3;
-
-	if (pattern[i] == 0 && file_name[j] == 0)
-		return (1);
-	if (file_name[j] == 0 && pattern[i] == '*')
-		return (glob(pattern, file_name, i + 1, j));
 	if (pattern[i] == 0 || file_name[j] == 0)
 		return (0);
-
 	if (pattern[i] != '*' && pattern[i] != file_name[j])
 		return (0);
 	if (pattern[0] == '*' && file_name[0] == '.')
 		return(0);
 	if (pattern[0] == '*' && pattern[1] == '.' && file_name[0] == '.')
 		return(0);
-	if (pattern[0] == '.' && pattern[1] == '*' && !pattern[2] && file_name[0] == '.')
-		return(1);
-	path1 = 0;
-	path2 = 0;
-	path3 = 0;
+	return (1);	
+}
+
+int	glob(char *pattern, char *file_name, int i, int j)
+{
+	if (pattern[i] == 0 && file_name[j] == 0)
+		return (1);
+	if (file_name[j] == 0 && pattern[i] == '*')
+		return (glob(pattern, file_name, i + 1, j));
+	if (!good_pattern(pattern, file_name, i , j))
+		return (0);
+	if (pattern[0] == '.' && pattern[1] == '*'
+		&& !pattern[2] && file_name[0] == '.')
+		return (1);
 	if (pattern[i] == '*')
-	{
-		path1 = glob(pattern, file_name, i + 1, j + 1);
-		path2 = glob(pattern, file_name, i, j + 1);
-		path3 = glob(pattern, file_name, i + 1, j);
-		return (path1 || path2 || path3);
-	}
+		return (glob(pattern, file_name, i + 1, j + 1)
+			|| glob(pattern, file_name, i, j + 1)
+			|| glob(pattern, file_name, i + 1, j));
 	else
 		return (glob(pattern, file_name, i + 1, j + 1));
 	return (0);
@@ -706,11 +699,10 @@ void	shell_loop(t_env *env, int ac, char **av)
 	char	*line;
 
 	line = NULL;
-	if (ac > 1)
-		line = build_line_from_av(ac, av, env);
+	// if (ac > 1)
+	// 	line = build_line_from_av(ac, av, env);
 	while (1)
 	{
-		if (ac == 1)
 		while (!line || !*line)
 			line = get_input(env);
 		if (env->tokens->type == EXIT)
@@ -722,8 +714,8 @@ void	shell_loop(t_env *env, int ac, char **av)
 		env->tokens = env->token_head;
 		reset_tokens(env);
 		env->tokens = NULL;
-		if (ac > 1)
-			break ;
+		// if (ac > 1)
+		// 	break ;
 	}
 	free (line);
 }
