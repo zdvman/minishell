@@ -462,11 +462,11 @@ int	glob(char *pattern, char *file_name, int i, int j)
 
 	if (pattern[i] != '*' && pattern[i] != file_name[j])
 		return (0);
-	if (pattern[0] == '*' && !pattern[1] && file_name[0] == '.')
+	if (pattern[0] == '*' && file_name[0] == '.')
 		return(0);
 	if (pattern[0] == '*' && pattern[1] == '.' && file_name[0] == '.')
 		return(0);
-	if (pattern[0] == '.' && pattern[1] == '*' && file_name[0] == '.')
+	if (pattern[0] == '.' && pattern[1] == '*' && !pattern[2] && file_name[0] == '.')
 		return(1);
 	path1 = 0;
 	path2 = 0;
