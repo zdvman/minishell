@@ -1,3 +1,3 @@
 digraph AST {
-"0x52fb00" [label="CMD: ls LICENSE Makefile README.md ast.dot includes libft src obj 3 2 1 NAMES minishell"];
+"0xc105f0" [label="CMD: exit"];
 }

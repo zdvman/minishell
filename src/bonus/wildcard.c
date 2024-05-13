@@ -185,6 +185,8 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 	get_current_dir(env);
 	(*env)->envp_backup = (*env)->envp;
 	get_args = expand_args(env, input);
+	if (!get_args)
+		return (0);
 	while (get_args)
 	{
 		tmp = get_args;
