@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/30 11:10:22 by dzuiev            #+#    #+#             */
-/*   Updated: 2023/11/01 14:18:24 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/04/12 14:20:23 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 size_t	ft_strlen(const char *str)
 {
-	size_t	size;
+	size_t	i;
 
-	size = 0;
-	while (*(str + size) != '\0')
-		size++;
-	return (size);
+	i = 0;
+	if (str)
+	{
+		while (str[i] != '\0')
+			i++;
+	}
+	return (i);
 }

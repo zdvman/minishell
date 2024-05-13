@@ -1,0 +1,9 @@
+digraph AST {
+"0x4427b0" [label="REDIR: 3"];
+"0x4427b0" -> "0x442740" [label="L"];
+"0x442740" [label="REDIR: 2"];
+"0x442740" -> "0x4426d0" [label="L"];
+"0x4426d0" [label="REDIR: 1"];
+"0x4426d0" -> "0x442660" [label="L"];
+"0x442660" [label="CMD: "];
+}

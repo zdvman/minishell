@@ -6,35 +6,34 @@
 #    By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 10:31:12 by dzuiev            #+#    #+#              #
-#    Updated: 2024/04/10 15:58:48 by dzuiev           ###   ########.fr        #
+#    Updated: 2024/04/15 11:41:51 by dzuiev           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# **************************************************************************** # 
+# **************************************************************************** #
 #                                 Minishell                                    #
 #  Project structure:                                                          #
 #   minishell/                                                                 #
-#  ├── libft/              # Libft library files                               #
-#  │   ├── Makefile                                                            #
-#  │   └── ...             # Libft source files and headers                    #
-#  ├── src/                # Source files for Minishell                        #
-#  │   ├── core/           # Core functionality for both parts                 #
-#  │   │   └── ...         # Core implementation files                         #
-#  │   ├── mandatory/      # Mandatory specific files                          #
-#  │   │   └── ...         # Mandatory implementation files                    #
-#  │   ├── bonus/          # Bonus specific files (if any)                     #
-#  │   │   └── ...         # Bonus implementation files                        #
-#  │   └── main.c          # Main program entry point                          #
-#  ├── includes/           # Header files                                      #
-#  │   ├── minishell.h                                                         #
-#  │   └── bonus_features.h                                                    #
-#  ├── Makefile                                                                #
-#  └── README.md                                                               #
+#  ├── libft/                  # Libft library files                           #
+#  │   ├── obj/                # Libft object files                            #
+#  │   ├── Makefile            # Makefile to build the libft library           #
+#  │   └── ...                 # Libft source files and headers                #
+#  ├── src/                    # Source files for Minishell core functionality #
+#  │   ├── mandatory/          # Source files from mandatory sources           #
+#  │   ├── bonus/              # Source files from bonus sources               #
+#  │   └── main.c              # Main file for the Minishell project           #
+#  ├── includes/               # Header files for all Minishell parts          #
+#  │   ├── minishell.h         # Main headers for the project                  #
+#  │   └── minishell_bonus.h   # Bonus headers for the project                 #
+#  ├── obj/                    # Object files for all Minishell parts          #
+#  │   ├── mandatory/          # Object files from mandatory sources           #
+#  │   ├── bonus/              # Object files from bonus sources               #
+#  ├── Makefile                # Makefile to build the minishell project       #
+#  └── README.md               # Documentation of the project                  #
 #                                                                              #
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Цвета для сообщений
 # Colors for messages
 GREEN=\033[0;32m
 YELLOW=\033[0;33m
@@ -44,143 +43,124 @@ RESET=\033[0m
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Имя исполняемого файла для основной и бонусной частей проекта
-# Name of the executable file for the main and bonus parts of the project
-NAME = minishell
+# Basic Configurations
+NAME = minishell # Name of the executable file
+CC = cc # Compiler
+CFLAGS = -Wall -Wextra -Werror -g # Flags
+LIBFT = $(LIBFT_DIR)/libft.a # Libft library
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Компилятор и флаги
-# Compiler and flags
-CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Имя библиотеки libft и libminishell
-# Name of the libft and libminishell libraries
-LIBFT = $(LIBFT_DIR)/libft.a
-LIBMINISHELL = libminishell.a
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Директории с исходным кодом и библиотеками
 # Directories with source files and libraries
-LIBFT_DIR = libft # path to the libft library
-INCLUDES = includes # path to the header files
-SRC_CORE_DIR = src/core # path to the core source files
-OBJ_CORE_DIR = obj/core # path to the core object files
-SRC_MANDATORY_DIR = src/mandatory # path to the mandatory source files
-OBJ_MANDATORY_DIR = obj/mandatory # path to the mandatory object files
-SRC_BONUS_DIR = src/bonus # path to the bonus source files
-OBJ_BONUS_DIR = obj/bonus # path to the bonus object files
+LIBFT_DIR = libft
+LIBFT_DIR = libft
+INCLUDES = -I./includes -I$(LIBFT_DIR) -I/usr/include/readline
+LDFLAGS = -L$(LIBFT_DIR) -lft -lreadline # -L/usr/local/lib , ldconfig -p | grep readline
+SRC_DIR = src
+OBJ_DIR = obj
+SRC_MANDATORY_DIR = $(SRC_DIR)/mandatory
+OBJ_MANDATORY_DIR = $(OBJ_DIR)/mandatory
+SRC_BONUS_DIR = $(SRC_DIR)/bonus
+OBJ_BONUS_DIR = $(OBJ_DIR)/bonus
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Компиляция библиотеки libft
-# Compilation of the libft library
-$(LIBFT):
-	$(MAKE) -C $(LIBFT_DIR)
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Исходные файлы для библиотеки libminishell
-# Source files for the libminishell library
-SRC_CORE = $(wildcard $(SRC_CORE_DIR)/*.c)
-# Объектные файлы для библиотеки libminishell
-# Object files for the libminishell library
-OBJ_CORE = $(SRC_CORE:$(SRC_CORE_DIR)/%.c=$(OBJ_CORE_DIR)/%.o)
-# Компиляция исходных core файлов в объектные файлы
-# Compilation of core source files into object files
-$(OBJ_CORE_DIR)/%.o: $(SRC_CORE_DIR)/%.c
-	mkdir -p $(OBJ_CORE_DIR)
-	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
-# Компиляция библиотеки libminishell
-# Compilation of the libminishell library
-$(LIBMINISHELL): $(OBJ_CORE)
-	ar rcs $@ $^
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Исходные файлы для основной части проекта
-# Source files for the main part of the project
+# Source and Object files mapping for mandatory and bonus parts
+SRC = $(wildcard $(SRC_DIR)/*.c) # All source files in current directory (main.c)
 SRC_MANDATORY = $(wildcard $(SRC_MANDATORY_DIR)/*.c)
-# Объектные файлы для основной части проекта
-# Object files for the main part of the project
-OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
-# Компиляция исходных файлов в объектные файлы
-# Compilation of source files into object files
-$(OBJ_MANDATORY_DIR)/%.o: $(SRC_MANDATORY_DIR)/%.c
-	mkdir -p $(OBJ_MANDATORY_DIR)
-	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Исходные файлы для бонусной части проекта
-# Source files for the bonus part of the project
 SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
-# Объектные файлы для бонусной части проекта
-# Object files for the bonus part of the project
+
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) # All object files in current directory
+OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
 OBJ_BONUS = $(SRC_BONUS:$(SRC_BONUS_DIR)/%.c=$(OBJ_BONUS_DIR)/%.o)
-# Компиляция исходных файлов бонусной части проекта
-# Compilation of source files for the bonus part of the project
-$(OBJ_BONUS_DIR)/%.o: $(SRC_BONUS_DIR)/%.c
-	mkdir -p $(OBJ_BONUS_DIR)
-	$(CC) $(CFLAGS) -I$(INCLUDES) -c $< -o $@
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Основная цель - сборка основной части проекта
-# Main target - compilation of the main part of the project
+# Main target
 all: $(NAME)
-	@file $(YELLOW) $(NAME) $(RESET)
-	@echo "$(GREEN)$(NAME) is ready!$(RESET)"
+
+# Linking the executable
+$(NAME): $(LIBFT) $(OBJ) $(OBJ_MANDATORY)
+	@$(CC) -o $@ $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(LDFLAGS)
+	@echo "$(GREEN)$(NAME) compiled$(RESET)"
+
+# -o $@ - output file name $(NAME), $@ = $(NAME)
+# **************************************************************************** #
+
+# Compile libft library
+$(LIBFT):
+	@$(MAKE) -C $(LIBFT_DIR)
+	@echo "$(GREEN)Libft compiled$(RESET)"
 # **************************************************************************** #
 
 # **************************************************************************** #
-# Сборка основной части проекта
-# Compilation of the main part of the project
-$(NAME): $(LIBFT) $(LIBMINISHELL) $(OBJ_MANDATORY)
-	$(CC) $(CFLAGS) -I$(INCLUDES) $(OBJ_MANDATORY) $(LIBFT) $(LIBMINISHELL) -o $(NAME)
+# Rules for compiling source files into object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_MANDATORY_DIR)/%.o: $(SRC_MANDATORY_DIR)/%.c
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_BONUS_DIR)/%.o: $(SRC_BONUS_DIR)/%.c
+	@mkdir -p $(OBJ_BONUS_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# -c $< -o $@ - compile source file $< into object file $@,
+# $< = source file, $@ = object file
 # **************************************************************************** #
 
+# Bonus part compilation
+bonus: CFLAGS += -DBONUS # Add a flag to the compiler
+bonus:  $(OBJ_BONUS) $(LIBFT) $(OBJ) $(OBJ_MANDATORY)
+	@$(CC) -o $(NAME) $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
+	@echo "$(GREEN)$(NAME) compiled with bonus part$(RESET)"
 # **************************************************************************** #
-# Цель и сборка бонусной части проекта
-# Target and compilation of the bonus part of the proje
-bonus: CFLAGS += -DBONUS # add a bonus flag to the compilation flags
-bonus: $(LIBFT) $(LIBMINISHELL) $(OBJ_BONUS)
-	$(CC) $(CFLAGS) -I$(INCLUDES) $(OBJ_BONUS) $(LIBFT) $(LIBMINISHELL) -o $(NAME)
-	@file $(YELLOW) $(NAME) $(RESET)
-	@echo "$(GREEN)Bonus part of $(NAME) is ready!$(RESET)"
-# **************************************************************************** #
-
-# **************************************************************************** #
-# Очистка всех созданных файлов и папок с объектами
-# Cleaning all created files and object folders
+# Cleaning up
 clean:
-	$(MAKE) -C $(LIBFT_DIR) clean
-	rm -rf $(OBJ_CORE_DIR)
-	rm -rf $(OBJ_MANDATORY_DIR)
-	rm -rf $(OBJ_BONUS_DIR)
-# **************************************************************************** #
+	@ if [ -d $(OBJ_DIR) ]; then \
+		rm -rf $(OBJ_DIR); \
+		echo "$(YELLOW)Minishell object files removed$(RESET)"; \
+	fi
+	@$(MAKE) -C $(LIBFT_DIR) clean
 
-# **************************************************************************** #
-# Полная очистка проекта
-# Full cleaning of the project
+# Full cleaning
 fclean: clean
-	$(MAKE) -C $(LIBFT_DIR) fclean
-	rm -f $(LIBMINISHELL)
-	rm -f $(NAME)
-# **************************************************************************** #
+	@$(MAKE) -C $(LIBFT_DIR) fclean
+	@rm -f $(NAME)
+	@echo "$(RED)$(NAME) removed$(RESET)"
+# rm -rf - remove the directory with all its content
+# -r - remove directories and their contents recursively
+# -f - ignore nonexistent files and arguments, never prompt
 
-# **************************************************************************** #
-# Пересборка проекта
-# Rebuilding the project
+# Rebuild everything
 re: fclean all
-# **************************************************************************** #
 
 # **************************************************************************** #
-# Указание фиктивных целей
-# Specification of phony targets
+# Phony targets
 .PHONY: all clean fclean re bonus
 # **************************************************************************** #
+
+# В контексте Makefile, команда -c $< -o $@ используется для указания компилятору ($(CC))
+# как компилировать исходные файлы в объектные файлы. Вот детальное объяснение каждого компонента этой команды:
+
+# -c
+# Этот флаг говорит компилятору генерировать объектный файл (*.o) из исходного файла (*.c).
+# Он останавливает процесс после этапа компиляции, не переходя к этапу линковки,
+# который обычно следует за компиляцией при создании исполняемого файла.
+
+# $<
+# Это одна из автоматических переменных в Makefile, которая представляет имя первой зависимости текущего правила.
+# В контексте правил компиляции, где правило выглядит как $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c,
+# $< будет подставлено значением исходного файла .c, который нужно скомпилировать.
+
+# -o
+# Этот флаг используется для указания выходного файла компиляции. Следом за этим флагом должно идти имя файла,
+# в который будет записан результат компиляции (в данном случае, объектный файл).
+
+# $@
+# Это также автоматическая переменная в Makefile, которая представляет имя цели текущего правила.
+# В контексте правила, например, $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c, $@ будет заменено на имя объектного файла,
+# который должен быть сгенерирован. Это позволяет обеспечить, что каждый исходный файл будет компилироваться
+# в соответствующий объектный файл в указанной директории.

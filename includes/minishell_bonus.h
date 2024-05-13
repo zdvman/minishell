@@ -13,6 +13,6 @@
 #ifndef MINISHELL_BONUS_H
 # define MINISHELL_BONUS_H
 
-# include "../includes/minishell.h"
+# include "minishell.h"
 
 #endif
