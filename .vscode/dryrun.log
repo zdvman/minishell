@@ -1,84 +1,10 @@
-make --dry-run --always-make --keep-going --print-directory
-make: Entering directory '/home/samoore/minishell'
-make -C libft 
- 
-Makefile:95: *** mixed implicit and normal rules: deprecated syntax
-Makefile:113: *** mixed implicit and normal rules: deprecated syntax
-Makefile:114: warning: overriding recipe for target '/%.o'
-Makefile:96: warning: ignoring old recipe for target '/%.o'
-Makefile:127: *** mixed implicit and normal rules: deprecated syntax
-Makefile:128: warning: overriding recipe for target '/%.o'
-Makefile:114: warning: ignoring old recipe for target '/%.o'
-
-make[1]: Entering directory '/home/samoore/minishell/libft'
-gcc -Wall -Wextra -Werror   -c -o ft_abs.o ft_abs.c
-gcc -Wall -Wextra -Werror   -c -o ft_atoi.o ft_atoi.c
-gcc -Wall -Wextra -Werror   -c -o ft_atoi_base.o ft_atoi_base.c
-gcc -Wall -Wextra -Werror   -c -o ft_atol.o ft_atol.c
-gcc -Wall -Wextra -Werror   -c -o ft_atoll.o ft_atoll.c
-gcc -Wall -Wextra -Werror   -c -o ft_bzero.o ft_bzero.c
-gcc -Wall -Wextra -Werror   -c -o ft_calloc.o ft_calloc.c
-gcc -Wall -Wextra -Werror   -c -o ft_count_words.o ft_count_words.c
-gcc -Wall -Wextra -Werror   -c -o ft_duplicates_found.o ft_duplicates_found.c
-gcc -Wall -Wextra -Werror   -c -o ft_isalnum.o ft_isalnum.c
-gcc -Wall -Wextra -Werror   -c -o ft_isalpha.o ft_isalpha.c
-gcc -Wall -Wextra -Werror   -c -o ft_isascii.o ft_isascii.c
-gcc -Wall -Wextra -Werror   -c -o ft_isdigit.o ft_isdigit.c
-gcc -Wall -Wextra -Werror   -c -o ft_isnumber.o ft_isnumber.c
-gcc -Wall -Wextra -Werror   -c -o ft_isprint.o ft_isprint.c
-gcc -Wall -Wextra -Werror   -c -o ft_issign.o ft_issign.c
-gcc -Wall -Wextra -Werror   -c -o ft_isspace.o ft_isspace.c
-gcc -Wall -Wextra -Werror   -c -o ft_iszero.o ft_iszero.c
-gcc -Wall -Wextra -Werror   -c -o ft_itoa.o ft_itoa.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstadd_back.o ft_lstadd_back.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstadd_front.o ft_lstadd_front.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstclear.o ft_lstclear.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstdelone.o ft_lstdelone.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstiter.o ft_lstiter.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstlast.o ft_lstlast.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstmap.o ft_lstmap.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstnew.o ft_lstnew.c
-gcc -Wall -Wextra -Werror   -c -o ft_lstsize.o ft_lstsize.c
-gcc -Wall -Wextra -Werror   -c -o ft_max.o ft_max.c
-gcc -Wall -Wextra -Werror   -c -o ft_memchr.o ft_memchr.c
-gcc -Wall -Wextra -Werror   -c -o ft_memcmp.o ft_memcmp.c
-gcc -Wall -Wextra -Werror   -c -o ft_memcpy.o ft_memcpy.c
-gcc -Wall -Wextra -Werror   -c -o ft_memmove.o ft_memmove.c
-gcc -Wall -Wextra -Werror   -c -o ft_memset.o ft_memset.c
-gcc -Wall -Wextra -Werror   -c -o ft_nbr_strcmp.o ft_nbr_strcmp.c
-gcc -Wall -Wextra -Werror   -c -o ft_putchar.o ft_putchar.c
-gcc -Wall -Wextra -Werror   -c -o ft_putchar_fd.o ft_putchar_fd.c
-gcc -Wall -Wextra -Werror   -c -o ft_putendl_fd.o ft_putendl_fd.c
-gcc -Wall -Wextra -Werror   -c -o ft_putnbr_fd.o ft_putnbr_fd.c
-gcc -Wall -Wextra -Werror   -c -o ft_putnchar.o ft_putnchar.c
-gcc -Wall -Wextra -Werror   -c -o ft_putnstr.o ft_putnstr.c
-gcc -Wall -Wextra -Werror   -c -o ft_putstr.o ft_putstr.c
-gcc -Wall -Wextra -Werror   -c -o ft_putstr_fd.o ft_putstr_fd.c
-gcc -Wall -Wextra -Werror   -c -o ft_realloc.o ft_realloc.c
-gcc -Wall -Wextra -Werror   -c -o ft_round.o ft_round.c
-gcc -Wall -Wextra -Werror   -c -o ft_split.o ft_split.c
-gcc -Wall -Wextra -Werror   -c -o ft_strchr.o ft_strchr.c
-gcc -Wall -Wextra -Werror   -c -o ft_strcmp.o ft_strcmp.c
-gcc -Wall -Wextra -Werror   -c -o ft_strdup.o ft_strdup.c
-gcc -Wall -Wextra -Werror   -c -o ft_strisempty.o ft_strisempty.c
-gcc -Wall -Wextra -Werror   -c -o ft_strisspace_only.o ft_strisspace_only.c
-gcc -Wall -Wextra -Werror   -c -o ft_striteri.o ft_striteri.c
-gcc -Wall -Wextra -Werror   -c -o ft_strjoin.o ft_strjoin.c
-gcc -Wall -Wextra -Werror   -c -o ft_strlcat.o ft_strlcat.c
-gcc -Wall -Wextra -Werror   -c -o ft_strlcpy.o ft_strlcpy.c
-gcc -Wall -Wextra -Werror   -c -o ft_strlen.o ft_strlen.c
-gcc -Wall -Wextra -Werror   -c -o ft_strmapi.o ft_strmapi.c
-gcc -Wall -Wextra -Werror   -c -o ft_strncmp.o ft_strncmp.c
-gcc -Wall -Wextra -Werror   -c -o ft_strnstr.o ft_strnstr.c
-gcc -Wall -Wextra -Werror   -c -o ft_strrchr.o ft_strrchr.c
-gcc -Wall -Wextra -Werror   -c -o ft_strtrim.o ft_strtrim.c
-gcc -Wall -Wextra -Werror   -c -o ft_substr.o ft_substr.c
-gcc -Wall -Wextra -Werror   -c -o ft_swap.o ft_swap.c
-gcc -Wall -Wextra -Werror   -c -o ft_tolower.o ft_tolower.c
-gcc -Wall -Wextra -Werror   -c -o ft_toupper.o ft_toupper.c
-gcc -Wall -Wextra -Werror   -c -o get_next_line.o get_next_line.c
- 
-ar rcs libft.a ft_abs.o ft_atoi.o ft_atoi_base.o ft_atol.o ft_atoll.o ft_bzero.o ft_calloc.o ft_count_words.o ft_duplicates_found.o ft_isalnum.o ft_isalpha.o ft_isascii.o ft_isdigit.o ft_isnumber.o ft_isprint.o ft_issign.o ft_isspace.o ft_iszero.o ft_itoa.o ft_lstadd_back.o ft_lstadd_front.o ft_lstclear.o ft_lstdelone.o ft_lstiter.o ft_lstlast.o ft_lstmap.o ft_lstnew.o ft_lstsize.o ft_max.o ft_memchr.o ft_memcmp.o ft_memcpy.o ft_memmove.o ft_memset.o ft_nbr_strcmp.o ft_putchar.o ft_putchar_fd.o ft_putendl_fd.o ft_putnbr_fd.o ft_putnchar.o ft_putnstr.o ft_putstr.o ft_putstr_fd.o ft_realloc.o ft_round.o ft_split.o ft_strchr.o ft_strcmp.o ft_strdup.o ft_strisempty.o ft_strisspace_only.o ft_striteri.o ft_strjoin.o ft_strlcat.o ft_strlcpy.o ft_strlen.o ft_strmapi.o ft_strncmp.o ft_strnstr.o ft_strrchr.o ft_strtrim.o ft_substr.o ft_swap.o ft_tolower.o ft_toupper.o get_next_line.o
-make[1]: Leaving directory '/home/samoore/minishell/libft'
-make: Leaving directory '/home/samoore/minishell'
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/samoore/new_minishell'
+mkdir -p obj/bonus
+cc  -Wall -Wextra -Werror -g  -I./includes -Ilibft -I/usr/include/readline -c src/bonus/wildcard.c -o obj/bonus/wildcard.o
+mkdir -p obj/mandatory
+cc  -Wall -Wextra -Werror -g  -I./includes -Ilibft -I/usr/include/readline -c src/mandatory/expand.c -o obj/mandatory/expand.o
+cc  -o minishell libft/libft.a  obj/main.o obj/bonus/wildcard.o  obj/mandatory/ast.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o -Llibft -lft -lreadline 
+echo "\033[0;32mminishell  compiled\033[0m"
+make: Leaving directory '/home/samoore/new_minishell'
  

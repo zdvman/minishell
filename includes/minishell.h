@@ -24,6 +24,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
+# include <dirent.h>
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -80,9 +81,16 @@ typedef struct s_token
 	struct s_token	*prev;
 }				t_token;
 
+// typedef struct s_list        
+// {								 //// for use with wildcards
+// 	struct s_list	*next;
+// 	char			*entry;
+// }	t_list;
+
 typedef struct s_env
 {
 	char			**envp;
+	char			**envp_backup;
 	int				exit_status;
 	int				pipe_fd[2];
 	int				fd_in;
@@ -90,6 +98,8 @@ typedef struct s_env
 	t_ast_node		*ast;
 	t_token			*tokens;
 	t_token			*head_token;
+	t_list			*directory_list;
+	t_list			*dir_head;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -100,14 +110,13 @@ typedef struct s_dynamic_buffer
 }				t_dynamic_buffer;
 
 // init.c
-void	shell_init(t_env **env, char **envp);
-
-// dynamic_buffer.c
 void	buffer_init(t_dynamic_buffer *buf);
 void	buffer_free(t_dynamic_buffer *buf);
 void	buffer_clear(t_dynamic_buffer *buf);
 int		buffer_append_char(t_dynamic_buffer *buf, char c);
 int		buffer_append(t_dynamic_buffer *buf, const char *str, size_t n);
+void	shell_init(t_env **env, char **envp);
+
 
 // free_utils.c
 void	ft_free_args(char ***args);
@@ -172,5 +181,9 @@ void	recursive_execute(t_ast_node *node, t_env **env);
 
 //main.c
 void	print_token_name(t_token *token);
+
+//wildcard.c  for bonus but using here for testing
+int		contains(char *str, char target);
+int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 #endif

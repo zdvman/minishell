@@ -1,0 +1,3 @@
+digraph AST {
+"0x441f70" [label="CMD: ls bonus main.c mandatory ast.dot "];
+}
