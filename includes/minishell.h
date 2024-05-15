@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:29:58 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/04/12 17:52:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/15 17:33:23 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 # define MINISHELL_H
 
 # include <stdio.h>
+# include <errno.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <stdbool.h>
 # include <stdlib.h>
 # include <signal.h>
 # include <string.h>
@@ -59,7 +63,6 @@ typedef enum e_token_type
 	TOKEN_BACKGROUND,
 	TOKEN_OPEN_BRACKET,
 	TOKEN_CLOSE_BRACKET,
-	TOKEN_GROUP,
 	TOKEN_EOF
 }				t_token_type;
 
@@ -113,6 +116,7 @@ int		buffer_append(t_dynamic_buffer *buf, const char *str, size_t n);
 void	ft_free_args(char ***args);
 void	cleanup_loop(char **input, t_env **env);
 void	cleanup(t_env **env, int status);
+void	ft_free_ast(t_ast_node **node);
 
 // utils.c
 void	set_sig_actions(void);
@@ -155,9 +159,11 @@ t_ast_node	*new_ast_node(t_token_type type, char **args,
 				t_ast_node *left, t_ast_node *right);
 char		**copy_args(t_token **current, t_env **env);
 t_ast_node	*parse_tokens(t_env **env);
+t_ast_node	*parse_expression(t_token **current, t_env **env);
 
 // parsing.c
 bool		is_redirection(t_token_type type);
+bool		is_control_op(t_token_type type);
 t_ast_node	*parse_command(t_token **current, t_env **env);
 t_ast_node	*parse_pipeline(t_token **current, t_env **env);
 t_ast_node	*parse_sequence(t_token **current, t_env **env);

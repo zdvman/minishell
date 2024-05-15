@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:17:27 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/11 14:07:56 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/15 17:19:06 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	ft_free_tokens(t_token **tokens)
 	*tokens = NULL;
 }
 
-static void	ft_free_ast(t_ast_node **node)
+void	ft_free_ast(t_ast_node **node)
 {
 	int	i;
 

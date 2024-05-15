@@ -103,9 +103,9 @@ void	get_tokens(char *input, t_env **env)
 	current = input;
 	while (*input)
 	{
-		while (ft_isspace(*input))
+		if (ft_isspace(*input))
 			input++;
-		if (is_meta_character(*input))
+		else if (is_meta_character(*input))
 			handle_meta(env, &input);
 		else if (*input == '#' && !is_quote_open(current))
 		{

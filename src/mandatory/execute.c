@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/11 14:46:49 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/15 20:27:59 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,7 @@ void execute_redir_input(t_ast_node *node, t_env **env)
 		ft_perror("open failed");
 		cleanup(env, EXIT_FAILURE);
 	}
+	// dup2(fd, STDIN_FILENO);
 	if ((*env)->fd_in == -1)
 		(*env)->fd_in = fd;
 	if (node->left)
@@ -189,6 +190,7 @@ void execute_redir_output(t_ast_node *node, t_env **env)
 		ft_perror("open failed");
 		cleanup(env, EXIT_FAILURE);
 	}
+	// dup2(fd, STDOUT_FILENO);
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
 	if (node->left)
@@ -209,6 +211,7 @@ void execute_redir_append(t_ast_node *node, t_env **env)
 		ft_perror("open failed");
 		cleanup(env, EXIT_FAILURE);
 	}
+	// dup2(fd, STDOUT_FILENO);
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
 	if (node->left)
@@ -251,6 +254,7 @@ void execute_here_doc(t_ast_node *node, t_env **env)
 		ft_perror("open failed");
 		cleanup(env, EXIT_FAILURE);
 	}
+	// dup2(fd, STDIN_FILENO);
 	if ((*env)->fd_in == -1)
 		(*env)->fd_in = fd;
 	if (node->left)
