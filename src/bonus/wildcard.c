@@ -22,27 +22,18 @@ t_list	*new_dir_entry(char *entry_name)
 	return (new);
 }
 
-int	good_pattern(char *pattern, char *file_name, int i, int j)
+int	glob(char *pattern, char *file_name, int i, int j)
 {
+	if (pattern[i] == 0 && file_name[j] == 0)
+		return (1);
 	if (pattern[i] == 0 || file_name[j] == 0)
 		return (0);
 	if (pattern[i] != '*' && pattern[i] != file_name[j])
 		return (0);
 	if (pattern[0] == '*' && file_name[0] == '.')
 		return(0);
-	if (pattern[0] == '*' && pattern[1] == '.' && file_name[0] == '.')
-		return(0);
-	return (1);	
-}
-
-int	glob(char *pattern, char *file_name, int i, int j)
-{
-	if (pattern[i] == 0 && file_name[j] == 0)
-		return (1);
 	if (file_name[j] == 0 && pattern[i] == '*')
 		return (glob(pattern, file_name, i + 1, j));
-	if (!good_pattern(pattern, file_name, i , j))
-		return (0);
 	if (pattern[0] == '.' && pattern[1] == '*'
 		&& !pattern[2] && file_name[0] == '.')
 		return (1);
@@ -94,7 +85,6 @@ t_list	*expand_args(t_env **env, char *pattern)
 		}
 		(*env)->directory_list = (*env)->directory_list->next;
 	}
-
 	return (matched_head);
 }
 
@@ -113,29 +103,6 @@ void	free_dir(t_env **env)
 	(*env)->directory_list = NULL;
 	(*env)->dir_head = NULL;
 }
-/*
-void	process_wildcard(t_env *env, t_list *prev)
-{
-	t_list	*next;
-	t_list	*tmp;
-	t_list	*get_args;
-
-	get_current_dir(env);
-	next = (*env)->tokens->args_list->next;
-	tmp = (*env)->tokens->args_list;
-	get_args = expand_args(env, (*env)->tokens->args_list->entry, next);
-	if (get_args)
-	{
-		prev->next = get_args;
-		free (tmp->content);
-		tmp->content = NULL;
-	}
-	else
-		prev->next = tmp;
-	prev = (*env)->tokens->args_list;
-	free_dir(env);	
-}
-*/
 
 void	get_current_dir(t_env **env)
 {
@@ -186,7 +153,7 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 	(*env)->envp_backup = (*env)->envp;
 	get_args = expand_args(env, input);
 	if (!get_args)
-		return (0);
+		return (0);	
 	while (get_args)
 	{
 		tmp = get_args;
@@ -200,9 +167,5 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 	}
 	free_dir(env);
 	(*env)->envp = (*env)->envp_backup;
-	// expanded = NULL;
-	// expanded = strdup(buf.data);
-	// buffer_free(&buf);
-	// return (expanded);
 	return (1);
 }

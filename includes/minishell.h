@@ -186,4 +186,8 @@ void	print_token_name(t_token *token);
 int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
+//builtin.c
+void	execute_builtin(char **args);
+int		is_builtin(char *cmd);
+
 #endif
