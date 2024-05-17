@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/15 21:13:55 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/17 20:39:59 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ t_ast_node	*new_ast_node(t_token_type type, char **args,
 	return (node);
 }
 
-t_ast_node	*create_ast_node(t_token_type type, char **args)
+t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env)
 {
 	t_ast_node	*node;
 
@@ -38,7 +38,7 @@ t_ast_node	*create_ast_node(t_token_type type, char **args)
 	if (!node)
 	{
 		ft_perror("Memory allocation failed for AST node\n");
-		return (NULL);
+		cleanup(env, EXIT_FAILURE);
 	}
 	node->type = type;
 	node->args = args;
@@ -91,7 +91,7 @@ char	**copy_args(t_token **current, t_env **env)
 	return (args);
 }
 
-static void	check_ast_output(t_token **current, t_env **env)
+static int	ast_output_is_valid(t_token **current, t_env **env)
 {
 	if (*current && (*current)->type != TOKEN_EOF)
 	{
@@ -99,18 +99,22 @@ static void	check_ast_output(t_token **current, t_env **env)
 		print_token_name(*current);
 		printf("\n");
 		ft_perror("Syntax error\n");
-		cleanup(env, EXIT_FAILURE);
+		cleanup(env, 1);
+		return (0);
 	}
 	if ((*env)->ast == NULL)
 	{
 		ft_perror("Failed to parse tokens\n");
-		cleanup(env, EXIT_FAILURE);
+		cleanup(env, 1);
+		return (0);
 	}
+	return (1);
 }
 
 t_ast_node	*parse_tokens(t_env **env)
 {
 	t_token		*current;
+	t_ast_node	*node;
 
 	if (!env || !*env)
 	{
@@ -123,25 +127,25 @@ t_ast_node	*parse_tokens(t_env **env)
 		ft_perror("No input to parse\n");
 		return (NULL);
 	}
-	(*env)->ast = parse_expression(&current, env);
-	check_ast_output(&current, env);
-	return ((*env)->ast);
+	node = parse_term(&current, NULL, env);
+	(*env)->ast = parse_expression(&current, &node, env);
+	if (ast_output_is_valid(&current, env))
+		return ((*env)->ast);
+	cleanup(env, 1);
+	return (NULL);
 }
 
-t_ast_node	*parse_brackets(t_token **current, t_env **env)
+t_ast_node	*parse_brackets(t_token **current, t_ast_node **left, t_env **env)
 {
 	t_ast_node	*node;
 
-	if (!*current)
-		return (NULL);
 	*current = (*current)->next;
-	node = parse_expression(current, env);
+	node = parse_expression(current, left, env);
 	if (!node)
 		return (NULL);
 	if (!*current || (*current)->type != TOKEN_CLOSE_BRACKET)
 	{
 		ft_perror("Expected close bracket\n");
-		cleanup(env, EXIT_FAILURE);
 		ft_free_ast(&node);
 		return (NULL);
 	}
@@ -149,128 +153,144 @@ t_ast_node	*parse_brackets(t_token **current, t_env **env)
 	return (node);
 }
 
-t_ast_node *parse_redirection(t_token **current, t_env **env) {
-    t_token_type type = (*current)->type;
-    *current = (*current)->next;  // Move past the redirection token
+char	**get_redir_arg(t_token **current, t_env **env)
+{
+	char	**arg;
 
-    if (!*current || (*current)->type != TOKEN_WORD) {
-        ft_perror("Expected filename for redirection\n");
-        return NULL;
-    }
-
-    char **args = (char **)malloc(sizeof(char *) * 2);
-    if (!args) {
-        ft_perror("malloc failed");
+	arg = (char **)malloc(sizeof(char *) * 2);
+	if (!arg)
+	{
+		ft_perror("malloc failed");
 		cleanup(env, EXIT_FAILURE);
-        return NULL;
-    }
-    args[0] = ft_strdup((*current)->value);
-    args[1] = NULL;
-    *current = (*current)->next;  // Move past the filename
-
-    t_ast_node *redir_node = create_ast_node(type, args);
-    return redir_node;
+	}
+	arg[0] = ft_strdup((*current)->value);
+	arg[1] = NULL;
+	if (!arg[0])
+	{
+		ft_perror("malloc failed");
+		free(arg);
+		cleanup(env, EXIT_FAILURE);
+	}
+	return (arg);
 }
 
-t_ast_node *parse_command(t_token **current, t_env **env) {
-    if (!*current || (*current)->type != TOKEN_WORD) {
-        ft_perror("Expected command or argument\n");
-        return NULL;
-    }
-
-    // This will collect all words until it encounters a token that isn't a word,
-    // which might signify the end of the command or the start of a redirection or operator.
-    char **args = copy_args(current, env);
-    if (!args) {
-        ft_perror("Failed to copy arguments for command\n");
-        return NULL;  // Error handling in case args could not be copied
-    }
-
-    t_ast_node *command_node = create_ast_node(TOKEN_WORD, args);
-    if (!command_node) {
-        ft_free_args(&args); // Cleanup if node creation failed
-        return NULL;
-    }
-
-    return command_node;
-}
-
-
-
-
-t_ast_node *parse_term(t_token **current, t_env **env) {
-    if (!*current) return NULL;
-
-    t_ast_node *base_node = NULL;  // This will eventually point to the command or the deepest nested expression
-    t_ast_node *last_redirection = NULL;  // Keep track of the last parsed redirection
-
-    // First, handle any leading redirections before a command or subexpression
-    while (*current && is_redirection((*current)->type)) {
-        t_ast_node *redir = parse_redirection(current, env);
-        if (!redir) return NULL;  // Error during redirection parsing
-
-        if (!base_node) {
-            base_node = redir;
-        } else {
-            last_redirection->right = redir;  // Chain redirections in the order they appear
-        }
-        last_redirection = redir;  // Update the last redirection
-    }
-
-    // Depending on the current token, handle commands or grouped expressions
-    if (*current && (*current)->type == TOKEN_OPEN_BRACKET) {
-        base_node = parse_brackets(current, env);  // Parse brackets and its content recursively
-        if (!base_node) return NULL;
-    } else if (*current && (*current)->type == TOKEN_WORD) {
-        base_node = parse_command(current, env);  // Parse the command
-        if (!base_node) return NULL;
-    } else {
-        ft_perror("Unexpected token\n");
-        return NULL; // Proper error handling
-    }
-
-    // If there were leading redirections, attach the parsed command/expression to the last redirection
-    if (last_redirection) {
-        last_redirection->right = base_node;
-        base_node = last_redirection;  // The first redirection becomes the new base node
-    }
-
-    // Finally, handle any trailing redirections
-    while (*current && is_redirection((*current)->type)) {
-        t_ast_node *redir = parse_redirection(current, env);
-        if (!redir) {
-            ft_free_ast(&base_node);
-            return NULL;  // Error during redirection parsing
-        }
-
-        // Chain trailing redirections to the right of the command or nested expression
-        redir->left = base_node;
-        base_node = redir;  // Update base_node to reflect the latest redirection wrapping
-    }
-
-    return base_node;  // Return the command wrapped with all applicable redirections
+t_ast_node	*parse_redirection(t_token **current, t_env **env)
+{
+	t_token_type	type;
+	t_ast_node		*redir_node;
+	t_ast_node		*base_node;
+	
+	base_node = NULL;
+	while (*current && is_redirection((*current)->type))
+	{
+		type = (*current)->type;
+    	*current = (*current)->next;  // Move past the redirection token
+		if (!*current || (*current)->type != TOKEN_WORD) {
+			ft_perror("Expected filename for redirection\n");
+			return (NULL);
+		}
+    	redir_node = create_ast_node(type, get_redir_arg(current, env), env);
+		if (!base_node)
+			base_node = redir_node;
+		else
+		{
+			redir_node->left = base_node;
+			base_node = redir_node;
+		}
+		*current = (*current)->next;  // Move past the filename
+	}
+    return (base_node);
 }
 
 
+t_ast_node	*ft_last_node(t_ast_node *base_node)
+{
+	t_ast_node	*last_node;
 
+	last_node = base_node;
+	while (last_node->left)
+		last_node = last_node->left;
+	return (last_node);
+}
 
-t_ast_node *parse_expression(t_token **current, t_env **env) {
-    t_ast_node *left = parse_term(current, env);
-    if (!left) return NULL; // Failed to parse left-hand side
+t_ast_node *parse_command(t_token **current, t_env **env)
+{
+	t_ast_node	*command_node;
+	t_ast_node 	*redir_node;
+	t_ast_node	*last_node;
+	char 		**args;
 
-    while (*current && (*current)->type != TOKEN_EOF && is_control_op((*current)->type)) {
-        t_token_type operator_type = (*current)->type;
-        (*current) = (*current)->next; // Move past the operator
-        t_ast_node *right = parse_term(current, env);
-        if (!right) {
-            ft_free_ast(&left); // Cleanup left-hand side on failure
-            return NULL;
-        }
+	args = copy_args(current, env);
+	redir_node = NULL;
+	command_node = create_ast_node(TOKEN_WORD, args, env);
+	if (!command_node)
+	{
+		ft_free_args(&args);
+		return (NULL);
+	}
+	if (*current && is_redirection((*current)->type))
+	{
+		redir_node = parse_redirection(current, env);
+		if (!redir_node)
+		{
+			ft_free_ast(&command_node);
+			return (NULL);
+		}
+		last_node = ft_last_node(redir_node);
+		last_node->left = command_node;
+		command_node = redir_node;
+	}
+	return (command_node);
+}
 
-        t_ast_node *new_node = create_ast_node(operator_type, NULL);
-        new_node->left = left;
-        new_node->right = right;
-        left = new_node; // Update 'left' to the newly formed compound node
-    }
-    return left; // Return the root of this subtree
+t_ast_node *parse_term(t_token **current, t_ast_node **left, t_env **env)
+{
+	t_ast_node	*node;
+
+	if (!*current)
+		return NULL;
+	if (*current && (*current)->type == TOKEN_OPEN_BRACKET)
+		node = parse_brackets(current, left, env);
+	else if (is_redirection((*current)->type))
+		node = parse_redirection(current, env);
+	else if ((*current)->type == TOKEN_WORD)
+		node = parse_command(current, env);
+	else
+	{
+		ft_perror("Unexpected token: ");
+		print_token_name(*current);
+		printf("\n");
+		return (NULL);
+	}
+	if (!node)
+		return (NULL);
+    return (node);  // Return the command wrapped with all applicable redirections
+}
+
+t_ast_node	*parse_expression(t_token **current, t_ast_node **left, t_env **env)
+{
+	t_token_type	type;
+	t_ast_node		*new_node;
+	// t_ast_node		*left;
+	t_ast_node		*right;
+	
+	// left = parse_term(current, env);
+	if (!(*left))
+		return (NULL); // Failed to parse left-hand side
+	while (*current && (*current)->type != TOKEN_EOF && is_control_op((*current)->type))
+	{
+		type = (*current)->type;
+		(*current) = (*current)->next; // Move past the operator
+		right = parse_term(current, left, env);
+		if (!right)
+		{
+			ft_free_ast(left); // Cleanup left-hand side on failure
+			return NULL;
+		}
+		new_node = create_ast_node(type, NULL, env);
+		new_node->left = *left;
+		new_node->right = right;
+		*left = new_node;
+	}
+	return (*left);
 }

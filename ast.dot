@@ -1,13 +1,7 @@
 digraph AST {
-"0x238fb90" [label="|"];
-"0x238fb90" -> "0x238fa60" [label="L"];
-"0x238fa60" [label="|"];
-"0x238fa60" -> "0x238f9a0" [label="L"];
-"0x238f9a0" [label="CMD: ls"];
-"0x238fa60" -> "0x238fa30" [label="R"];
-"0x238fa30" [label="CMD: grep 1"];
-"0x238fb90" -> "0x238fb60" [label="R"];
-"0x238fb60" [label="REDIR: 1"];
-"0x238fb60" -> "0x238faf0" [label="L"];
-"0x238faf0" [label="CMD: wc -l"];
+"0x1ba0290" [label=";"];
+"0x1ba0290" -> "0x1bbd5f0" [label="L"];
+"0x1bbd5f0" [label="CMD: ls"];
+"0x1ba0290" -> "0x1bbd5a0" [label="R"];
+"0x1bbd5a0" [label="CMD: ls"];
 }

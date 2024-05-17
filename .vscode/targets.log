@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Wed May 15 12:48:19 2024
+# Make data base, printed on Fri May 17 18:08:14 2024
 
 # Variables
 
@@ -63,7 +63,7 @@ SRC_MANDATORY_DIR = $(SRC_DIR)/mandatory
 # environment
 VSCODE_CODE_CACHE_PATH = /home/dzuiev/.config/Code/CachedData/1e790d77f81672c49be070e04474901747115651
 # environment
-XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session5
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session7
 # makefile (from 'Makefile', line 50)
 LIBFT = $(LIBFT_DIR)/libft.a 
 # environment
@@ -84,8 +84,6 @@ BLUE = \033[0;34m
 CURDIR := /home/dzuiev/minishell
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
-# environment
-VSCODE_L10N_BUNDLE_LOCATION = 
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # makefile (from 'Makefile', line 63)
@@ -111,9 +109,9 @@ OBJ_MANDATORY_DIR = $(OBJ_DIR)/mandatory
 # environment
 ZSH = /home/dzuiev/.oh-my-zsh
 # environment
-VSCODE_PID = 716090
+VSCODE_PID = 1027279
 # environment
-KRB5CCNAME = FILE:/tmp/krb5cc_101014_eYUj9X
+KRB5CCNAME = FILE:/tmp/krb5cc_101014_WgROBP
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -121,7 +119,7 @@ XDG_SESSION_TYPE = x11
 # makefile (from 'Makefile', line 57)
 INCLUDES = -I./includes -I$(LIBFT_DIR) -I/usr/include/readline
 # environment
-SESSION_MANAGER = local/c2r6s1.42london.com:@/tmp/.ICE-unix/715293,unix/c2r6s1.42london.com:/tmp/.ICE-unix/715293
+SESSION_MANAGER = local/c2r6s1.42london.com:@/tmp/.ICE-unix/995127,unix/c2r6s1.42london.com:/tmp/.ICE-unix/995127
 # automatic
 *F = $(notdir $*)
 # environment
@@ -147,6 +145,7 @@ SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
 # environment
 GJS_DEBUG_TOPICS = JS ERROR;JS LOG
 # environment
+ 
 SHLVL = 0
 # environment
 MAKELEVEL := 0
@@ -169,7 +168,7 @@ SRC_MANDATORY = $(wildcard $(SRC_MANDATORY_DIR)/*.c)
 # makefile (from 'Makefile', line 75)
 OBJ_BONUS = $(SRC_BONUS:$(SRC_BONUS_DIR)/%.c=$(OBJ_BONUS_DIR)/%.o)
 # environment
-INVOCATION_ID = 59e7bcb4ee79448dbef6ef1bbd192c2c
+INVOCATION_ID = dddab1aa8a10412dbed65a10cb87884d
 # makefile (from 'Makefile', line 38)
 GREEN = \033[0;32m
 # environment
@@ -201,7 +200,7 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 715312
+SYSTEMD_EXEC_PID = 995148
 # makefile (from 'Makefile', line 40)
 RED = \033[0;31m
 # environment
@@ -215,9 +214,9 @@ MAKE_VERSION := 4.3
 # makefile (from 'Makefile', line 58)
 LDFLAGS = -L$(LIBFT_DIR) -lft -lreadline 
 # environment
-MANAGERPID = 714737
+MANAGERPID = 994577
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 716090
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1027279
 # environment
 PAGER = less
 # environment
@@ -231,7 +230,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 # environment
 GPG_AGENT_INFO = /run/user/101014/gnupg/S.gpg-agent:0:1
 # environment
-JOURNAL_STREAM = 8:1861052
+JOURNAL_STREAM = 8:2431968
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -267,7 +266,7 @@ XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu
 # variable set hash-table stats:
-# Load=128/1024=12%, Rehash=0, Collisions=12/221=5%
+# Load=127/1024=12%, Rehash=0, Collisions=11/220=5%
 
 # Pattern-specific Variable Values
 
@@ -279,7 +278,6 @@ GDMSESSION = ubuntu
 # src (device 2048, inode 4567958): 6 files, no impossibilities.
 # src/bonus (device 2048, inode 8590231): 3 files, no impossibilities.
 # . (device 2048, inode 2018): 16 files, no impossibilities.
- 
 
 # 43 files, no impossibilities in 4 directories.
 
@@ -312,7 +310,7 @@ obj/mandatory/handle_quotes.o:
 obj/main.o: src/main.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2024-05-13 13:32:43.354530719
+#  Last modified 2024-05-17 12:03:47.823000311
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 99):
@@ -327,7 +325,7 @@ obj/mandatory/dynamic_buffer.o:
 
 minishell: libft/libft.a obj/main.o obj/mandatory/ast.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
 #  Implicit rule search has not been done.
-#  Last modified 2024-05-13 13:32:43.714534723
+#  Last modified 2024-05-17 12:03:48.235004408
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
@@ -351,7 +349,7 @@ Makefile:
 
 libft/libft.a:
 #  Implicit rule search has not been done.
-#  Last modified 2024-05-13 13:32:43.326530407
+#  Last modified 2024-05-17 12:03:47.795000032
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 92):
@@ -392,14 +390,14 @@ clean:
 # Not a target:
 src/mandatory/ast.c:
 #  Implicit rule search has been done.
-#  Last modified 2024-05-15 12:48:16.799290066
+#  Last modified 2024-05-17 18:01:13.660072122
 #  File has been updated.
 #  Successfully updated.
 
 obj/mandatory/ast.o: src/mandatory/ast.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'ast'
-#  Last modified 2024-05-13 13:32:43.38253103
+#  Last modified 2024-05-17 12:03:47.851000589
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
@@ -419,6 +417,7 @@ obj/mandatory/ast.o: src/mandatory/ast.c
 # automatic
 # | := 
 # variable set hash-table stats:
+ 
 # Load=8/32=25%, Rehash=0, Collisions=3/19=16%
 #  recipe to execute (from 'Makefile', line 103):
 	@mkdir -p $(OBJ_MANDATORY_DIR)
@@ -548,12 +547,12 @@ obj/mandatory/get_path.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 77 / storage = 1118 B / avg = 14 B
-# current buf: size = 8162 B / used = 1118 B / count = 77 / avg = 14 B
+# strcache buffers: 1 (0) / strings = 77 / storage = 1135 B / avg = 14 B
+# current buf: size = 8162 B / used = 1135 B / count = 77 / avg = 14 B
 
 # strcache performance: lookups = 131 / hit rate = 41%
 # hash-table stats:
 # Load=77/8192=1%, Rehash=0, Collisions=2/131=2%
-# Finished Make data base on Wed May 15 12:48:19 2024
+# Finished Make data base on Fri May 17 18:08:14 2024
 
  
