@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/17 20:39:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 15:20:53 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,16 @@ t_ast_node	*new_ast_node(t_token_type type, char **args,
 	node->left = left;
 	node->right = right;
 	return (node);
+}
+
+t_ast_node	*ft_last_node(t_ast_node *base_node)
+{
+	t_ast_node	*last_node;
+
+	last_node = base_node;
+	while (last_node->left)
+		last_node = last_node->left;
+	return (last_node);
 }
 
 t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env)
@@ -114,7 +124,6 @@ static int	ast_output_is_valid(t_token **current, t_env **env)
 t_ast_node	*parse_tokens(t_env **env)
 {
 	t_token		*current;
-	t_ast_node	*node;
 
 	if (!env || !*env)
 	{
@@ -127,20 +136,21 @@ t_ast_node	*parse_tokens(t_env **env)
 		ft_perror("No input to parse\n");
 		return (NULL);
 	}
-	node = parse_term(&current, NULL, env);
-	(*env)->ast = parse_expression(&current, &node, env);
+	(*env)->ast = parse_expression(&current, env);
 	if (ast_output_is_valid(&current, env))
 		return ((*env)->ast);
 	cleanup(env, 1);
 	return (NULL);
 }
 
-t_ast_node	*parse_brackets(t_token **current, t_ast_node **left, t_env **env)
+t_ast_node	*parse_brackets(t_token **current, t_env **env)
 {
 	t_ast_node	*node;
+	t_ast_node	*redir_node;
+	t_ast_node	*last_node;
 
 	*current = (*current)->next;
-	node = parse_expression(current, left, env);
+	node = parse_expression(current, env);
 	if (!node)
 		return (NULL);
 	if (!*current || (*current)->type != TOKEN_CLOSE_BRACKET)
@@ -150,6 +160,18 @@ t_ast_node	*parse_brackets(t_token **current, t_ast_node **left, t_env **env)
 		return (NULL);
 	}
 	*current = (*current)->next;
+	if (*current && is_redirection((*current)->type))
+	{
+		redir_node = parse_redirection(current, env);
+		if (!redir_node)
+		{
+			ft_free_ast(&node);
+			return (NULL);
+		}
+		last_node = ft_last_node(redir_node);
+		last_node->left = node;
+		node = redir_node;
+	}
 	return (node);
 }
 
@@ -203,16 +225,6 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 }
 
 
-t_ast_node	*ft_last_node(t_ast_node *base_node)
-{
-	t_ast_node	*last_node;
-
-	last_node = base_node;
-	while (last_node->left)
-		last_node = last_node->left;
-	return (last_node);
-}
-
 t_ast_node *parse_command(t_token **current, t_env **env)
 {
 	t_ast_node	*command_node;
@@ -243,14 +255,14 @@ t_ast_node *parse_command(t_token **current, t_env **env)
 	return (command_node);
 }
 
-t_ast_node *parse_term(t_token **current, t_ast_node **left, t_env **env)
+t_ast_node *parse_term(t_token **current, t_env **env)
 {
 	t_ast_node	*node;
 
 	if (!*current)
 		return NULL;
 	if (*current && (*current)->type == TOKEN_OPEN_BRACKET)
-		node = parse_brackets(current, left, env);
+		node = parse_brackets(current, env);
 	else if (is_redirection((*current)->type))
 		node = parse_redirection(current, env);
 	else if ((*current)->type == TOKEN_WORD)
@@ -267,30 +279,31 @@ t_ast_node *parse_term(t_token **current, t_ast_node **left, t_env **env)
     return (node);  // Return the command wrapped with all applicable redirections
 }
 
-t_ast_node	*parse_expression(t_token **current, t_ast_node **left, t_env **env)
+t_ast_node	*parse_expression(t_token **current, t_env **env)
 {
 	t_token_type	type;
 	t_ast_node		*new_node;
-	// t_ast_node		*left;
+	t_ast_node		*left;
 	t_ast_node		*right;
 	
-	// left = parse_term(current, env);
-	if (!(*left))
-		return (NULL); // Failed to parse left-hand side
+
+	left = parse_term(current, env);
+	if (!left)
+		return (NULL); // Failed to parse left-hand side;
 	while (*current && (*current)->type != TOKEN_EOF && is_control_op((*current)->type))
 	{
 		type = (*current)->type;
 		(*current) = (*current)->next; // Move past the operator
-		right = parse_term(current, left, env);
+		right = parse_term(current, env);
 		if (!right)
 		{
-			ft_free_ast(left); // Cleanup left-hand side on failure
+			ft_free_ast(&left); // Cleanup left-hand side on failure
 			return NULL;
 		}
 		new_node = create_ast_node(type, NULL, env);
-		new_node->left = *left;
+		new_node->left = left;
 		new_node->right = right;
-		*left = new_node;
+		left = new_node;
 	}
-	return (*left);
+	return (left);
 }

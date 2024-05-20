@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:29:58 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/17 20:23:29 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 16:22:41 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,8 +165,9 @@ t_ast_node	*new_ast_node(t_token_type type, char **args,
 char		**copy_args(t_token **current, t_env **env);
 t_ast_node	*parse_tokens(t_env **env);
 // t_ast_node	*parse_expression(t_token **current, t_env **env);
-t_ast_node	*parse_expression(t_token **current, t_ast_node **left, t_env **env);
-t_ast_node	*parse_term(t_token **current, t_ast_node **left, t_env **env);
+t_ast_node	*parse_expression(t_token **current, t_env **env);
+t_ast_node	*parse_term(t_token **current, t_env **env);
+t_ast_node	*parse_redirection(t_token **current, t_env **env);
 
 // parsing.c
 bool		is_redirection(t_token_type type);
@@ -180,6 +181,7 @@ t_ast_node	*parse_bracket(t_token **current, t_env **env);
 char	*get_path(char *cmd, t_env **env);
 
 // execute.c
+void	handle_fd(t_env **env);
 void	execute(t_ast_node *node, t_env **env);
 void	recursive_execute(t_ast_node *node, t_env **env);
 

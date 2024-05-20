@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/15 20:27:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 16:21:49 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void execute_pipe(t_ast_node *node, t_env **env)
 	int		fd[2];
 	pid_t	pid;
 
+	handle_fd(env);
 	if (pipe(fd) == -1)
 	{
 		ft_perror("pipe failed");
