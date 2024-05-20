@@ -97,7 +97,7 @@ typedef struct s_env
 	t_token			*head_token;
 	t_list			*directory_list;
 	t_list			*dir_head;
-
+	char			**local_variables;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -193,8 +193,12 @@ int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
+void	add_local_var(t_env **env, char *var);
 void	execute_builtin(t_env **env, char **args);
 char	*get_env_variable(t_env *env, char *env_var);
+char	*get_local_variable(t_env *env, char *env_var);
+void	insert_local(t_env *env, char *var);
+int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
 
 #endif

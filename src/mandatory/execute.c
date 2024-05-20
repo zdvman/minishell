@@ -58,7 +58,9 @@ void execute_pipe(t_ast_node *node, t_env **env)
 {
 	int		fd[2];
 	pid_t	pid;
+	int	original_stdin;
 
+	original_stdin = dup(STDIN_FILENO);
 	handle_fd(env);
 	if (pipe(fd) == -1)
 	{
@@ -85,6 +87,8 @@ void execute_pipe(t_ast_node *node, t_env **env)
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		execute(node->right, env);
+		dup2(original_stdin, STDIN_FILENO);
+		close(original_stdin);
 	}
 }
 
@@ -146,6 +150,11 @@ void execute_command(t_ast_node *node, t_env **env)
 		execute_builtin(env, node->args);
 		return ;
 	}
+	if (is_assignment(node->args[0]) && !node->args[1])
+	{
+		insert_local(*env, node->args[0]);
+		return ;
+	}
 	pid = fork();
 	if (pid == -1)
 	{
@@ -154,7 +163,13 @@ void execute_command(t_ast_node *node, t_env **env)
 	}
 	if (pid == 0)
 	{
-		execve(get_path(node->args[0], env), node->args, (*env)->envp);
+		if (is_assignment(node->args[0]))
+		{
+			insert_local(*env, node->args[0]);
+			execve(get_path(node->args[1], env), &node->args[1], (*env)->envp);
+		}
+		else
+			execve(get_path(node->args[0], env), node->args, (*env)->envp);
 		ft_perror("execve fail");
 		cleanup_loop(NULL, env);
 		return ;

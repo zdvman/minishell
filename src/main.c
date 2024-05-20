@@ -160,7 +160,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = read_multiline();
-		if (!ft_strncmp(input, "exit", 4) && (!input[4] || ft_isspace(input[4])))
+		if (!input)
 		{	
 			write(1, "exit\n", 5);
 			break ;
@@ -171,13 +171,13 @@ int	main(int argc, char **argv, char **envp)
 			get_tokens(input, &env);
 			expand_tokens(&env);
 			current = env->tokens;
-			while (current)
-			{
-				print_token_name(current);
-				printf(" space: %s", current->has_space ? "true ;" : "false;");
-				printf(" %s\n", current->value);
-				current = current->next;
-			}
+			// while (current)
+			// {
+			// 	print_token_name(current);
+			// 	printf(" space: %s", current->has_space ? "true ;" : "false;");
+			// 	printf(" %s\n", current->value);
+			// 	current = current->next;
+			// }
 			ast = parse_tokens(&env);
 			if (ast)
 			{

@@ -82,6 +82,8 @@ static void	handle_environment_variable(char **input, char **current,
 		// free(env_name);
 		// free(env_value);
 		env_value = ft_strdup(get_env_variable(*env, env_name));
+		if (!env_value)
+			env_value = ft_strdup(get_local_variable(*env, env_name));
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_name);
 		free(env_value);

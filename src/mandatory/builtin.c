@@ -71,25 +71,47 @@ void	add_var(t_env *env, char *var, char *val)
 	env->envp = new_env;
 }
 
-void	replace_env_var(t_env **env, char *var, char *val)
+void	insert_local(t_env *env, char *var)
 {
+	char	**new_env;
+	int		count;
 	int		i;
 
+	count = 0;
 	i = 0;
-	while ((*env)->envp[i])
+	while (env->local_variables[count])
+		count++;
+	new_env = ft_calloc(sizeof(char *), count + 2);
+	while (i < count)
 	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
-		{
-			free ((*env)->envp[i]);
-			if (val)
-				(*env)->envp[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return ;
-		}
+		new_env[i] = env->local_variables[i];
 		i++;
 	}
+	new_env[i++] = ft_strdup(var);
+	// free (env->local_variables[target]);
+	free (env->local_variables);
+	env->local_variables = new_env;
 }
+
+// void	replace_env_var(t_env **env, char *var, char *val)
+// {
+// 	int		i;
+
+// 	i = 0;
+// 	while ((*env)->envp[i])
+// 	{
+// 		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
+// 		{
+// 			free ((*env)->envp[i]);
+// 			if (val)
+// 				(*env)->envp[i] = make_var(var, val);
+// 			else
+// 				remove_var(*env, i);
+// 			return ;
+// 		}
+// 		i++;
+// 	}
+// }
 
 void	replace_or_add_env_var(t_env **env, char *var, char *val)
 {
@@ -125,6 +147,8 @@ int	is_builtin(char *cmd)
 		return (1);
 	if (!ft_strcmp(cmd, "unset"))
 		return (1);
+	if (!ft_strcmp(cmd, "exit"))
+		return (1);
 	return (0);
 }
 
@@ -137,6 +161,20 @@ char	*get_env_variable(t_env *env, char *env_var)
 	{
 		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)))
 			return (&env->envp[i][ft_strlen(env_var) + 1]);
+		i++;
+	}
+	return (NULL);
+}
+
+char	*get_local_variable(t_env *env, char *env_var)
+{
+	int		i;
+
+	i = 0;
+	while (env->local_variables[i])
+	{
+		if (!ft_strncmp(env->local_variables[i], env_var, ft_strlen(env_var)))
+			return (&env->local_variables[i][ft_strlen(env_var) + 1]);
 		i++;
 	}
 	return (NULL);
@@ -164,8 +202,8 @@ void	change_dir(t_env **env, char **args)
 	if ((chdir(args[1])) == -1)
 		return ;
 	getcwd(cwd, 256);
-	replace_env_var(env, "OLDPWD", old_cwd);
-	replace_env_var(env, "PWD", cwd);
+	replace_or_add_env_var(env, "OLDPWD", old_cwd);
+	replace_or_add_env_var(env, "PWD", cwd);
 }
 
 void	print_cwd(void)
@@ -199,13 +237,62 @@ void	echo(char **args)
 	while (args[i + n])
 	{
 		ft_putstr(args[i++ + n]);
-		if (args[i])
+		if (args[i + n])
 			ft_putchar(' ');
 	}
 	if (!n)
 		ft_putchar('\n');
 }
 
+int	is_assignment(char *cmd)
+{
+	int	i;
+
+	i = 0;
+	if (cmd[0] != '_' && !ft_isalpha(cmd[0]))
+		return (0);
+	i++;
+	while (cmd[i] != '=')
+	{
+		if (cmd[0] != '_' && !ft_isalnum(cmd[0]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	add_local_var(t_env **env, char *var)
+{
+	int		i;
+	int		len;
+
+	i = 0;
+	len = 0;
+	while (var[len] != '=')
+		len++;
+	while ((*env)->local_variables[i])
+	{
+		if (!ft_strncmp((*env)->local_variables[i], var, len))
+		{
+			free ((*env)->local_variables[i]);
+			if (var[i])
+				(*env)->local_variables[i] = ft_strdup(var);
+			else
+				remove_var(*env, i);
+			return ;
+		}
+		i++;
+		if (!(*env)->local_variables[i])
+			insert_local(*env, var);
+	}
+}
+
+void	clean_exit(t_env **env)
+{
+	ft_putstr("exit\n");
+	cleanup(env, 0);
+	exit (EXIT_SUCCESS);
+}
 void	execute_builtin(t_env **env, char **args)
 {
 	if (!ft_strcmp(args[0], "cd") && args[1][0])
@@ -216,6 +303,8 @@ void	execute_builtin(t_env **env, char **args)
 		print_env(*env);
 	if (!ft_strcmp(args[0], "echo"))
 		echo(args);
+	if (!ft_strcmp(args[0], "exit"))
+		clean_exit(env);
 	if (!ft_strcmp(args[0], "unset"))
-		replace_env_var(env, args[1], NULL);
+		replace_or_add_env_var(env, args[1], NULL);
 }

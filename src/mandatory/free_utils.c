@@ -77,6 +77,29 @@ static void	ft_free_env(t_env **env)
 		free((*env)->envp);
 		(*env)->envp = NULL;
 	}
+}
+
+static void	ft_free_local_variables(t_env **env)
+{
+	int	i;
+
+	if (!*env)
+		return ;
+	i = 0;
+	if ((*env)->local_variables)
+	{
+		while ((*env)->local_variables[i])
+		{
+			if ((*env)->local_variables[i])
+			{
+				free((*env)->local_variables[i]);
+				(*env)->local_variables[i] = NULL;
+			}
+			i++;
+		}
+		free((*env)->local_variables);
+		(*env)->local_variables = NULL;
+	}
 	free(*env);
 	*env = NULL;
 }
@@ -103,6 +126,7 @@ void	cleanup(t_env **env, int status)
 	ft_free_tokens(&(*env)->tokens);
 	ft_free_ast(&(*env)->ast);
 	ft_free_env(env);
+	ft_free_local_variables(env);
 	rl_clear_history();
 	printf("\033[?12l");
 	if (status == EXIT_FAILURE)
