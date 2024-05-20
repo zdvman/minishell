@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 16:21:49 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 18:06:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,8 @@ void execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
 
-	if (cmd_is_not_valid(node->args[0], env))
-		cleanup(env, EXIT_FAILURE);
+	// if (cmd_is_not_valid(node->args[0], env))
+	// 	return ;
 	handle_fd(env);
 	if (is_builtin(node->args[0]))
 	{
@@ -155,8 +155,10 @@ void execute_command(t_ast_node *node, t_env **env)
 	if (pid == 0)
 	{
 		execve(get_path(node->args[0], env), node->args, (*env)->envp);
-		ft_perror("execve failed");
-		cleanup(env, EXIT_FAILURE);
+		ft_perror("execve fail");
+		cleanup_loop(NULL, env);
+		return ;
+		// cleanup(env, EXIT_FAILURE);
 	}
 	else
 	{

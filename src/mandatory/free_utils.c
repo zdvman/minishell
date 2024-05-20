@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:17:27 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/15 17:19:06 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 18:07:39 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ void	cleanup(t_env **env, int status)
 
 void	cleanup_loop(char **input, t_env **env)
 {
-	ft_free_str(input);
+	if (input && *input) 
+		ft_free_str(input);
 	ft_free_tokens(&(*env)->tokens);
 	ft_free_ast(&(*env)->ast);
 }
