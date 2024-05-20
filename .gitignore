@@ -55,4 +55,7 @@ dkms.conf
 *.log
 
 #vscode files
-.vscode/
+.vscode/*.*
+
+#AST .dor file
+*.dot

@@ -1,7 +1,6 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/samoore/minishell'
 make -C libft
- 
 make[1]: Entering directory '/home/samoore/minishell/libft'
 mkdir -p obj
 cc -Wall -Wextra -Werror -c ft_abs.c -o obj/ft_abs.o
@@ -131,6 +130,7 @@ mkdir -p obj
 cc -Wall -Wextra -Werror -c ft_strncmp.c -o obj/ft_strncmp.o
 mkdir -p obj
 cc -Wall -Wextra -Werror -c ft_strnstr.c -o obj/ft_strnstr.o
+ 
 mkdir -p obj
 cc -Wall -Wextra -Werror -c ft_strrchr.c -o obj/ft_strrchr.o
 mkdir -p obj

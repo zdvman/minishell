@@ -59,7 +59,7 @@ static char	*get_process_id(void)
 }
 
 static void	handle_environment_variable(char **input, char **current,
-				t_dynamic_buffer *buf)
+				t_dynamic_buffer *buf, t_env **env)
 {
 	char	*env_name;
 	char	*env_value;
@@ -74,10 +74,14 @@ static void	handle_environment_variable(char **input, char **current,
 	}
 	else
 	{
-		while (**input && (ft_isalnum(**input) || **input == '_'))
-			(*input)++;
+		 while (**input && (ft_isalnum(**input) || **input == '_'))
+		 	(*input)++;
 		env_name = ft_substr(*current, 0, *input - *current);
-		env_value = ft_strdup(getenv(env_name));
+		// env_value = ft_strdup(getenv(env_name));
+		// buffer_append(buf, env_value, ft_strlen(env_value));
+		// free(env_name);
+		// free(env_value);
+		env_value = ft_strdup(get_env_variable(*env, env_name));
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_name);
 		free(env_value);
@@ -87,7 +91,7 @@ static void	handle_environment_variable(char **input, char **current,
 	*current = *input;
 }
 
-void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf)
+void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_env **env)
 {
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
@@ -95,6 +99,6 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf)
 	if (**input == '\'')
 		expand_cstyle_string(input, current, buf);
 	else if (ft_isalnum(**input) || **input == '_' || **input == '$')
-		handle_environment_variable(input, current, buf);
+		handle_environment_variable(input, current, buf, env);
 	*current = *input;
 }

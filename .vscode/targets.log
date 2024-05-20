@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May 20 10:44:07 2024
+# Make data base, printed on Mon May 20 14:24:32 2024
 
 # Variables
 
@@ -64,6 +64,7 @@ VSCODE_CODE_CACHE_PATH = /home/samoore/.config/Code/CachedData/1e790d77f81672c49
 XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session17
 # makefile (from 'Makefile', line 50)
 LIBFT = $(LIBFT_DIR)/libft.a 
+ 
 # environment
 LANG = C
 # makefile (from 'Makefile', line 75)
@@ -75,7 +76,7 @@ XAUTHORITY = /home/samoore/.Xauthority
 # default
 .INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
 # environment
-GNOME_TERMINAL_SERVICE = :1.92
+GNOME_TERMINAL_SERVICE = :1.360
 # makefile
 MAKEFLAGS = pqrR
 # makefile (from 'Makefile', line 41)
@@ -107,7 +108,7 @@ OBJ_MANDATORY_DIR = $(OBJ_DIR)/mandatory
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 751630
+VSCODE_PID = 758093
 # environment
 KRB5CCNAME = FILE:/tmp/krb5cc_101194_o4FqA8
 # environment
@@ -143,7 +144,7 @@ SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
 # environment
 SHLVL = 1
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/28d40149_258a_4133_bd71_6f731dbb0eed
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/ca91e922_9f8b_4a94_8e5e_0bd1caa5fbbe
 # environment
 MAKELEVEL := 0
 # default
@@ -190,7 +191,6 @@ GNUMAKEFLAGS :=
 LOGNAME = samoore
 # makefile
 .DEFAULT_GOAL := all
- 
 # environment
 SYSTEMD_EXEC_PID = 749263
 # makefile (from 'Makefile', line 40)
@@ -260,7 +260,7 @@ XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu
 # variable set hash-table stats:
-# Load=124/1024=12%, Rehash=0, Collisions=20/218=9%
+# Load=124/1024=12%, Rehash=0, Collisions=20/210=10%
 
 # Pattern-specific Variable Values
 
@@ -271,9 +271,9 @@ GDMSESSION = ubuntu
 # src/mandatory (device 2048, inode 50150): 20 files, no impossibilities.
 # src (device 2048, inode 8607000): 6 files, no impossibilities.
 # src/bonus (device 2048, inode 12583162): 4 files, no impossibilities.
-# . (device 2048, inode 4236922): 20 files, no impossibilities.
+# . (device 2048, inode 4236922): 19 files, no impossibilities.
 
-# 50 files, no impossibilities in 4 directories.
+# 49 files, no impossibilities in 4 directories.
 
 # Implicit Rules
 
@@ -295,62 +295,83 @@ obj/bonus/%.o: src/bonus/%.c
 # 3 implicit rules, 0 (0.0%) terminal.
 # Files
 
+obj/mandatory/handle_quotes.o: src/mandatory/handle_quotes.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'handle_quotes'
+#  Last modified 2024-05-13 19:22:52.145975438
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 # Not a target:
-obj/mandatory/handle_quotes.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/dynamic_buffer.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/mandatory/handle_dollar.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
 
 obj/main.o: src/main.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2024-05-13 19:22:51.857970984
+#  Last modified 2024-05-20 14:22:21.046885189
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := obj/main.o
-# automatic
-# * := main
-# automatic
-# < := src/main.c
-# automatic
-# + := src/main.c
-# automatic
-# % := 
-# automatic
-# ^ := src/main.c
-# automatic
-# ? := src/main.c
-# automatic
-# | := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=3/18=17%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 100):
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Not a target:
-obj/mandatory/dynamic_buffer.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/dynamic_buffer.o: src/mandatory/dynamic_buffer.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'dynamic_buffer'
+#  Last modified 2024-05-13 19:22:51.933972159
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 minishell: libft/libft.a obj/main.o obj/bonus/wildcard.o obj/mandatory/ast.o obj/mandatory/builtin.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
 #  Implicit rule search has not been done.
-#  Last modified 2024-05-20 10:38:25.795700435
+#  Last modified 2024-05-20 14:22:21.138886595
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/8=0%
+ 
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 85):
 	@$(CC) -o $@ $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled$(RESET)"
 
 # Not a target:
-obj/mandatory/init.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/builtin.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 14:21:58.562541644
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/init.o: src/mandatory/init.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'init'
+#  Last modified 2024-05-13 19:22:52.169975809
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Not a target:
+src/mandatory/expand.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 10:38:25.799700496
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 Makefile:
@@ -368,11 +389,15 @@ libft/libft.a:
 	@$(MAKE) -C $(LIBFT_DIR)
 	@echo "$(GREEN)Libft compiled$(RESET)"
 
-# Not a target:
-obj/mandatory/handle_meta_brackets_semi.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/handle_meta_brackets_semi.o: src/mandatory/handle_meta_brackets_semi.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'handle_meta_brackets_semi'
+#  Last modified 2024-05-13 19:22:52.101974757
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # makefile (from 'Makefile', line 116)
 bonus: CFLAGS += -DBONUS 
@@ -400,21 +425,43 @@ clean:
 	@$(MAKE) -C $(LIBFT_DIR) clean
 
 # Not a target:
-obj/mandatory/ast.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/ast.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 11:15:28.646762389
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/ast.o: src/mandatory/ast.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'ast'
+#  Last modified 2024-05-20 11:34:29.837000022
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+obj/mandatory/handle_dollar.o: src/mandatory/handle_dollar.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'handle_dollar'
+#  Last modified 2024-05-13 19:22:52.077974386
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Not a target:
-obj/mandatory/handle_dollar.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/execute.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 14:22:01.362584414
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
 src/main.c:
 #  Implicit rule search has been done.
-#  Last modified 2024-05-20 10:38:25.795700435
+#  Last modified 2024-05-20 14:22:04.370630365
 #  File has been updated.
 #  Successfully updated.
 
@@ -424,29 +471,46 @@ re: fclean all
 #  File does not exist.
 #  File has not been updated.
 
-# Not a target:
-obj/mandatory/free_utils.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/free_utils.o: src/mandatory/free_utils.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'free_utils'
+#  Last modified 2024-05-20 11:34:56.433446687
+#  File has been updated.
+#  Successfully updated.
+ 
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Not a target:
-obj/mandatory/parsing.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/parsing.o: src/mandatory/parsing.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'parsing'
+#  Last modified 2024-05-20 11:34:56.481447492
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Not a target:
-obj/mandatory/get_tokens.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/get_tokens.o: src/mandatory/get_tokens.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'get_tokens'
+#  Last modified 2024-05-20 11:34:56.45744709
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Not a target:
-obj/mandatory/handle_meta_redirs_pipe_or.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/handle_meta_redirs_pipe_or.o: src/mandatory/handle_meta_redirs_pipe_or.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'handle_meta_redirs_pipe_or'
+#  Last modified 2024-05-13 19:22:52.121975066
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Not a target:
 obj/bonus/init_bonus.o:
@@ -466,9 +530,7 @@ all: minishell
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/8=0%
+#  Successfully updated.
 
 fclean: clean
 #  Phony target (prerequisite of .PHONY).
@@ -481,73 +543,190 @@ fclean: clean
 	@echo "$(RED)$(NAME) removed$(RESET)"
 
 # Not a target:
-obj/mandatory/execute.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/get_path.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 10:38:25.799700496
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
-obj/mandatory/builtin.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/handle_meta_redirs_pipe_or.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/execute.o: src/mandatory/execute.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'execute'
+#  Last modified 2024-05-20 14:22:21.118886289
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Not a target:
-obj/mandatory/multiline_and_quotes_input.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/free_utils.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 11:15:28.646762389
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/builtin.o: src/mandatory/builtin.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'builtin'
+#  Last modified 2024-05-20 14:22:21.094885923
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Not a target:
-obj/bonus/wildcard.o:
+src/mandatory/utils.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/multiline_and_quotes_input.o: src/mandatory/multiline_and_quotes_input.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'multiline_and_quotes_input'
+#  Last modified 2024-05-13 19:22:52.209976428
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+obj/bonus/wildcard.o: src/bonus/wildcard.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'wildcard'
+#  Last modified 2024-05-20 14:22:21.070885556
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 108):
+	@mkdir -p $(OBJ_BONUS_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+obj/mandatory/init_mandatory.o: src/mandatory/init_mandatory.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'init_mandatory'
+#  Last modified 2024-05-13 19:22:52.189976118
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+obj/mandatory/expand.o: src/mandatory/expand.c
  
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'expand'
+#  Last modified 2024-05-20 10:51:18.567381451
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Not a target:
-obj/mandatory/init_mandatory.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/multiline_and_quotes_input.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
-obj/mandatory/expand.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/init_mandatory.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
 
 # Not a target:
-obj/mandatory/utils.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+src/mandatory/handle_meta_brackets_semi.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/bonus/wildcard.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 14:22:15.618802231
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/mandatory/init.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/mandatory/handle_quotes.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-13 13:53:06.81283494
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/mandatory/get_tokens.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 11:15:28.646762389
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+src/mandatory/parsing.c:
+#  Implicit rule search has been done.
+#  Last modified 2024-05-20 11:15:28.646762389
+#  File has been updated.
+#  Successfully updated.
+
+obj/mandatory/utils.o: src/mandatory/utils.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'utils'
+#  Last modified 2024-05-13 19:22:52.261977232
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 .PHONY: all clean fclean re bonus
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
-obj/mandatory/get_path.o:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
+obj/mandatory/get_path.o: src/mandatory/get_path.c
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'get_path'
+#  Last modified 2024-05-20 10:51:18.619382231
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 104):
+	@mkdir -p $(OBJ_MANDATORY_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # files hash-table stats:
-# Load=32/1024=3%, Rehash=0, Collisions=3/101=3%
+ 
+# Load=50/1024=5%, Rehash=0, Collisions=6/173=3%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 82 / storage = 1181 B / avg = 14 B
-# current buf: size = 8162 B / used = 1181 B / count = 82 / avg = 14 B
+# strcache buffers: 1 (0) / strings = 117 / storage = 1922 B / avg = 16 B
+# current buf: size = 8162 B / used = 1922 B / count = 117 / avg = 16 B
 
-# strcache performance: lookups = 140 / hit rate = 41%
+# strcache performance: lookups = 193 / hit rate = 39%
 # hash-table stats:
-# Load=82/8192=1%, Rehash=0, Collisions=2/140=1%
-# Finished Make data base on Mon May 20 10:44:07 2024
+# Load=117/8192=1%, Rehash=0, Collisions=2/193=1%
+# Finished Make data base on Mon May 20 14:24:32 2024
 
  
