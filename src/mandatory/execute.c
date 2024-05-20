@@ -143,7 +143,7 @@ void execute_command(t_ast_node *node, t_env **env)
 	handle_fd(env);
 	if (is_builtin(node->args[0]))
 	{
-		execute_builtin(node->args);
+		execute_builtin(env, node->args);
 		return ;
 	}
 	pid = fork();

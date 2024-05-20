@@ -28,7 +28,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
-# include <dirent.h>
+# include <dirent.h>	
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -128,7 +128,7 @@ void	set_sig_actions(void);
 
 // expand.c
 void	expand_tokens(t_env **env);
-char	*expand_word(char **input);
+char	*expand_word(t_env **env, char **input);
 
 // multiline_and_quotes_input.c
 char	*read_multiline(void);
@@ -149,7 +149,7 @@ void	handle_close_bracket(t_env **env, char **input);
 void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf);
 
 // handle_dollar.c
-void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf);
+void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_env **env);
 
 // get_tokens.c
 void	add_token(t_token_type type, char *value, int space_after, t_env **env);
@@ -193,7 +193,8 @@ int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
-void	execute_builtin(char **args);
+void	execute_builtin(t_env **env, char **args);
+char	*get_env_variable(t_env *env, char *env_var);
 int		is_builtin(char *cmd);
 
 #endif
