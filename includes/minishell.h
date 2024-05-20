@@ -146,7 +146,7 @@ void	handle_open_bracket(t_env **env, char **input);
 void	handle_close_bracket(t_env **env, char **input);
 
 // handle_quotes.c
-void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf);
+void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf, t_env **env);
 
 // handle_dollar.c
 void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_env **env);

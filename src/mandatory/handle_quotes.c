@@ -31,14 +31,14 @@ static void	handle_backslach(char **input, char **current,
 }
 
 static void	handle_double_quotes(char **input, char **current,
-				t_dynamic_buffer *buf)
+				t_dynamic_buffer *buf, t_env **env)
 {
 	(*input)++;
 	*current = *input;
 	while (**input && **input != '\"')
 	{
 		if (**input == '$')
-			handle_dollar_sign(input, current, buf);
+			handle_dollar_sign(input, current, buf, env);
 		if (**input == '\\')
 			handle_backslach(input, current, buf);
 		if (**input != '$' && **input != '\\')
@@ -69,12 +69,12 @@ static void	handle_single_quotes(char **input, char **current,
 	*current = *input;
 }
 
-void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf)
+void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf, t_env **env)
 {
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
 	if (**input == '\"')
-		handle_double_quotes(input, current, buf);
+		handle_double_quotes(input, current, buf, env);
 	else if (**input == '\'')
 		handle_single_quotes(input, current, buf);
 	*current = *input;
