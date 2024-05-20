@@ -28,7 +28,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
-# include <dirent.h>
+# include <dirent.h>	
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -191,7 +191,7 @@ int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
-void	execute_builtin(char **args);
+void	execute_builtin(t_env **env, char **args);
 int		is_builtin(char *cmd);
 
 #endif
