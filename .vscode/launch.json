@@ -5,6 +5,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+<<<<<<< HEAD
 			"name": "(gdb) Pipe Launch",
 			"type": "cppdbg",
 			"request": "launch",
@@ -61,6 +62,8 @@
 			]
 		},
 		{
+=======
+>>>>>>> sam
 			"name": "(gdb) Launch",
 			"type": "cppdbg",
 			"request": "launch",
@@ -83,6 +86,7 @@
 					"ignoreFailures": true
 				}
 			]
+<<<<<<< HEAD
 		},
 		{
 			"name": "(gdb) Attach",
@@ -106,3 +110,9 @@
 
 	]
 }
+=======
+		}
+
+	]
+}
+>>>>>>> sam

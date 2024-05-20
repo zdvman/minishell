@@ -94,6 +94,8 @@ int	cmd_is_not_valid(char *cmd, t_env **env)
 
 	if (!cmd)
 		return (1);
+	if (is_builtin(cmd))
+		return (0);
 	path = NULL;
 	path  = get_path(cmd, env);
 	if (!path
@@ -139,6 +141,11 @@ void execute_command(t_ast_node *node, t_env **env)
 	if (cmd_is_not_valid(node->args[0], env))
 		cleanup(env, EXIT_FAILURE);
 	handle_fd(env);
+	if (is_builtin(node->args[0]))
+	{
+		execute_builtin(node->args);
+		return ;
+	}
 	pid = fork();
 	if (pid == -1)
 	{

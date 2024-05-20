@@ -1,0 +1,3 @@
+digraph AST {
+"0x4250d0" [label="CMD: ls . .. "];
+}

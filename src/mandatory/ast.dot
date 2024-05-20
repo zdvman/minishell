@@ -1,0 +1,3 @@
+digraph AST {
+"0x4250e0" [label="CMD: ls ast.c dynamic_buffer.c execute.c expand.c free_utils.c get_path.c get_tokens.c handle_dollar.c handle_meta_brackets_semi.c handle_meta_redirs_pipe_or.c handle_quotes.c init.c init_mandatory.c multiline_and_quotes_input.c parsing.c utils.c"];
+}

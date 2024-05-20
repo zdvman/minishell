@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/30 11:09:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2023/11/10 18:04:34 by dzuiev           ###   ########.fr       */
+/*   Created: 2024/04/19 18:42:01 by dzuiev            #+#    #+#             */
+/*   Updated: 2024/05/11 14:28:59 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../includes/minishell.h"
 
-size_t	ft_strlcpy(char *dest, const char *src, size_t size)
+int	is_builtin(char *cmd)
 {
-	size_t	n;
+	if (!ft_strcmp(cmd, "cd"))
+		return (1);
+	return (0);
+}
 
-	n = 0;
-	while (size > 1 && *src != '\0')
-	{
-		*dest++ = *src++;
-		n++;
-		size--;
-	}
-	if (size > 0)
-		*dest = '\0';
-	return (n + ft_strlen(src));
+void	change_dir(char **args)
+{
+	chdir(args[1]);
+}
+
+void	execute_builtin(char **args)
+{
+	if (!ft_strcmp(args[0], "cd"))
+	change_dir(args);
 }

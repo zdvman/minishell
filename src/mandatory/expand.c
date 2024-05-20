@@ -42,17 +42,35 @@ char	*expand_word(char **input)
 void	expand_tokens(t_env **env)
 {
 	t_token	*token;
+	t_token	*prev;
+	t_token	*next;
 	char	*expanded;
 
+	prev = NULL;
 	token = (*env)->tokens;
 	while (token)
 	{
 		if (token->type == TOKEN_WORD)
 		{
-			expanded = expand_word(&token->value);
-			free(token->value);
-			token->value = expanded;
+			if (contains(token->value, '*'))
+			{
+				next = token->next;
+				if (expand_wildcard(token->value, env, prev, next))
+				{
+					free (token->value);
+					free (token);
+					token = next;
+					continue ;
+				}
+			}
+			else
+			{
+				expanded = expand_word(&token->value);
+				free(token->value);
+				token->value = expanded;
+			}
 		}
+		prev = token;
 		token = token->next;
 	}
 }
