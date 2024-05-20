@@ -31,7 +31,7 @@ char	*expand_word(t_env **env, char **input)
 		if (**input == '$')
 			handle_dollar_sign(input, &current, &buf, env);
 		if (**input == '\'' || **input == '\"')
-			handle_quotes(input, &current, &buf);
+			handle_quotes(input, &current, &buf, env);
 		if (**input != '$' && **input != '\'' && **input != '\"')
 			(*input)++;
 	}

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 16:53:30 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 18:43:08 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = read_multiline();
-		if (!ft_strncmp(input, "exit", 4) && (!input[4] || ft_isspace(input[4])))
+		if (!input)
 		{	
 			write(1, "exit\n", 5);
 			break ;

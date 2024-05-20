@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 18:06:03 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/20 19:11:48 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ void execute_pipe(t_ast_node *node, t_env **env)
 {
 	int		fd[2];
 	pid_t	pid;
+	int	original_stdin;
 
+	original_stdin = dup(STDIN_FILENO);
 	handle_fd(env);
 	if (pipe(fd) == -1)
 	{
@@ -85,6 +87,8 @@ void execute_pipe(t_ast_node *node, t_env **env)
 		dup2(fd[0], STDIN_FILENO);
 		close(fd[0]);
 		execute(node->right, env);
+		dup2(original_stdin, STDIN_FILENO);
+		close(original_stdin);
 	}
 }
 
