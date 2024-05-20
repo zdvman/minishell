@@ -1,7 +1,23 @@
 digraph AST {
-"0x1ba0290" [label=";"];
-"0x1ba0290" -> "0x1bbd5f0" [label="L"];
-"0x1bbd5f0" [label="CMD: ls"];
-"0x1ba0290" -> "0x1bbd5a0" [label="R"];
-"0x1bbd5a0" [label="CMD: ls"];
+"0x10b9fb0" [label=";"];
+"0x10b9fb0" -> "0x10b9ef0" [label="L"];
+"0x10b9ef0" [label=";"];
+"0x10b9ef0" -> "0x10b9cb0" [label="L"];
+"0x10b9cb0" [label="REDIR: 3"];
+"0x10b9cb0" -> "0x10b9c40" [label="L"];
+"0x10b9c40" [label="REDIR: 1"];
+"0x10b9c40" -> "0x10b9bd0" [label="L"];
+"0x10b9bd0" [label="CMD: ls"];
+"0x10b9ef0" -> "0x10b9ec0" [label="R"];
+"0x10b9ec0" [label="REDIR: 1"];
+"0x10b9ec0" -> "0x10b9e50" [label="L"];
+"0x10b9e50" [label="REDIR: 3"];
+"0x10b9e50" -> "0x10b9de0" [label="L"];
+"0x10b9de0" [label="|"];
+"0x10b9de0" -> "0x10b9d20" [label="L"];
+"0x10b9d20" [label="CMD: cat"];
+"0x10b9de0" -> "0x10b9db0" [label="R"];
+"0x10b9db0" [label="CMD: wc -l"];
+"0x10b9fb0" -> "0x10b9f80" [label="R"];
+"0x10b9f80" [label="CMD: cat 1"];
 }
