@@ -6,28 +6,26 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri May 17 18:08:14 2024
+# Make data base, printed on Mon May 20 10:44:07 2024
 
 # Variables
 
-# makefile (from 'Makefile', line 73)
+# makefile (from 'Makefile', line 74)
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) 
 # environment
 GDK_BACKEND = x11
 # environment
 LC_ALL = C
-# makefile (from 'Makefile', line 69)
-SRC = $(wildcard $(SRC_DIR)/*.c) 
+# makefile (from 'Makefile', line 72)
+SRC = $(wildcard $(SRC_DIR)/*.c)  src/bonus/wildcard.c
 # environment
 SSH_AGENT_LAUNCHER = gnome-keyring
-# environment
-GJS_DEBUG_OUTPUT = stderr
 # makefile (from 'Makefile', line 59)
 SRC_DIR = src
 # environment
 VSCODE_CRASH_REPORTER_PROCESS_TYPE = extensionHost
 # environment
-VSCODE_CWD = /home/dzuiev
+VSCODE_CWD = /home/samoore/minishell
 # environment
 LIBVIRT_DEFAULT_URI = qemu:///system
 # environment
@@ -45,15 +43,15 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
 .VARIABLES := 
 # environment
-PWD = /home/dzuiev/minishell
+PWD = /home/samoore/minishell
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
-LSCOLORS = Gxfxcxdxbxegedabagacad
+MAIL = samoore@student.42london.com
 # environment
 XDG_DATA_DIRS = /usr/share/ubuntu:/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop
 # environment
-OLDPWD = /home/dzuiev
+OLDPWD = /home/samoore
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # automatic
@@ -61,27 +59,29 @@ OLDPWD = /home/dzuiev
 # makefile (from 'Makefile', line 61)
 SRC_MANDATORY_DIR = $(SRC_DIR)/mandatory
 # environment
-VSCODE_CODE_CACHE_PATH = /home/dzuiev/.config/Code/CachedData/1e790d77f81672c49be070e04474901747115651
+VSCODE_CODE_CACHE_PATH = /home/samoore/.config/Code/CachedData/1e790d77f81672c49be070e04474901747115651
 # environment
-XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session7
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session17
 # makefile (from 'Makefile', line 50)
 LIBFT = $(LIBFT_DIR)/libft.a 
 # environment
 LANG = C
-# makefile (from 'Makefile', line 74)
+# makefile (from 'Makefile', line 75)
 OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
 # environment
-XAUTHORITY = /home/dzuiev/.Xauthority
+XAUTHORITY = /home/samoore/.Xauthority
 # default
 .LOADED := 
 # default
 .INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# environment
+GNOME_TERMINAL_SERVICE = :1.92
 # makefile
 MAKEFLAGS = pqrR
 # makefile (from 'Makefile', line 41)
 BLUE = \033[0;34m
 # makefile
-CURDIR := /home/dzuiev/minishell
+CURDIR := /home/samoore/minishell
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # automatic
@@ -91,7 +91,7 @@ SRC_BONUS_DIR = $(SRC_DIR)/bonus
 # environment
 MFLAGS = -pqrR
 # environment
-SSH_AUTH_SOCK = /run/user/101014/keyring/ssh
+SSH_AUTH_SOCK = /run/user/101194/keyring/ssh
 # default
 .SHELLFLAGS := -c
 # environment
@@ -107,11 +107,9 @@ OBJ_MANDATORY_DIR = $(OBJ_DIR)/mandatory
 # automatic
 @F = $(notdir $@)
 # environment
-ZSH = /home/dzuiev/.oh-my-zsh
+VSCODE_PID = 751630
 # environment
-VSCODE_PID = 1027279
-# environment
-KRB5CCNAME = FILE:/tmp/krb5cc_101014_WgROBP
+KRB5CCNAME = FILE:/tmp/krb5cc_101194_o4FqA8
 # environment
 XDG_SESSION_TYPE = x11
 # automatic
@@ -119,17 +117,17 @@ XDG_SESSION_TYPE = x11
 # makefile (from 'Makefile', line 57)
 INCLUDES = -I./includes -I$(LIBFT_DIR) -I/usr/include/readline
 # environment
-SESSION_MANAGER = local/c2r6s1.42london.com:@/tmp/.ICE-unix/995127,unix/c2r6s1.42london.com:/tmp/.ICE-unix/995127
+SESSION_MANAGER = local/c1r4s5.42london.com:@/tmp/.ICE-unix/749243,unix/c1r4s5.42london.com:/tmp/.ICE-unix/749243
 # automatic
 *F = $(notdir $*)
 # environment
 CHROME_DESKTOP = code-url-handler.desktop
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/101014/bus
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/101194/bus
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # environment
-VSCODE_NLS_CONFIG = {"locale":"en","osLocale":"en","availableLanguages":{},"_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"en-us","osLocale":"en","availableLanguages":{},"_languagePackSupport":true}
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
@@ -143,16 +141,15 @@ XMODIFIERS = @im=ibus
 # makefile (from 'Makefile', line 71)
 SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
 # environment
-GJS_DEBUG_TOPICS = JS ERROR;JS LOG
+SHLVL = 1
 # environment
- 
-SHLVL = 0
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/28d40149_258a_4133_bd71_6f731dbb0eed
 # environment
 MAKELEVEL := 0
 # default
 MAKE = $(MAKE_COMMAND)
 # environment
-PATH = /home/dzuiev/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+PATH = /home/samoore/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 # default
 MAKEFILES := 
 # environment
@@ -165,14 +162,12 @@ LIBFT_DIR = libft
 YELLOW = \033[0;33m
 # makefile (from 'Makefile', line 70)
 SRC_MANDATORY = $(wildcard $(SRC_MANDATORY_DIR)/*.c)
-# makefile (from 'Makefile', line 75)
+# makefile (from 'Makefile', line 76)
 OBJ_BONUS = $(SRC_BONUS:$(SRC_BONUS_DIR)/%.c=$(OBJ_BONUS_DIR)/%.o)
-# environment
-INVOCATION_ID = dddab1aa8a10412dbed65a10cb87884d
 # makefile (from 'Makefile', line 38)
 GREEN = \033[0;32m
 # environment
-DOCKER_HOST = unix:///run/user/101014/docker.sock
+DOCKER_HOST = unix:///run/user/101194/docker.sock
 # automatic
 ?F = $(notdir $?)
 # makefile (from 'Makefile', line 47)
@@ -186,27 +181,24 @@ XDG_CURRENT_DESKTOP = Unity
 # environment
 XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
 # environment
-LESS = -R
-# environment
 DESKTOP_SESSION = ubuntu
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # 'override' directive
 GNUMAKEFLAGS := 
 # environment
-LOGNAME = dzuiev
-# environment
-GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
+LOGNAME = samoore
 # makefile
 .DEFAULT_GOAL := all
+ 
 # environment
-SYSTEMD_EXEC_PID = 995148
+SYSTEMD_EXEC_PID = 749263
 # makefile (from 'Makefile', line 40)
 RED = \033[0;31m
 # environment
 DISPLAY = :0
 # environment
-USER = dzuiev
+USER = samoore
 # environment
 GTK_MODULES = gail:atk-bridge
 # default
@@ -214,35 +206,31 @@ MAKE_VERSION := 4.3
 # makefile (from 'Makefile', line 58)
 LDFLAGS = -L$(LIBFT_DIR) -lft -lreadline 
 # environment
-MANAGERPID = 994577
-# environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 1027279
-# environment
-PAGER = less
-# environment
-_ = /usr/share/code/code
+_ = /usr/bin/code
 # makefile (from 'Makefile', line 42)
 RESET = \033[0m
 # environment
-XDG_RUNTIME_DIR = /run/user/101014
+XDG_RUNTIME_DIR = /run/user/101194
 # makefile (from 'Makefile', line 49)
 CFLAGS = -Wall -Wextra -Werror -g 
 # environment
-GPG_AGENT_INFO = /run/user/101014/gnupg/S.gpg-agent:0:1
+GPG_AGENT_INFO = /run/user/101194/gnupg/S.gpg-agent:0:1
 # environment
-JOURNAL_STREAM = 8:2431968
+COLORTERM = truecolor
 # environment
 XDG_SESSION_CLASS = user
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
-HOME = /home/dzuiev
+HOME = /home/samoore
 # environment
 QT_IM_MODULE = ibus
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/101014/vscode-9e7354eb-1.87-main.sock
+VSCODE_IPC_HOOK = /run/user/101194/vscode-b09c1acb-1.87-main.sock
+# environment
+TERM = xterm-256color
 # environment
 FT_HOOK_PATHNAME = login-user.d
 # makefile (from 'Makefile', line 64)
@@ -254,9 +242,15 @@ OBJ_BONUS_DIR = $(OBJ_DIR)/bonus
 # default
 SUFFIXES := 
 # environment
+VSCODE_CLI = 1
+# environment
 FT_HOOK_NAME = login-user
 # environment
-XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/dzuiev
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+VTE_VERSION = 6800
+# environment
+XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/samoore
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
 # makefile (from 'Makefile', line 48)
@@ -266,7 +260,7 @@ XDG_MENU_PREFIX = gnome-
 # environment
 GDMSESSION = ubuntu
 # variable set hash-table stats:
-# Load=127/1024=12%, Rehash=0, Collisions=11/220=5%
+# Load=124/1024=12%, Rehash=0, Collisions=20/218=9%
 
 # Pattern-specific Variable Values
 
@@ -274,27 +268,27 @@ GDMSESSION = ubuntu
 
 # Directories
 
-# src/mandatory (device 2048, inode 12583611): 18 files, no impossibilities.
-# src (device 2048, inode 4567958): 6 files, no impossibilities.
-# src/bonus (device 2048, inode 8590231): 3 files, no impossibilities.
-# . (device 2048, inode 2018): 16 files, no impossibilities.
+# src/mandatory (device 2048, inode 50150): 20 files, no impossibilities.
+# src (device 2048, inode 8607000): 6 files, no impossibilities.
+# src/bonus (device 2048, inode 12583162): 4 files, no impossibilities.
+# . (device 2048, inode 4236922): 20 files, no impossibilities.
 
-# 43 files, no impossibilities in 4 directories.
+# 50 files, no impossibilities in 4 directories.
 
 # Implicit Rules
 
 obj/%.o: src/%.c
-#  recipe to execute (from 'Makefile', line 99):
+#  recipe to execute (from 'Makefile', line 100):
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 obj/mandatory/%.o: src/mandatory/%.c
-#  recipe to execute (from 'Makefile', line 103):
+#  recipe to execute (from 'Makefile', line 104):
 	@mkdir -p $(OBJ_MANDATORY_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 obj/bonus/%.o: src/bonus/%.c
-#  recipe to execute (from 'Makefile', line 107):
+#  recipe to execute (from 'Makefile', line 108):
 	@mkdir -p $(OBJ_BONUS_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -310,10 +304,28 @@ obj/mandatory/handle_quotes.o:
 obj/main.o: src/main.c
 #  Implicit rule search has been done.
 #  Implicit/static pattern stem: 'main'
-#  Last modified 2024-05-17 12:03:47.823000311
+#  Last modified 2024-05-13 19:22:51.857970984
 #  File has been updated.
-#  Successfully updated.
-#  recipe to execute (from 'Makefile', line 99):
+#  Needs to be updated (-q is set).
+# automatic
+# @ := obj/main.o
+# automatic
+# * := main
+# automatic
+# < := src/main.c
+# automatic
+# + := src/main.c
+# automatic
+# % := 
+# automatic
+# ^ := src/main.c
+# automatic
+# ? := src/main.c
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=3/18=17%
+#  recipe to execute (from 'Makefile', line 100):
 	@mkdir -p $(OBJ_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -323,14 +335,14 @@ obj/mandatory/dynamic_buffer.o:
 #  Modification time never checked.
 #  File has not been updated.
 
-minishell: libft/libft.a obj/main.o obj/mandatory/ast.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
+minishell: libft/libft.a obj/main.o obj/bonus/wildcard.o obj/mandatory/ast.o obj/mandatory/builtin.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
 #  Implicit rule search has not been done.
-#  Last modified 2024-05-17 12:03:48.235004408
+#  Last modified 2024-05-20 10:38:25.795700435
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/9=0%
-#  recipe to execute (from 'Makefile', line 84):
+# Load=0/32=0%, Rehash=0, Collisions=0/8=0%
+#  recipe to execute (from 'Makefile', line 85):
 	@$(CC) -o $@ $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled$(RESET)"
 
@@ -343,16 +355,16 @@ obj/mandatory/init.o:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2024-04-16 14:18:04.589351
+#  Last modified 2024-05-20 10:38:25.795700435
 #  File has been updated.
 #  Successfully updated.
 
 libft/libft.a:
 #  Implicit rule search has not been done.
-#  Last modified 2024-05-17 12:03:47.795000032
+#  Last modified 2024-05-13 19:22:51.833970612
 #  File has been updated.
 #  Successfully updated.
-#  recipe to execute (from 'Makefile', line 92):
+#  recipe to execute (from 'Makefile', line 93):
 	@$(MAKE) -C $(LIBFT_DIR)
 	@echo "$(GREEN)Libft compiled$(RESET)"
 
@@ -362,16 +374,16 @@ obj/mandatory/handle_meta_brackets_semi.o:
 #  Modification time never checked.
 #  File has not been updated.
 
-# makefile (from 'Makefile', line 115)
+# makefile (from 'Makefile', line 116)
 bonus: CFLAGS += -DBONUS 
-bonus: obj/bonus/init_bonus.o libft/libft.a obj/main.o obj/mandatory/ast.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
+bonus: obj/bonus/init_bonus.o obj/bonus/wildcard.o libft/libft.a obj/main.o obj/bonus/wildcard.o obj/mandatory/ast.o obj/mandatory/builtin.o obj/mandatory/dynamic_buffer.o obj/mandatory/execute.o obj/mandatory/expand.o obj/mandatory/free_utils.o obj/mandatory/get_path.o obj/mandatory/get_tokens.o obj/mandatory/handle_dollar.o obj/mandatory/handle_meta_brackets_semi.o obj/mandatory/handle_meta_redirs_pipe_or.o obj/mandatory/handle_quotes.o obj/mandatory/init.o obj/mandatory/init_mandatory.o obj/mandatory/multiline_and_quotes_input.o obj/mandatory/parsing.o obj/mandatory/utils.o
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
 # variable set hash-table stats:
 # Load=1/32=3%, Rehash=0, Collisions=0/3=0%
-#  recipe to execute (from 'Makefile', line 117):
+#  recipe to execute (from 'Makefile', line 118):
 	@$(CC) -o $(NAME) $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled with bonus part$(RESET)"
 
@@ -380,7 +392,7 @@ clean:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 122):
+#  recipe to execute (from 'Makefile', line 123):
 	@ if [ -d $(OBJ_DIR) ]; then \
 		rm -rf $(OBJ_DIR); \
 		echo "$(YELLOW)Minishell object files removed$(RESET)"; \
@@ -388,40 +400,10 @@ clean:
 	@$(MAKE) -C $(LIBFT_DIR) clean
 
 # Not a target:
-src/mandatory/ast.c:
-#  Implicit rule search has been done.
-#  Last modified 2024-05-17 18:01:13.660072122
-#  File has been updated.
-#  Successfully updated.
-
-obj/mandatory/ast.o: src/mandatory/ast.c
-#  Implicit rule search has been done.
-#  Implicit/static pattern stem: 'ast'
-#  Last modified 2024-05-17 12:03:47.851000589
-#  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := obj/mandatory/ast.o
-# automatic
-# * := ast
-# automatic
-# < := src/mandatory/ast.c
-# automatic
-# + := src/mandatory/ast.c
-# automatic
-# % := 
-# automatic
-# ^ := src/mandatory/ast.c
-# automatic
-# ? := src/mandatory/ast.c
-# automatic
-# | := 
-# variable set hash-table stats:
- 
-# Load=8/32=25%, Rehash=0, Collisions=3/19=16%
-#  recipe to execute (from 'Makefile', line 103):
-	@mkdir -p $(OBJ_MANDATORY_DIR)
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+obj/mandatory/ast.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 obj/mandatory/handle_dollar.o:
@@ -432,7 +414,7 @@ obj/mandatory/handle_dollar.o:
 # Not a target:
 src/main.c:
 #  Implicit rule search has been done.
-#  Last modified 2024-05-13 10:56:35.151374
+#  Last modified 2024-05-20 10:38:25.795700435
 #  File has been updated.
 #  Successfully updated.
 
@@ -486,14 +468,14 @@ all: minishell
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/9=0%
+# Load=0/32=0%, Rehash=0, Collisions=0/8=0%
 
 fclean: clean
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 130):
+#  recipe to execute (from 'Makefile', line 131):
 	@$(MAKE) -C $(LIBFT_DIR) fclean
 	@rm -f $(NAME)
 	@echo "$(RED)$(NAME) removed$(RESET)"
@@ -505,7 +487,20 @@ obj/mandatory/execute.o:
 #  File has not been updated.
 
 # Not a target:
+obj/mandatory/builtin.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 obj/mandatory/multiline_and_quotes_input.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+obj/bonus/wildcard.o:
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -540,19 +535,19 @@ obj/mandatory/get_path.o:
 #  File has not been updated.
 
 # files hash-table stats:
-# Load=31/1024=3%, Rehash=0, Collisions=3/98=3%
+# Load=32/1024=3%, Rehash=0, Collisions=3/101=3%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 77 / storage = 1135 B / avg = 14 B
-# current buf: size = 8162 B / used = 1135 B / count = 77 / avg = 14 B
+# strcache buffers: 1 (0) / strings = 82 / storage = 1181 B / avg = 14 B
+# current buf: size = 8162 B / used = 1181 B / count = 82 / avg = 14 B
 
-# strcache performance: lookups = 131 / hit rate = 41%
+# strcache performance: lookups = 140 / hit rate = 41%
 # hash-table stats:
-# Load=77/8192=1%, Rehash=0, Collisions=2/131=2%
-# Finished Make data base on Fri May 17 18:08:14 2024
+# Load=82/8192=1%, Rehash=0, Collisions=2/140=1%
+# Finished Make data base on Mon May 20 10:44:07 2024
 
  

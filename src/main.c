@@ -160,7 +160,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = read_multiline();
-		if (input == NULL)
+		if (!input)
 		{
 			write(1, "exit\n", 5);
 			break ;

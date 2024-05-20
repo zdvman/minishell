@@ -28,6 +28,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/libft.h"
+# include <dirent.h>
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -86,6 +87,7 @@ typedef struct s_token
 typedef struct s_env
 {
 	char			**envp;
+	char			**envp_backup;
 	int				exit_status;
 	int				pipe_fd[2];
 	int				fd_in;
@@ -93,6 +95,9 @@ typedef struct s_env
 	t_ast_node		*ast;
 	t_token			*tokens;
 	t_token			*head_token;
+	t_list			*directory_list;
+	t_list			*dir_head;
+
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -180,5 +185,13 @@ void	recursive_execute(t_ast_node *node, t_env **env);
 
 //main.c
 void	print_token_name(t_token *token);
+
+//wildcard.c  for bonus but using here for testing
+int		contains(char *str, char target);
+int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
+
+//builtin.c
+void	execute_builtin(char **args);
+int		is_builtin(char *cmd);
 
 #endif

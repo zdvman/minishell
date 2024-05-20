@@ -1,7 +1,3 @@
 digraph AST {
-"0x1ba0290" [label=";"];
-"0x1ba0290" -> "0x1bbd5f0" [label="L"];
-"0x1bbd5f0" [label="CMD: ls"];
-"0x1ba0290" -> "0x1bbd5a0" [label="R"];
-"0x1bbd5a0" [label="CMD: ls"];
+"0xa5f260" [label="CMD: exit"];
 }
