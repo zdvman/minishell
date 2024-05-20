@@ -115,6 +115,8 @@ void	replace_or_add_env_var(t_env **env, char *var, char *val)
 
 int	is_builtin(char *cmd)
 {
+	if (!ft_strcmp(cmd, "echo"))
+		return (1);
 	if (!ft_strcmp(cmd, "cd"))
 		return (1);
 	if (!ft_strcmp(cmd, "pwd"))
@@ -187,6 +189,23 @@ void	print_env(t_env *env)
 	}
 }
 
+void	echo(char **args)
+{
+	int	i;
+	int	n;
+
+	i = 1;
+	n = (!ft_strcmp(args[i], "-n"));
+	while (args[i + n])
+	{
+		ft_putstr(args[i++ + n]);
+		if (args[i])
+			ft_putchar(' ');
+	}
+	if (!n)
+		ft_putchar('\n');
+}
+
 void	execute_builtin(t_env **env, char **args)
 {
 	if (!ft_strcmp(args[0], "cd") && args[1][0])
@@ -195,6 +214,8 @@ void	execute_builtin(t_env **env, char **args)
 		print_cwd();
 	if (!ft_strcmp(args[0], "env"))
 		print_env(*env);
+	if (!ft_strcmp(args[0], "echo"))
+		echo(args);
 	if (!ft_strcmp(args[0], "unset"))
 		replace_env_var(env, args[1], NULL);
 }
