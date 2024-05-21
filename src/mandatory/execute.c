@@ -6,11 +6,22 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 19:11:48 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/21 19:12:49 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+void	error_msg(char *cmd, int error_value)
+{
+	if (cmd)
+	{
+		ft_putstr_fd(cmd, STDERR_FILENO);
+		write(STDERR_FILENO, ": ", 2);
+	}
+	ft_putstr_fd(strerror(error_value), STDERR_FILENO);
+	write(STDERR_FILENO, "\n", 1);
+}
 
 void	execute_semi(t_ast_node *node, t_env **env)
 {
@@ -39,7 +50,7 @@ void execute_background(t_ast_node *node, t_env **env)
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_perror("fork failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	if (pid == 0)
@@ -49,8 +60,9 @@ void execute_background(t_ast_node *node, t_env **env)
 	}
 	else
 	{
-		waitpid(pid, &(*env)->exit_status, 0);
-		(*env)->exit_status = WEXITSTATUS((*env)->exit_status);
+		// waitpid(pid, &(*env)->exit_status, 0);
+		// (*env)->exit_status = WEXITSTATUS((*env)->exit_status);
+		printf("Process running in background with PID %d\n", pid);
 	}
 }
 
@@ -64,13 +76,13 @@ void execute_pipe(t_ast_node *node, t_env **env)
 	handle_fd(env);
 	if (pipe(fd) == -1)
 	{
-		ft_perror("pipe failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_perror("fork failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	if (pid == 0)
@@ -120,7 +132,7 @@ void handle_fd(t_env **env)
 	{
 		if (dup2((*env)->fd_out, STDOUT_FILENO) == -1)
 		{
-			ft_perror("dup2 failed");
+			error_msg(NULL, errno);
 			cleanup(env, EXIT_FAILURE);
 		}
 		close((*env)->fd_out);
@@ -130,13 +142,14 @@ void handle_fd(t_env **env)
 	{
 		if (dup2((*env)->fd_in, STDIN_FILENO) == -1)
 		{
-			ft_perror("dup2 failed");
+			error_msg(NULL, errno);
 			cleanup(env, EXIT_FAILURE);
 		}
 		close((*env)->fd_in);
 		(*env)->fd_in = -1;
 	}
 }
+
 
 void execute_command(t_ast_node *node, t_env **env)
 {
@@ -153,16 +166,14 @@ void execute_command(t_ast_node *node, t_env **env)
 	pid = fork();
 	if (pid == -1)
 	{
-		ft_perror("fork failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	if (pid == 0)
 	{
 		execve(get_path(node->args[0], env), node->args, (*env)->envp);
-		ft_perror("execve fail");
-		cleanup_loop(NULL, env);
-		return ;
-		// cleanup(env, EXIT_FAILURE);
+		error_msg(node->args[0], errno);
+		cleanup(env, EXIT_FAILURE);
 	}
 	else
 	{
@@ -180,10 +191,9 @@ void execute_redir_input(t_ast_node *node, t_env **env)
 	fd = open(node->args[0], O_RDONLY);
 	if (fd == -1)
 	{
-		ft_perror("open failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
-	// dup2(fd, STDIN_FILENO);
 	if ((*env)->fd_in == -1)
 		(*env)->fd_in = fd;
 	if (node->left)
@@ -200,11 +210,11 @@ void execute_redir_output(t_ast_node *node, t_env **env)
 
 	original_stdout = dup(STDOUT_FILENO);
 	fd = open(node->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1) {
-		ft_perror("open failed");
+	if (fd == -1)
+	{
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
-	// dup2(fd, STDOUT_FILENO);
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
 	if (node->left)
@@ -222,10 +232,9 @@ void execute_redir_append(t_ast_node *node, t_env **env)
 	original_stdout = dup(STDOUT_FILENO);
 	fd = open(node->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1) {
-		ft_perror("open failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
-	// dup2(fd, STDOUT_FILENO);
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
 	if (node->left)
@@ -244,7 +253,7 @@ void execute_here_doc(t_ast_node *node, t_env **env)
 	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		ft_perror("open failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	line = readline("> ");
@@ -265,10 +274,9 @@ void execute_here_doc(t_ast_node *node, t_env **env)
 	fd = open(".here_doc", O_RDONLY, 0644);
 	if (fd == -1)
 	{
-		ft_perror("open failed");
+		error_msg(NULL, errno);
 		cleanup(env, EXIT_FAILURE);
 	}
-	// dup2(fd, STDIN_FILENO);
 	if ((*env)->fd_in == -1)
 		(*env)->fd_in = fd;
 	if (node->left)

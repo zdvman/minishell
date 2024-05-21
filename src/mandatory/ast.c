@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 15:20:53 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/21 17:38:04 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,12 +268,14 @@ t_ast_node *parse_term(t_token **current, t_env **env)
 	else if ((*current)->type == TOKEN_WORD)
 		node = parse_command(current, env);
 	else
-	{
-		ft_perror("Unexpected token: ");
-		print_token_name(*current);
-		printf("\n");
 		return (NULL);
-	}
+	// else
+	// {
+	// 	ft_perror("Unexpected token: ");
+	// 	print_token_name(*current);
+	// 	printf("\n");
+	// 	return (NULL);
+	// }
 	if (!node)
 		return (NULL);
     return (node);  // Return the command wrapped with all applicable redirections
@@ -285,21 +287,20 @@ t_ast_node	*parse_expression(t_token **current, t_env **env)
 	t_ast_node		*new_node;
 	t_ast_node		*left;
 	t_ast_node		*right;
-	
 
 	left = parse_term(current, env);
 	if (!left)
-		return (NULL); // Failed to parse left-hand side;
+		return (NULL);
 	while (*current && (*current)->type != TOKEN_EOF && is_control_op((*current)->type))
 	{
 		type = (*current)->type;
 		(*current) = (*current)->next; // Move past the operator
 		right = parse_term(current, env);
-		if (!right)
-		{
-			ft_free_ast(&left); // Cleanup left-hand side on failure
-			return NULL;
-		}
+		// if (!right)
+		// {
+		// 	ft_free_ast(&left);
+		// 	return NULL;
+		// }
 		new_node = create_ast_node(type, NULL, env);
 		new_node->left = left;
 		new_node->right = right;

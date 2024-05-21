@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:21:10 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/10 14:16:04 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/21 18:39:08 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,34 +43,81 @@ int	is_quote_open(const char *input)
 	return (current_quote != 0);
 }
 
-char	*read_multiline(void)
+int	pipe_or_and_is_closed(char *buffer_str, int i)
+{
+	if (!buffer_str)
+		return (1);
+	while (buffer_str[i] != '\0')
+	{
+		if (buffer_str[i] == '|')
+		{
+			if (buffer_str[i + 1] == '\0')
+				return (0);
+			else if (buffer_str[i + 1] == '|')
+			{
+				if (buffer_str[i + 2] == '\0')
+					return (0);
+			}
+		}
+		else if (buffer_str[i] == '&')
+		{
+			if (buffer_str[i + 1] == '&')
+			{
+				if (buffer_str[i + 2] == '\0')
+					return (0);
+			}
+		}
+		i++;
+	}
+	return (1);
+}
+
+char *read_multiline(void)
 {
 	t_dynamic_buffer	buf;
-	char				*line;
+	char 				*line;
 
-	line = readline("minishell> ");
-	if (line == NULL || line[0] == '\0')
-		return (line);
 	buffer_init(&buf);
-	buffer_append(&buf, line, ft_strlen(line));
-	ft_free_str(&line);
-	while (is_quote_open(buf.data))
+	while (1)
 	{
-		line = readline("> ");
-		if (!line)
+		line = readline(buf.data[0] ? "> " : "minishell> ");
+		if (g_sigint_received)
+        {
+            g_sigint_received = 0;
+            ft_free_str(&line);
+			buffer_clear(&buf);
+            	break ;
+        }
+		if (line == NULL)
 		{
-			write(2, "unexpected EOF while looking for matching `\"\'\n", 46);
+			if (buf.data[0])
+			{
+				write(2, "unexpected EOF while looking for matching `\"\'\n", 46);
+				buffer_free(&buf);
+				return (ft_strdup(""));
+			}
+			else
+			{
+				buffer_free(&buf);
+				return (NULL); // Exit the shell
+			}
+		}
+		if (line[0] == '\0' && buf.data[0] == '\0')
+		{
 			buffer_free(&buf);
-			return (NULL);
+			return (line);
 		}
 		buffer_append(&buf, line, ft_strlen(line));
-		buffer_append_char(&buf, '\n');
+		if (is_quote_open(buf.data))
+			buffer_append_char(&buf, '\n');
 		ft_free_str(&line);
+		if (!is_quote_open(buf.data))
+		{
+			if (pipe_or_and_is_closed(buf.data, 0))
+				break ;
+		}
 	}
-	if (buf.data[0])
-		line = ft_strdup(buf.data);
-	else
-		line = ft_strdup("");
+	line = ft_strdup(buf.data);
 	buffer_free(&buf);
 	return (line);
 }
