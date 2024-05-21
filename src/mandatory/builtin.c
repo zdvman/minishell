@@ -12,129 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-char	*make_var(char *var, char *val)
-{
-	char	*tmp;
-	char	*res;
-
-	tmp = ft_strjoin(var, "=");
-	res = ft_strjoin(tmp, val);
-	free (tmp);
-	return (res);
-}
-
-void	remove_var(t_env *env, int target)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (env->envp[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count);
-	while (i < target)
-	{
-		new_env[i] = env->envp[i];
-		i++;
-	}
-	while (i < count - 1)
-	{
-		new_env[i] = env->envp[i + 1];
-		i++;
-	}
-	// free (env->envp[target]);
-	free (env->envp);
-	env->envp = new_env;
-}
-
-void	add_var(t_env *env, char *var, char *val)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (env->envp[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count + 2);
-	while (i < count)
-	{
-		new_env[i] = env->envp[i];
-		i++;
-	}
-	new_env[i++] = make_var(var, val);
-	// free (env->envp[target]);
-	free (env->envp);
-	env->envp = new_env;
-}
-
-void	insert_local(t_env *env, char *var)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (env->local_variables[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count + 2);
-	while (i < count)
-	{
-		new_env[i] = env->local_variables[i];
-		i++;
-	}
-	new_env[i++] = ft_strdup(var);
-	// free (env->local_variables[target]);
-	free (env->local_variables);
-	env->local_variables = new_env;
-}
-
-// void	replace_env_var(t_env **env, char *var, char *val)
-// {
-// 	int		i;
-
-// 	i = 0;
-// 	while ((*env)->envp[i])
-// 	{
-// 		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
-// 		{
-// 			free ((*env)->envp[i]);
-// 			if (val)
-// 				(*env)->envp[i] = make_var(var, val);
-// 			else
-// 				remove_var(*env, i);
-// 			return ;
-// 		}
-// 		i++;
-// 	}
-// }
-
-void	replace_or_add_env_var(t_env **env, char *var, char *val)
-{
-	int		i;
-
-	i = 0;
-	while ((*env)->envp[i])
-	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
-		{
-			free ((*env)->envp[i]);
-			if (val && *val)
-				(*env)->envp[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return ;
-		}
-		i++;
-		if (!(*env)->envp[i])
-			add_var(*env, var, val);
-	}
-}
-
 int	is_builtin(char *cmd)
 {
 	if (!ft_strcmp(cmd, "echo"))
@@ -149,35 +26,9 @@ int	is_builtin(char *cmd)
 		return (1);
 	if (!ft_strcmp(cmd, "exit"))
 		return (1);
+	if (!ft_strcmp(cmd, "export"))
+		return (1);
 	return (0);
-}
-
-char	*get_env_variable(t_env *env, char *env_var)
-{
-	int		i;
-
-	i = 0;
-	while (env->envp[i])
-	{
-		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)))
-			return (&env->envp[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	return (NULL);
-}
-
-char	*get_local_variable(t_env *env, char *env_var)
-{
-	int		i;
-
-	i = 0;
-	while (env->local_variables[i])
-	{
-		if (!ft_strncmp(env->local_variables[i], env_var, ft_strlen(env_var)))
-			return (&env->local_variables[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	return (NULL);
 }
 
 void	change_dir(t_env **env, char **args)
@@ -252,47 +103,42 @@ int	is_assignment(char *cmd)
 	if (cmd[0] != '_' && !ft_isalpha(cmd[0]))
 		return (0);
 	i++;
-	while (cmd[i] != '=')
+	while (cmd[i] && cmd[i] != '=')
 	{
 		if (cmd[0] != '_' && !ft_isalnum(cmd[0]))
 			return (0);
 		i++;
 	}
-	return (1);
+	if (cmd[i] && cmd[i] == '=')
+		return (1);
+	return (0);
 }
 
-void	add_local_var(t_env **env, char *var)
+void	clean_exit(t_env **env, char **args)
 {
-	int		i;
-	int		len;
+	int	code;
 
-	i = 0;
-	len = 0;
-	while (var[len] != '=')
-		len++;
-	while ((*env)->local_variables[i])
+	code = EXIT_SUCCESS;
+	if (args[1] && ft_isnumber(args[1]) && args[2])
 	{
-		if (!ft_strncmp((*env)->local_variables[i], var, len))
-		{
-			free ((*env)->local_variables[i]);
-			if (var[i])
-				(*env)->local_variables[i] = ft_strdup(var);
-			else
-				remove_var(*env, i);
-			return ;
-		}
-		i++;
-		if (!(*env)->local_variables[i])
-			insert_local(*env, var);
+		ft_putstr("minishell: exit: too many arguments\n");
+		return ;
 	}
+	ft_putstr("exit\n");
+	if (args[1] && !ft_isnumber(args[1]))
+	{
+		ft_putstr("minishell: exit: ");
+		ft_putstr(args[1]);
+		ft_putstr(": numeric argument required\n");
+		cleanup(env, 0);
+		exit (2);
+	}
+	if (args[1])
+		code = ft_atoi(args[1]);
+	cleanup(env, 0);
+	exit (code);
 }
 
-void	clean_exit(t_env **env)
-{
-	ft_putstr("exit\n");
-	cleanup(env, 0);
-	exit (EXIT_SUCCESS);
-}
 void	execute_builtin(t_env **env, char **args)
 {
 	if (!ft_strcmp(args[0], "cd") && args[1][0])
@@ -304,7 +150,9 @@ void	execute_builtin(t_env **env, char **args)
 	if (!ft_strcmp(args[0], "echo"))
 		echo(args);
 	if (!ft_strcmp(args[0], "exit"))
-		clean_exit(env);
+		clean_exit(env, args);
+	if (!ft_strcmp(args[0], "export"))
+		export_var(*env, args);
 	if (!ft_strcmp(args[0], "unset"))
 		replace_or_add_env_var(env, args[1], NULL);
 }

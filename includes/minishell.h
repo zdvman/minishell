@@ -193,12 +193,19 @@ int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
-void	add_local_var(t_env **env, char *var);
 void	execute_builtin(t_env **env, char **args);
-char	*get_env_variable(t_env *env, char *env_var);
-char	*get_local_variable(t_env *env, char *env_var);
 void	insert_local(t_env *env, char *var);
 int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
+void	remove_var(t_env *env, int target);
+
+void	add_local_var(t_env **env, char *var);
+void	add_var(t_env *env, char *var, char *val);
+void	assign_variable(t_env *env, char *string);
+char	*make_var(char *var, char *val);
+void	export_var(t_env *env, char **args);
+char	*get_env_variable(t_env *env, char *env_var);
+char	*get_local_variable(t_env *env, char *env_var);
+void	replace_or_add_env_var(t_env **env, char *var, char *val);
 
 #endif

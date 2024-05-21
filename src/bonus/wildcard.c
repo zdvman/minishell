@@ -32,8 +32,6 @@ int	glob(char *pattern, char *file_name, int i, int j)
 		return (0);
 	if (pattern[0] == '*' && file_name[0] == '.')
 		return(0);
-	if (file_name[j] == 0 && pattern[i] == '*')
-		return (glob(pattern, file_name, i + 1, j));
 	if (pattern[0] == '.' && pattern[1] == '*'
 		&& !pattern[2] && file_name[0] == '.')
 		return (1);
