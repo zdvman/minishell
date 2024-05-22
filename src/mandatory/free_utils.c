@@ -77,31 +77,31 @@ static void	ft_free_env(t_env **env)
 		free((*env)->envp);
 		(*env)->envp = NULL;
 	}
+	free(*env);
+	*env = NULL;
 }
 
-static void	ft_free_local_variables(t_env **env)
+static void	ft_free_loc_vars(t_env **env)
 {
 	int	i;
 
 	if (!*env)
 		return ;
 	i = 0;
-	if ((*env)->local_variables)
+	if ((*env)->loc_vars)
 	{
-		while ((*env)->local_variables[i])
+		while ((*env)->loc_vars[i])
 		{
-			if ((*env)->local_variables[i])
+			if ((*env)->loc_vars[i])
 			{
-				free((*env)->local_variables[i]);
-				(*env)->local_variables[i] = NULL;
+				free((*env)->loc_vars[i]);
+				(*env)->loc_vars[i] = NULL;
 			}
 			i++;
 		}
-		free((*env)->local_variables);
-		(*env)->local_variables = NULL;
+		free((*env)->loc_vars);
+		(*env)->loc_vars = NULL;
 	}
-	free(*env);
-	*env = NULL;
 }
 
 void	ft_free_args(char ***args)
@@ -125,11 +125,11 @@ void	cleanup(t_env **env, int status)
 {
 	ft_free_tokens(&(*env)->tokens);
 	ft_free_ast(&(*env)->ast);
+	ft_free_loc_vars(env);
 	ft_free_env(env);
-	ft_free_local_variables(env);
 	rl_clear_history();
 	printf("\033[?12l");
-	if (status == EXIT_FAILURE)
+	// if (status == EXIT_FAILURE)
 		exit(status);
 }
 

@@ -19,10 +19,6 @@ char	*expand_word(t_env **env, char **input)
 	char				*current;
 	char				*start;
 
-	// if (*input[0] == '$' && *input[1] != '$')
-	// {
-	// 	return (ft_strdup(get_env_variable(*env, *input)));
-	// }
 	buffer_init(&buf);
 	start = *input;
 	current = *input;

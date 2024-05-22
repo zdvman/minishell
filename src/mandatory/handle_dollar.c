@@ -85,7 +85,12 @@ static void	handle_environment_variable(char **input, char **current,
 		while (**input && (ft_isalnum(**input) || **input == '_'))
 		 	(*input)++;
 		env_name = ft_substr(*current, 0, *input - *current);
-		env_value = ft_strdup(get_env_variable(*env, env_name));
+		if (get_env_var(*env, env_name))
+			env_value = ft_strdup(get_env_var(*env, env_name));
+		else if (get_loc_var(*env, env_name))
+			env_value = ft_strdup(get_loc_var(*env, env_name));
+		else
+			env_value = ft_strdup("");
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_name);
 		free(env_value);

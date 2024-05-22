@@ -98,7 +98,8 @@ typedef struct s_env
 	t_token			*head_token;
 	t_list			*directory_list;
 	t_list			*dir_head;
-	char			**local_variables;
+	char			**loc_vars;
+	char			*prompt;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -132,7 +133,7 @@ void	expand_tokens(t_env **env);
 char	*expand_word(t_env **env, char **input);
 
 // multiline_and_quotes_input.c
-char	*read_multiline(void);
+char	*read_multiline(t_env **env);
 int		is_quote_open(const char *input);
 
 // handle_meta_redirs_pipe_or.c
@@ -198,15 +199,20 @@ void	execute_builtin(t_env **env, char **args);
 void	insert_local(t_env *env, char *var);
 int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
-void	remove_var(t_env *env, int target);
 
-void	add_local_var(t_env **env, char *var);
-void	add_var(t_env *env, char *var, char *val);
+void	add_env_var(t_env *env, char *var, char *val);
+void	add_loc_var(t_env *env, char *var);
 void	assign_variable(t_env *env, char *string);
 char	*make_var(char *var, char *val);
-int	export_var(t_env *env, char **args);
-char	*get_env_variable(t_env *env, char *env_var);
-char	*get_local_variable(t_env *env, char *env_var);
-int	replace_or_add_env_var(t_env **env, char *var, char *val);
+int		export_var(t_env *env, char **args);
+char	*get_env_var(t_env *env, char *env_var);
+char	*get_loc_var(t_env *env, char *env_var);
+int		replace_env_var(t_env *env, char *var, char *val);
+int		replace_loc_var(t_env *env, char *var, char *val);
+void	remove_env_var(t_env *env, char *name);
+void	remove_loc_var(t_env *env, char *name);
 
+
+//prompt.c
+char	*prompt(t_env *env);
 #endif

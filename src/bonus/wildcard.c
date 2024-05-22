@@ -148,7 +148,7 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 	if (!prev)
 		return (0);
 	get_current_dir(env);
-	(*env)->envp_backup = (*env)->envp;
+	// (*env)->envp_backup = (*env)->envp;
 	get_args = expand_args(env, input);
 	if (!get_args)
 		return (0);	
@@ -164,6 +164,6 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 		free (tmp);
 	}
 	free_dir(env);
-	(*env)->envp = (*env)->envp_backup;
+	// (*env)->envp = (*env)->envp_backup;
 	return (1);
 }

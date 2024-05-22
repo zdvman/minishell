@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-void	insert_local(t_env *env, char *var)
+void	add_loc_var(t_env *env, char *var)
 {
 	char	**new_env;
 	int		count;
@@ -20,42 +20,85 @@ void	insert_local(t_env *env, char *var)
 
 	count = 0;
 	i = 0;
-	while (env->local_variables[count])
+	while (env->loc_vars && env->loc_vars[count])
 		count++;
 	new_env = ft_calloc(sizeof(char *), count + 2);
 	while (i < count)
 	{
-		new_env[i] = env->local_variables[i];
+		new_env[i] = env->loc_vars[i];
 		i++;
 	}
 	new_env[i++] = ft_strdup(var);
-	free (env->local_variables);
-	env->local_variables = new_env;
+	free (env->loc_vars);
+	env->loc_vars = new_env;
 }
 
-void	remove_var(t_env *env, int target)
+void	remove_loc_var(t_env *env, char *name)
 {
 	char	**new_env;
 	int		count;
 	int		i;
+	int		skip;
 
 	count = 0;
+	skip = 0;
 	i = 0;
-	while (env->envp[count])
+	while (env->loc_vars && env->loc_vars[count])
 		count++;
 	new_env = ft_calloc(sizeof(char *), count);
-	while (i < target)
+	while (i < count)
 	{
-		new_env[i] = env->envp[i];
+		if (strncmp(env->loc_vars[i], name, ft_strlen(name)) ||
+		env->loc_vars[i][ft_strlen(name)] != '=')
+			new_env[i - skip] = env->loc_vars[i];
+		else
+		{
+			free (env->loc_vars[i]);
+			// env->loc_vars[i] = NULL;
+			skip = 1;
+		}
 		i++;
 	}
-	while (i < count - 1)
+	free (env->loc_vars);
+	env->loc_vars = NULL;
+	if (count > 1)
+		env->loc_vars = new_env;
+	else
+		free(new_env);
+}
+
+void	remove_env_var(t_env *env, char *name)
+{
+	char	**new_env;
+	int		count;
+	int		i;
+	int		skip;
+
+	count = 0;
+	skip = 0;
+	i = 0;
+	while (env->envp && env->envp[count])
+		count++;
+	new_env = ft_calloc(sizeof(char *), count);
+	while (i < count)
 	{
-		new_env[i] = env->envp[i + 1];
+		if (strncmp(env->envp[i], name, ft_strlen(name)) ||
+		env->envp[i][ft_strlen(name)] != '=')
+			new_env[i - skip] = env->envp[i];
+		else
+		{
+			free (env->envp[i]);
+			// env->envp[i] = NULL;
+			skip = 1;
+		}
 		i++;
 	}
 	free (env->envp);
-	env->envp = new_env;
+	env->envp = NULL;
+	if (count > 1)
+		env->envp = new_env;
+	else
+		free (new_env);
 }
 
 void	add_env_var(t_env *env, char *var, char *val)
@@ -66,7 +109,7 @@ void	add_env_var(t_env *env, char *var, char *val)
 
 	count = 0;
 	i = 0;
-	while (env->envp[count])
+	while (env->envp && env->envp[count])
 		count++;
 	new_env = ft_calloc(sizeof(char *), count + 2);
 	while (i < count)
@@ -79,20 +122,60 @@ void	add_env_var(t_env *env, char *var, char *val)
 	env->envp = new_env;
 }
 
-char	*check_envp(t_env *env, char *env_var)
+char	*get_var_name(char *str)
 {
+	char	*res;
 	int		i;
-
+	
 	i = 0;
-	while (env->envp[i])
+	while (str[i] != '=')
+		i++;
+	res = ft_substr(str, 0, i);
+	return (res);
+}
+
+void	assign_env_var(t_env *env, char *var)
+{
+	char	**new_env;
+	int		count;
+	int		i;
+	char	*name;
+
+	name = get_var_name(var);
+	if (get_env_var(env, name))
+		remove_env_var(env, name);
+	if (get_loc_var(env, name))
+		remove_loc_var(env, name);
+	free (name);
+	count = 0;
+	i = 0;
+	while (env->envp[count])
+		count++;
+	new_env = ft_calloc(sizeof(char *), count + 2);
+	while (i < count)
 	{
-		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)) &&
-			env->envp[i][ft_strlen(env_var)] == '=')
-				return (&env->envp[i][ft_strlen(env_var) + 1]);
+		new_env[i] = env->envp[i];
 		i++;
 	}
-	return (NULL);
+	new_env[i] = ft_strdup(var);
+	free (env->envp);
+	env->envp = new_env;
 }
+
+// char	*check_envp(t_env *env, char *env_var)
+// {
+// 	int		i;
+
+// 	i = 0;
+// 	while (env->envp[i])
+// 	{
+// 		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)) &&
+// 			env->envp[i][ft_strlen(env_var)] == '=')
+// 				return (&env->envp[i][ft_strlen(env_var) + 1]);
+// 		i++;
+// 	}
+// 	return (NULL);
+// }
 
 int	valid_env_name(char *name)
 {
@@ -120,10 +203,17 @@ int	export_var(t_env *env, char **args)
 		return (2);
 	}
 	
-	if (!is_assignment(args[1]) && !(check_envp(env, args[1])))
-		if (get_env_variable(env, args[1]))
-			add_env_var(env, args[1], get_env_variable(env, args[1]));
-	if (is_assignment(args[1]))
-		assign_variable(env, args[1]);
+	if (!is_assignment(args[1])) //&& !(check_envp(env, args[1])))
+	{
+		if (get_loc_var(env, args[1]))
+		{
+			// if (get_env_var(env, args[1]))
+			// 	remove_loc_var(env, args[1]);
+			add_env_var(env, args[1], get_loc_var(env, args[1]));
+			remove_loc_var(env, args[1]);
+		}
+	}
+	else
+		assign_env_var(env, args[1]);
 	return (0);
 }

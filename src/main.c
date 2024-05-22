@@ -160,7 +160,7 @@ int	main(int argc, char **argv, char **envp)
 	input = NULL;
 	while (1)
 	{
-		input = read_multiline();
+		input = read_multiline(&env);
 		if (!input)
         {
             if (g_sigint_received)

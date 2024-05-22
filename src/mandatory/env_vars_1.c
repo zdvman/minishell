@@ -23,47 +23,38 @@ char	*make_var(char *var, char *val)
 	return (res);
 }
 
-void	check_local(t_env **env, char *var, char *val)
-{
-	int	i;
-
-	i = 0;
-	while ((*env)->local_variables[i])
-	{
-		if (!ft_strncmp((*env)->local_variables[i], var, ft_strlen(var)) && (*env)->local_variables[i][ft_strlen(var)] == '=')
-		{
-			free ((*env)->local_variables[i]);
-			if (val && *val)
-				(*env)->local_variables[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return ;
-		}
-		i++;
-	}
-	insert_local(*env, make_var(var, val));
-}
-
-int	replace_or_add_env_var(t_env **env, char *var, char *val)
+char	*get_env_var(t_env *env, char *env_var)
 {
 	int		i;
 
 	i = 0;
-	while ((*env)->envp[i])
+	if (!env->envp)
+		return (NULL);
+	while (env->envp[i])
 	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)) && (*env)->envp[i][ft_strlen(var)] == '=')
-		{
-			free ((*env)->envp[i]);
-			if (val && *val)
-				(*env)->envp[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return (0);
-		}
+		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)) &&
+			env->envp[i][ft_strlen(env_var)] == '=')
+				return (&env->envp[i][ft_strlen(env_var) + 1]);
 		i++;
 	}
-	check_local(env, var, val);
-	return (0);
+	return (NULL);
+}
+
+char	*get_loc_var(t_env *env, char *env_var)
+{
+	int		i;
+
+	i = 0;
+	if (!env->loc_vars)
+		return (NULL);
+	while (env->loc_vars[i])
+	{
+		if (!ft_strncmp(env->loc_vars[i], env_var, ft_strlen(env_var)) &&
+			env->loc_vars[i][ft_strlen(env_var)] == '=')
+				return (&env->loc_vars[i][ft_strlen(env_var) + 1]);
+		i++;
+	}
+	return (NULL);
 }
 
 void	assign_variable(t_env *env, char *string)
@@ -77,30 +68,20 @@ void	assign_variable(t_env *env, char *string)
 		i++;
 	var = ft_substr(string, 0, i);
 	val = ft_substr(string, i + 1, ft_strlen(string) - i);
-	replace_or_add_env_var(&env, var, val);
+	if (get_env_var(env, var))
+	{
+		remove_env_var(env, var);
+		add_env_var(env, var, val);
+	}
+		// replace_env_var(env, var, val);
+	else if (get_loc_var(env, var))
+	{
+		remove_loc_var(env, var);
+		add_loc_var(env, string);
+	}
+		// replace_loc_var(env, var, val);
+	else
+		add_loc_var(env, string);
 	free (var);
 	free (val);
-}
-
-char	*get_env_variable(t_env *env, char *env_var)
-{
-	int		i;
-
-	i = 0;
-	while (env->envp[i])
-	{
-		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)) &&
-			env->envp[i][ft_strlen(env_var)] == '=')
-				return (&env->envp[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	i = 0;
-	while (env->local_variables[i])
-	{
-		if (!ft_strncmp(env->local_variables[i], env_var, ft_strlen(env_var)) &&
-			env->local_variables[i][ft_strlen(env_var)] == '=')
-				return (&env->local_variables[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	return (NULL);
 }

@@ -72,7 +72,7 @@ int	pipe_or_and_is_closed(char *buffer_str, int i)
 	return (1);
 }
 
-char *read_multiline(void)
+char *read_multiline(t_env **env)
 {
 	t_dynamic_buffer	buf;
 	char 				*line;
@@ -80,7 +80,7 @@ char *read_multiline(void)
 	buffer_init(&buf);
 	while (1)
 	{
-		line = readline(buf.data[0] ? "> " : "minishell> ");
+		line = readline(buf.data[0] ? "> " : prompt(*env));
 		if (g_sigint_received)
         {
             g_sigint_received = 0;

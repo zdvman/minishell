@@ -57,5 +57,6 @@ void	shell_init(t_env **env, char **envp)
 	}
 	env_len = ft_strarr_len(envp);
 	env_init(env, envp, env_len);
-	(*env)->local_variables = ft_calloc(sizeof(char *), 1);
+	(*env)->loc_vars = ft_calloc(sizeof(char *), 1);
+	(*env)->prompt = NULL;
 }
