@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 16:53:30 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/21 11:42:24 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,10 +162,15 @@ int	main(int argc, char **argv, char **envp)
 	{
 		input = read_multiline();
 		if (!input)
-		{	
-			write(1, "exit\n", 5);
-			break ;
-		}
+        {
+            if (g_sigint_received)
+                continue; // Restart the loop for SIGINT
+            else
+            {
+                write(1, "exit\n", 5);
+                break; // Exit the loop for EOF
+            }
+        }
 		if (input && *input)
 		{
 			add_history(input);

@@ -12,30 +12,38 @@
 
 #include "../../includes/minishell.h"
 
-volatile sig_atomic_t sigint_received = 0;
+volatile sig_atomic_t g_sigint_received = 0;
 
-static void	handle_sigint(int sig)
+void handle_sigint(int sig)
 {
 	(void)sig;
-	sigint_received = 1;
+	g_sigint_received = 1;
+	write(1, "\n", 1);
 	rl_replace_line("", 0);
-	rl_done = 1;
-	// rl_on_new_line();
+	rl_on_new_line();
+	rl_set_prompt("minishell> ");
 	rl_redisplay();
-	write(STDIN_FILENO, "\nminishell> ", 12);
 }
 
-void	set_sig_actions(void)
+void handle_sigquit(int sig)
 {
-	struct sigaction	sa_int;
-	struct sigaction	sa_quit;
+	(void)sig; // Unused parameter
+	// Do nothing
+}
 
-	sigemptyset(&sa_int.sa_mask);
+void set_sig_actions(void)
+{
+	struct sigaction sa_int;
+	struct sigaction sa_quit;
+
+	// rl_catch_signals = 0; 
 	sa_int.sa_handler = handle_sigint;
 	sa_int.sa_flags = 0;
+	sigemptyset(&sa_int.sa_mask);
 	sigaction(SIGINT, &sa_int, NULL);
 
+	sa_quit.sa_handler = handle_sigquit;
+	sa_quit.sa_flags = 0;
 	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }

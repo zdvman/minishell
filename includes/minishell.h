@@ -21,6 +21,7 @@
 # include <stdlib.h>
 # include <signal.h>
 # include <string.h>
+# include <pthread.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/wait.h>
@@ -157,7 +158,7 @@ int		is_meta_character(char c);
 void	handle_meta(t_env **env, char **input);
 void	get_tokens(char *input, t_env **env);
 
-extern volatile sig_atomic_t sigint_received;
+extern volatile sig_atomic_t g_sigint_received;
 
 // ast.c
 t_ast_node	*new_ast_node(t_token_type type, char **args,

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 08:31:35 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/17 18:45:55 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/21 19:24:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ bool	is_control_op(t_token_type type)
 	if ( type == TOKEN_AND_IF
 		|| type == TOKEN_OR_IF
 		|| type == TOKEN_SEMI
-		|| type == TOKEN_PIPE)
+		|| type == TOKEN_PIPE
+		|| type == TOKEN_BACKGROUND)
 		return (true);
 	else
 		return (false);
