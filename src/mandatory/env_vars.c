@@ -108,16 +108,16 @@ int	valid_env_name(char *name)
 	return (0);
 }
 
-void	export_var(t_env *env, char **args)
+int	export_var(t_env *env, char **args)
 {
 	if (!args[1])
-		return ;
+		return (1);
 	if (!valid_env_name(args[1]))
 	{
 		ft_putstr("minishell: export: \'");
 		ft_putstr(args[1]);
 		ft_putstr("\': not a valid identifier\n");
-		return ;
+		return (2);
 	}
 	
 	if (!is_assignment(args[1]) && !(check_envp(env, args[1])))
@@ -125,4 +125,5 @@ void	export_var(t_env *env, char **args)
 			add_env_var(env, args[1], get_env_variable(env, args[1]));
 	if (is_assignment(args[1]))
 		assign_variable(env, args[1]);
+	return (0);
 }

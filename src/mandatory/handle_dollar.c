@@ -49,14 +49,14 @@ static void	expand_cstyle_string(char **input, char **current,
 	*current = *input;
 }
 
-static char	*get_process_id(void)
-{
-	pid_t	pid;
+// static char	*get_process_id(void)
+// {
+// 	pid_t	pid;
 
-	pid = 0;
-	pid = getpid();
-	return (ft_itoa(pid));
-}
+// 	pid = 0;
+// 	pid = getpid();
+// 	return (ft_itoa(pid));
+// }
 
 static void	handle_environment_variable(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env)
@@ -65,9 +65,17 @@ static void	handle_environment_variable(char **input, char **current,
 	char	*env_value;
 
 	*current = *input;
-	if (**input == '$')
+	if (ft_isnumber(*input))
 	{
-		env_value = get_process_id();
+		if (**input == '0')
+			buffer_append(buf, "minishell", 9);
+
+		(*input)++;
+		return ;
+	}
+	else if (**input == '?')
+	{
+		env_value = ft_itoa((*env)->exit_status);
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_value);
 		(*input)++;
@@ -94,7 +102,7 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_e
 	(*input)++;
 	if (**input == '\'')
 		expand_cstyle_string(input, current, buf);
-	else if (ft_isalnum(**input) || **input == '_' || **input == '$')
+	else if (ft_isalnum(**input) || **input == '_' || **input == '?')
 		handle_environment_variable(input, current, buf, env);
 	*current = *input;
 }

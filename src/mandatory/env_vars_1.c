@@ -30,7 +30,7 @@ void	check_local(t_env **env, char *var, char *val)
 	i = 0;
 	while ((*env)->local_variables[i])
 	{
-		if (!ft_strncmp((*env)->local_variables[i], var, ft_strlen(var)))
+		if (!ft_strncmp((*env)->local_variables[i], var, ft_strlen(var)) && (*env)->local_variables[i][ft_strlen(var)] == '=')
 		{
 			free ((*env)->local_variables[i]);
 			if (val && *val)
@@ -44,25 +44,26 @@ void	check_local(t_env **env, char *var, char *val)
 	insert_local(*env, make_var(var, val));
 }
 
-void	replace_or_add_env_var(t_env **env, char *var, char *val)
+int	replace_or_add_env_var(t_env **env, char *var, char *val)
 {
 	int		i;
 
 	i = 0;
 	while ((*env)->envp[i])
 	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
+		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)) && (*env)->envp[i][ft_strlen(var)] == '=')
 		{
 			free ((*env)->envp[i]);
 			if (val && *val)
 				(*env)->envp[i] = make_var(var, val);
 			else
 				remove_var(*env, i);
-			return ;
+			return (0);
 		}
 		i++;
 	}
 	check_local(env, var, val);
+	return (0);
 }
 
 void	assign_variable(t_env *env, char *string)

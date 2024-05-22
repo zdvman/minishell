@@ -170,7 +170,7 @@ void execute_command(t_ast_node *node, t_env **env)
 		}
 		else
 			execve(get_path(node->args[0], env), node->args, (*env)->envp);
-		ft_perror("execve fail");
+		ft_perror(node->args[0]);
 		cleanup_loop(NULL, env);
 		return ;
 		// cleanup(env, EXIT_FAILURE);

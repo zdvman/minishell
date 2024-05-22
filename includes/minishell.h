@@ -203,9 +203,9 @@ void	add_local_var(t_env **env, char *var);
 void	add_var(t_env *env, char *var, char *val);
 void	assign_variable(t_env *env, char *string);
 char	*make_var(char *var, char *val);
-void	export_var(t_env *env, char **args);
+int	export_var(t_env *env, char **args);
 char	*get_env_variable(t_env *env, char *env_var);
 char	*get_local_variable(t_env *env, char *env_var);
-void	replace_or_add_env_var(t_env **env, char *var, char *val);
+int	replace_or_add_env_var(t_env **env, char *var, char *val);
 
 #endif

@@ -130,17 +130,18 @@ void print_ast_dot(t_ast_node *node, FILE *stream)
 
 void	generate_ast_diagram(t_ast_node *root)
 {
-	FILE *stream = fopen("ast.dot", "w");
-	if (stream == NULL)
-	{
-		perror("fopen");
-		return;
-	}
+	(void)root;
+	// FILE *stream = fopen("ast.dot", "w");
+	// if (stream == NULL)
+	// {
+	// 	perror("fopen");
+	// 	return;
+	// }
 
-	fprintf(stream, "digraph AST {\n");
-	print_ast_dot(root, stream);
-	fprintf(stream, "}\n");
-	fclose(stream);
+	// fprintf(stream, "digraph AST {\n");
+	// print_ast_dot(root, stream);
+	// fprintf(stream, "}\n");
+	// fclose(stream);
 }
 
 int	main(int argc, char **argv, char **envp)
