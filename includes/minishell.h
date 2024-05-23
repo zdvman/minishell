@@ -93,6 +93,8 @@ typedef struct s_env
 	int				pipe_fd[2];
 	int				fd_in;
 	int				fd_out;
+	int				original_stdin;
+	int				original_stdout;
 	t_ast_node		*ast;
 	t_token			*tokens;
 	t_token			*head_token;
