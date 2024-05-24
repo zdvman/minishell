@@ -32,9 +32,9 @@ char	*get_var(char *env_var, char **vars)
 		return (NULL);
 	while (vars[i])
 	{
-		if (!ft_strncmp(vars[i], env_var, ft_strlen(env_var)) &&
-			vars[i][ft_strlen(env_var)] == '=')
-				return (&vars[i][ft_strlen(env_var) + 1]);
+		if (!ft_strncmp(vars[i], env_var, ft_strlen(env_var))
+			&& vars[i][ft_strlen(env_var)] == '=')
+			return (&vars[i][ft_strlen(env_var) + 1]);
 		i++;
 	}
 	return (NULL);
@@ -44,7 +44,7 @@ char	*get_var_name(char *str)
 {
 	char	*res;
 	int		i;
-	
+
 	i = 0;
 	while (str[i] != '=')
 		i++;
@@ -65,4 +65,3 @@ int	valid_env_name(char *name)
 		return (1);
 	return (0);
 }
-

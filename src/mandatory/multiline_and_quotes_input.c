@@ -38,6 +38,8 @@ int	is_quote_open(const char *input)
 		else if ((input[i] == '\'' || input[i] == '\"')
 			&& (i == 0 || input[i - 1] != '\\'))
 			current_quote = new_current_quote(current_quote, input[i]);
+		else if (current_quote == 0 && input[i] == '#')
+			return (0);
 		i++;
 	}
 	return (current_quote != 0);

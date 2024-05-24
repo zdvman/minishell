@@ -81,8 +81,17 @@ static void	handle_environment_variable(char **input, char **current,
 			env_value = NULL;
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_value);
+		env_value = NULL;
 		(*input)++;
 	}
+	else if (**input == '#')
+	{
+		env_value = ft_strdup("0");
+		buffer_append(buf, env_value, 1);
+		free (env_value);
+		(*input)++;
+		return ;
+	}	
 	else
 	{
 		while (**input && (ft_isalnum(**input) || **input == '_'))
@@ -110,7 +119,7 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_e
 	(*input)++;
 	if (**input == '\'')
 		expand_cstyle_string(input, current, buf);
-	else if (ft_isalnum(**input) || **input == '_' || **input == '?')
+	else if (ft_isalnum(**input) || **input == '_' || **input == '?' || **input == '#')
 		handle_environment_variable(input, current, buf, env);
 	*current = *input;
 }

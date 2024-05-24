@@ -195,6 +195,11 @@ void	print_token_name(t_token *token);
 int		contains(char *str, char target);
 int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
+//wildcard_dir_entries.c
+void	free_dir(t_env **env);
+void	get_current_dir(t_env **env);
+t_list	*new_dir_entry(char *entry_name);
+
 //builtin.c
 void	execute_builtin(t_env **env, char **args);
 void	insert_local(t_env *env, char *var);

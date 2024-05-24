@@ -107,7 +107,7 @@ void	get_tokens(char *input, t_env **env)
 			input++;
 		else if (is_meta_character(*input))
 			handle_meta(env, &input);
-		else if (*input == '#' && !is_quote_open(current))
+		else if (*input == '#') //&& !is_quote_open(current))
 		{
 			add_token(TOKEN_EOF, ft_strdup("EOF"), 0, env);
 			return ;
