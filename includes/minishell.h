@@ -99,6 +99,7 @@ typedef struct s_env
 	t_list			*directory_list;
 	t_list			*dir_head;
 	char			**loc_vars;
+	char			*user_host;
 	char			*prompt;
 }				t_env;
 
@@ -200,19 +201,16 @@ void	insert_local(t_env *env, char *var);
 int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
 
-void	add_env_var(t_env *env, char *var, char *val);
-void	add_loc_var(t_env *env, char *var);
-void	assign_variable(t_env *env, char *string);
-char	*make_var(char *var, char *val);
+//env_var
+void	add_var(char *var, char ***vars);
 int		export_var(t_env *env, char **args);
-char	*get_env_var(t_env *env, char *env_var);
-char	*get_loc_var(t_env *env, char *env_var);
-int		replace_env_var(t_env *env, char *var, char *val);
-int		replace_loc_var(t_env *env, char *var, char *val);
-void	remove_env_var(t_env *env, char *name);
-void	remove_loc_var(t_env *env, char *name);
-
+char	*get_var(char *env_var, char **vars);
+char	*make_var(char *var, char *val);
+void	remove_var(char *name, char ***vars);
+int		valid_env_name(char *name);
 
 //prompt.c
 char	*prompt(t_env *env);
+void	get_host_and_user(t_env *env);
+
 #endif

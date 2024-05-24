@@ -12,47 +12,70 @@
 
 #include "../../includes/minishell.h"
 
-char	*get_computer_name(t_env *env)
+void	get_host_and_user(t_env *env)
 {
 	char	*res;
-	char	*tmp;
+	char	buf[256];
+	int		fd;
 	int		i;
-	int		j;
-	int		k;
 
-	tmp = get_env_var(env, "SESSION_MANAGER");
 	i = 0;
-	while (tmp[i] && tmp[i] != '/')
+	fd = open("/etc/hostname", O_RDONLY);
+	if (fd == -1)
+		return ;
+	read(fd, buf, 255);
+	close(fd);
+	res = ft_calloc(1, 253);
+	res[0] = '@';
+	while (buf[i] && buf[i] != '.')
+	{
+		res[i + 1] = buf[i];
 		i++;
-	i++;
-	j = i;
-	while (tmp[j] && tmp[j] != '.')
-		j++;
-	res = ft_calloc(1, (j - i + 1));
-	k = 0;
-	while (i < j)
-		res[k++] = tmp[i++];
-	res[k] = 0;
+	}
+	res[i] = ':';
+	env->user_host = ft_strjoin(get_var("USER", env->envp), res);
+	free (res);
+}
+
+char	*add_cwd(t_env *env, char *user_host)
+{
+	char	dir_name[256];
+	char	*res;
+	char	*tmp;
+
+	getcwd(dir_name, 256);
+	if (!get_var("HOME", env->envp))
+	{
+		res = ft_strjoin(user_host, dir_name);
+		return (res);
+	}
+	if (ft_strncmp(dir_name, get_var("HOME", env->envp), ft_strlen(get_var("HOME", env->envp))))
+	{
+		res = ft_strjoin(user_host, dir_name);
+		return (res);
+	}
+	if (get_var("HOME", env->envp))
+		tmp = ft_strjoin(user_host, "~");
+	else
+		tmp = ft_strdup(user_host);
+	res = ft_strjoin(tmp, &dir_name[ft_strlen(get_var("HOME", env->envp))]);
+	free (tmp);
 	return (res);
 }
 
 char	*prompt(t_env *env)
 {
-	// char	*name;
-	// char	*tmp;
+	char	*tmp;
+	char	*tmp2;
 
-	// if (!env->prompt)
-	// {
-	// 	name = get_computer_name(env);
-	// 	tmp = ft_strjoin("@", name);
-	// 	free (name);
-	// 	name = NULL;
-	// 	name = ft_strjoin(get_env_variable(env, "USER"), tmp);
-	// 	free (tmp);
-	// 	tmp = NULL;
-	// 	tmp = ft_strjoin(name, ":");
-	// 	env->prompt = tmp;
-	// 	free (tmp);
-	// }
+	if (env->prompt)
+	{
+		free (env->prompt);
+		env->prompt = NULL;
+	}
+	tmp = add_cwd(env, env->user_host);
+	tmp2 = ft_strjoin(tmp, "$ ");
+	free (tmp);
+	env->prompt = tmp2;
 	return (env->prompt);
 }

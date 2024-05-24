@@ -124,6 +124,10 @@ void	ft_free_args(char ***args)
 void	cleanup(t_env **env, int status)
 {
 	ft_free_tokens(&(*env)->tokens);
+	if ((*env)->user_host)
+		free ((*env)->user_host);
+	if ((*env)->prompt)
+		free ((*env)->prompt);
 	ft_free_ast(&(*env)->ast);
 	ft_free_loc_vars(env);
 	ft_free_env(env);

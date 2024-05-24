@@ -26,9 +26,9 @@ char	*expand_word(t_env **env, char **input)
 	{
 		if (**input == '$')
 			handle_dollar_sign(input, &current, &buf, env);
-		if (**input == '\'' || **input == '\"')
+		else if (**input == '\'' || **input == '\"')
 			handle_quotes(input, &current, &buf, env);
-		if (**input != '$' && **input != '\'' && **input != '\"')
+		else if (**input != '$' && **input != '\'' && **input != '\"')
 			(*input)++;
 	}
 	if (current != *input)

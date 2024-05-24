@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static void	env_init(t_env **env, char **envp, int env_len)
+static void	env_init(t_env **env, char **envp , int env_len)
 {
 	int	i;
 
@@ -33,6 +33,7 @@ static void	env_init(t_env **env, char **envp, int env_len)
 			cleanup(env, EXIT_FAILURE);
 		}
 	}
+	get_host_and_user(*env);
 	(*env)->tokens = NULL;
 	(*env)->head_token = NULL;
 	(*env)->ast = NULL;
@@ -47,9 +48,10 @@ void	shell_init(t_env **env, char **envp)
 {
 	int	env_len;
 
+	(void)envp;
 	set_sig_actions();
 	printf("\033[?12h");
-	*env = malloc(sizeof(t_env));
+	*env = ft_calloc(sizeof(t_env), 1);
 	if (*env == NULL)
 	{
 		ft_perror("malloc failed\n");

@@ -45,7 +45,7 @@ int	change_dir(t_env **env, char **args)
 		if (!args[1][1])
 		{
 			free (args[1]);
-			args[1] = ft_strdup(get_env_var(*env, "OLDPWD"));
+			args[1] = ft_strdup(get_var("OLDPWD", (*env)->envp));
 			return(change_dir(env, args));
 		}
 		ft_putstr("minishell: cd: ");
@@ -57,7 +57,7 @@ int	change_dir(t_env **env, char **args)
 	if (args[1] && args[2])
 		return ((void)ft_putstr("minishell: cd: too many arguments\n"), 1);
 	if (args[1][0] == '~')
-		tmp = ft_strjoin(get_env_var(*env, "HOME"), &args[1][1]);
+		tmp = ft_strjoin(get_var("HOME", (*env)->envp), &args[1][1]);
 	else
 		tmp = ft_strdup(args[1]);
 	if (access(tmp, F_OK))
@@ -73,10 +73,14 @@ int	change_dir(t_env **env, char **args)
 		return (1);
 	getcwd(cwd, 256);
 	
-	remove_env_var(*env, "OLDPWD");
-	remove_env_var(*env, "PWD");
-	add_env_var(*env, "OLDPWD", old_cwd);
-	add_env_var(*env, "PWD", cwd);
+	remove_var("OLDPWD", &(*env)->envp);
+	remove_var("PWD", &(*env)->envp);
+	tmp = ft_strjoin("OLDPWD=", old_cwd);
+	add_var(tmp, &(*env)->envp);
+	free (tmp);
+	tmp = ft_strjoin("PWD=", cwd);
+	add_var(tmp, &(*env)->envp);
+	free (tmp);
 	return (0);
 }
 
@@ -117,7 +121,7 @@ int	print_env(t_env *env, char *args)
 		ft_putstr(": invalid option\nenv: usage: env\n");
 		return (125);
 	}
-	while (env->envp[i])
+	while (env->envp && env->envp[i])
 	{
 		ft_putstr(env->envp[i++]);
 		ft_putchar('\n');
@@ -206,8 +210,8 @@ void	execute_builtin(t_env **env, char **args)
 		exit = export_var(*env, args);
 	else if (!ft_strcmp(args[0], "unset"))
 	{
-		remove_env_var(*env, args[1]);
-		remove_loc_var(*env, args[1]);
+		remove_var(args[1], &(*env)->envp);
+		remove_var(args[1], &(*env)->loc_vars);
 	}
 	(*env)->exit_status = exit;
 }
