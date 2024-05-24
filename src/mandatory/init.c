@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:42:01 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/11 14:28:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 17:54:05 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,10 @@ static void	env_init(t_env **env, char **envp , int env_len)
 	(*env)->pipe_fd[1] = -1;
 	(*env)->fd_in = -1;
 	(*env)->fd_out = -1;
+	(*env)->exit_status = 0;
+	(*env)->directory_list = NULL;
+	(*env)->dir_head = NULL;
+	(*env)->syntax_error = 0;
 }
 
 void	shell_init(t_env **env, char **envp)

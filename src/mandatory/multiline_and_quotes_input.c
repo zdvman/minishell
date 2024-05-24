@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/18 18:21:10 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/21 18:39:08 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 13:02:40 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	pipe_or_and_is_closed(char *buffer_str, int i)
 	return (1);
 }
 
-char *read_multiline(t_env **env)
+char	*read_multiline(t_env **env)
 {
 	t_dynamic_buffer	buf;
 	char 				*line;
@@ -83,9 +83,10 @@ char *read_multiline(t_env **env)
 	while (1)
 	{
 		line = readline(buf.data[0] ? "> " : prompt(*env));
-		if (g_sigint_received)
+		if (g_signal)
         {
-            g_sigint_received = 0;
+			(*env)->exit_status = g_signal + 128;
+            g_signal = 0;
             ft_free_str(&line);
 			buffer_clear(&buf);
             	break ;

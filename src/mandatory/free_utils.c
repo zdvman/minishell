@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:17:27 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 18:07:39 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 17:59:51 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,14 +134,19 @@ void	cleanup(t_env **env, int status)
 	ft_free_env(env);
 	rl_clear_history();
 	printf("\033[?12l");
-	// if (status == EXIT_FAILURE)
-		exit(status);
+	exit(status);
 }
 
 void	cleanup_loop(char **input, t_env **env)
 {
 	if (input && *input) 
 		ft_free_str(input);
+	ft_free_tokens(&(*env)->tokens);
+	ft_free_ast(&(*env)->ast);
+}
+
+void	cleanup_no_exit(t_env **env)
+{
 	ft_free_tokens(&(*env)->tokens);
 	ft_free_ast(&(*env)->ast);
 }

@@ -6,11 +6,19 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/21 17:38:04 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 18:05:24 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+t_token	**next_token(t_token **current)
+{
+	if (!current || !*current)
+		return (NULL);
+	*current = (*current)->next;
+	return (current);
+}
 
 t_ast_node	*new_ast_node(t_token_type type, char **args,
 							t_ast_node *left, t_ast_node *right)
@@ -38,6 +46,18 @@ t_ast_node	*ft_last_node(t_ast_node *base_node)
 	while (last_node->left)
 		last_node = last_node->left;
 	return (last_node);
+}
+
+t_ast_node	*tree_grafter(t_ast_node *base_node, t_ast_node *new_node)
+{
+	t_ast_node	*last_node;
+
+	if (!new_node)
+		return (base_node);
+	last_node = ft_last_node(new_node);
+	last_node->left = base_node;
+	base_node = new_node;
+	return (base_node);
 }
 
 t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env)
@@ -103,19 +123,23 @@ char	**copy_args(t_token **current, t_env **env)
 
 static int	ast_output_is_valid(t_token **current, t_env **env)
 {
+	if ((*env)->syntax_error)
+	{
+		cleanup_no_exit(env);
+		return (0);
+	}
 	if (*current && (*current)->type != TOKEN_EOF)
 	{
-		printf("Unexpected token: ");
+		ft_putstr_fd("Unexpected token: ", STDERR_FILENO);
 		print_token_name(*current);
-		printf("\n");
-		ft_perror("Syntax error\n");
-		cleanup(env, 1);
+		ft_putchar_fd('\n', STDERR_FILENO);
+		cleanup_no_exit(env);
 		return (0);
 	}
 	if ((*env)->ast == NULL)
 	{
-		ft_perror("Failed to parse tokens\n");
-		cleanup(env, 1);
+		ft_putstr_fd("Failed to parse tokens\n", STDERR_FILENO);
+		cleanup_no_exit(env);
 		return (0);
 	}
 	return (1);
@@ -128,18 +152,15 @@ t_ast_node	*parse_tokens(t_env **env)
 	if (!env || !*env)
 	{
 		ft_perror("No environment to parse\n");
-		cleanup(env, EXIT_FAILURE);
+		cleanup_no_exit(env);
 	}
 	current = (*env)->tokens;
 	if (!current || current->type == TOKEN_EOF)
-	{
-		ft_perror("No input to parse\n");
 		return (NULL);
-	}
 	(*env)->ast = parse_expression(&current, env);
 	if (ast_output_is_valid(&current, env))
 		return ((*env)->ast);
-	cleanup(env, 1);
+	cleanup_no_exit(env);
 	return (NULL);
 }
 
@@ -147,10 +168,8 @@ t_ast_node	*parse_brackets(t_token **current, t_env **env)
 {
 	t_ast_node	*node;
 	t_ast_node	*redir_node;
-	t_ast_node	*last_node;
 
-	*current = (*current)->next;
-	node = parse_expression(current, env);
+	node = parse_expression(next_token(current), env);
 	if (!node)
 		return (NULL);
 	if (!*current || (*current)->type != TOKEN_CLOSE_BRACKET)
@@ -163,14 +182,7 @@ t_ast_node	*parse_brackets(t_token **current, t_env **env)
 	if (*current && is_redirection((*current)->type))
 	{
 		redir_node = parse_redirection(current, env);
-		if (!redir_node)
-		{
-			ft_free_ast(&node);
-			return (NULL);
-		}
-		last_node = ft_last_node(redir_node);
-		last_node->left = node;
-		node = redir_node;
+		node = tree_grafter(node, redir_node);
 	}
 	return (node);
 }
@@ -179,6 +191,17 @@ char	**get_redir_arg(t_token **current, t_env **env)
 {
 	char	**arg;
 
+	if (!(*current)->has_space
+		&& ft_isnumber((*current)->value)
+		&& is_redirection((*current)->next->type))
+	{
+		ft_putstr_fd("syntax error near unexpected token ", STDERR_FILENO);
+		ft_putchar_fd('\'', STDERR_FILENO);
+		ft_putstr_fd((*current)->value, STDERR_FILENO);
+		ft_putstr_fd("'\n", STDERR_FILENO);
+		(*env)->syntax_error = 1;
+		return (NULL);
+	}
 	arg = (char **)malloc(sizeof(char *) * 2);
 	if (!arg)
 	{
@@ -201,17 +224,22 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 	t_token_type	type;
 	t_ast_node		*redir_node;
 	t_ast_node		*base_node;
-	
+	char			**arg;
+
 	base_node = NULL;
 	while (*current && is_redirection((*current)->type))
 	{
 		type = (*current)->type;
-    	*current = (*current)->next;  // Move past the redirection token
-		if (!*current || (*current)->type != TOKEN_WORD) {
+		*current = (*current)->next;
+		if (!*current || (*current)->type != TOKEN_WORD)
+		{
 			ft_perror("Expected filename for redirection\n");
 			return (NULL);
 		}
-    	redir_node = create_ast_node(type, get_redir_arg(current, env), env);
+		arg = get_redir_arg(current, env);
+		if (!arg)
+			return (NULL);
+		redir_node = create_ast_node(type, arg, env);
 		if (!base_node)
 			base_node = redir_node;
 		else
@@ -219,18 +247,21 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 			redir_node->left = base_node;
 			base_node = redir_node;
 		}
-		*current = (*current)->next;  // Move past the filename
+		*current = (*current)->next;
+		if (*current && (*current)->type == TOKEN_WORD)
+		{
+			redir_node =  parse_command(current, env);
+			base_node->left = redir_node;
+		}
 	}
-    return (base_node);
+	return (base_node);
 }
 
-
-t_ast_node *parse_command(t_token **current, t_env **env)
+t_ast_node	*parse_command(t_token **current, t_env **env)
 {
 	t_ast_node	*command_node;
-	t_ast_node 	*redir_node;
-	t_ast_node	*last_node;
-	char 		**args;
+	t_ast_node	*redir_node;
+	char		**args;
 
 	args = copy_args(current, env);
 	redir_node = NULL;
@@ -243,24 +274,17 @@ t_ast_node *parse_command(t_token **current, t_env **env)
 	if (*current && is_redirection((*current)->type))
 	{
 		redir_node = parse_redirection(current, env);
-		if (!redir_node)
-		{
-			ft_free_ast(&command_node);
-			return (NULL);
-		}
-		last_node = ft_last_node(redir_node);
-		last_node->left = command_node;
-		command_node = redir_node;
+		command_node = tree_grafter(command_node, redir_node);
 	}
 	return (command_node);
 }
 
-t_ast_node *parse_term(t_token **current, t_env **env)
+t_ast_node	*parse_term(t_token **current, t_env **env)
 {
 	t_ast_node	*node;
 
 	if (!*current)
-		return NULL;
+		return (NULL);
 	if (*current && (*current)->type == TOKEN_OPEN_BRACKET)
 		node = parse_brackets(current, env);
 	else if (is_redirection((*current)->type))
@@ -269,16 +293,9 @@ t_ast_node *parse_term(t_token **current, t_env **env)
 		node = parse_command(current, env);
 	else
 		return (NULL);
-	// else
-	// {
-	// 	ft_perror("Unexpected token: ");
-	// 	print_token_name(*current);
-	// 	printf("\n");
-	// 	return (NULL);
-	// }
 	if (!node)
 		return (NULL);
-    return (node);  // Return the command wrapped with all applicable redirections
+	return (node);
 }
 
 t_ast_node	*parse_expression(t_token **current, t_env **env)
@@ -291,16 +308,12 @@ t_ast_node	*parse_expression(t_token **current, t_env **env)
 	left = parse_term(current, env);
 	if (!left)
 		return (NULL);
-	while (*current && (*current)->type != TOKEN_EOF && is_control_op((*current)->type))
+	while (*current && (*current)->type != TOKEN_EOF
+		&& is_control_op((*current)->type))
 	{
 		type = (*current)->type;
-		(*current) = (*current)->next; // Move past the operator
+		(*current) = (*current)->next;
 		right = parse_term(current, env);
-		// if (!right)
-		// {
-		// 	ft_free_ast(&left);
-		// 	return NULL;
-		// }
 		new_node = create_ast_node(type, NULL, env);
 		new_node->left = left;
 		new_node->right = right;
