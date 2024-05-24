@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/23 17:58:45 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 11:55:25 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ t_ast_node	*parse_tokens(t_env **env)
 	current = (*env)->tokens;
 	if (!current || current->type == TOKEN_EOF)
 	{
-		ft_perror("No input to parse\n");
+		// ft_perror("No input to parse\n");
 		return (NULL);
 	}
 	(*env)->ast = parse_expression(&current, env);

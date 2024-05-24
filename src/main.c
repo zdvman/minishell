@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/21 11:42:24 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 13:03:59 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,39 +143,32 @@ void	generate_ast_diagram(t_ast_node *root)
 	fclose(stream);
 }
 
-int	main(int argc, char **argv, char **envp)
+void minishell_loop(t_env **env)
 {
 	t_token		*current;
-	t_env		*env;
 	t_ast_node	*ast;
 	char		*input;
 
-	if (argc != 1)
-	{
-		printf("Usage: ./%s\n", argv[0]);
-		return (EXIT_FAILURE);
-	}
-	shell_init(&env, envp);
 	input = NULL;
 	while (1)
 	{
-		input = read_multiline();
+		input = read_multiline(env);
 		if (!input)
-        {
-            if (g_sigint_received)
-                continue; // Restart the loop for SIGINT
-            else
-            {
-                write(1, "exit\n", 5);
-                break; // Exit the loop for EOF
-            }
-        }
-		if (input && *input)
+			exit_minishell(env);
+		else if (!*input && g_signal)
 		{
+			(*env)->exit_status = g_signal + 128;
+            g_signal = 0;
+			continue ;
+		}
+
+		if (*input)
+		{
+			g_signal = 0;
 			add_history(input);
-			get_tokens(input, &env);
-			expand_tokens(&env);
-			current = env->tokens;
+			get_tokens(input, env);
+			expand_tokens(env);
+			current = (*env)->tokens;
 			while (current)
 			{
 				print_token_name(current);
@@ -183,15 +176,31 @@ int	main(int argc, char **argv, char **envp)
 				printf(" %s\n", current->value);
 				current = current->next;
 			}
-			ast = parse_tokens(&env);
+			ast = parse_tokens(env);
 			if (ast)
 			{
 				generate_ast_diagram(ast);
-				execute(ast, &env);
+				execute(ast, env);
 			}
 		}
-		cleanup_loop(&input, &env);
+		cleanup_loop(&input, env);
 	}
-	cleanup(&env, 0);
-	return (0);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_env	*env;
+
+	if (argc == 1)
+	{
+		shell_init(&env, envp);
+		minishell_loop(&env);
+		cleanup(&env, 0);
+		return (0);
+	}
+	else
+	{
+		printf("Usage: ./%s\n", argv[0]);
+		return (EXIT_FAILURE);
+	}
 }

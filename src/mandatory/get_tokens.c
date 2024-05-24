@@ -117,15 +117,3 @@ void	get_tokens(char *input, t_env **env)
 	}
 	add_token(TOKEN_EOF, ft_strdup("EOF"), 0, env);
 }
-
-/*
-void	handle_illegal(t_env **env, char **input)
-{
-	char	error[2];
-
-	error[0] = **input;
-	error[1] = '\0';
-	add_token(TOKEN_ILLEGAL, ft_strdup(error), 0, env);
-	(*input)++;
-}
-*/

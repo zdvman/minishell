@@ -25,6 +25,7 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include <sys/ioctl.h>
 # include <stdbool.h>
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -50,6 +51,8 @@
 /*    } token_type;                                                           */
 /*                                                                            */
 /* ************************************************************************** */
+
+extern volatile sig_atomic_t g_signal;
 
 typedef enum e_token_type
 {
@@ -90,11 +93,12 @@ typedef struct s_env
 	char			**envp;
 	char			**envp_backup;
 	int				exit_status;
+	pid_t			pid;
 	int				pipe_fd[2];
 	int				fd_in;
 	int				fd_out;
-	int				original_stdin;
-	int				original_stdout;
+	// int				original_stdin;
+	// int				original_stdout;
 	t_ast_node		*ast;
 	t_token			*tokens;
 	t_token			*head_token;
@@ -128,13 +132,14 @@ void	ft_free_ast(t_ast_node **node);
 
 // utils.c
 void	set_sig_actions(void);
+void	exit_minishell(t_env **env);
 
 // expand.c
 void	expand_tokens(t_env **env);
 char	*expand_word(t_env **env, char **input);
 
 // multiline_and_quotes_input.c
-char	*read_multiline(void);
+char	*read_multiline(t_env **env);
 int		is_quote_open(const char *input);
 
 // handle_meta_redirs_pipe_or.c
@@ -160,7 +165,6 @@ int		is_meta_character(char c);
 void	handle_meta(t_env **env, char **input);
 void	get_tokens(char *input, t_env **env);
 
-extern volatile sig_atomic_t g_sigint_received;
 
 // ast.c
 t_ast_node	*new_ast_node(t_token_type type, char **args,
@@ -176,9 +180,9 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env);
 bool		is_redirection(t_token_type type);
 bool		is_control_op(t_token_type type);
 t_ast_node	*parse_command(t_token **current, t_env **env);
-t_ast_node	*parse_pipeline(t_token **current, t_env **env);
-t_ast_node	*parse_sequence(t_token **current, t_env **env);
-t_ast_node	*parse_bracket(t_token **current, t_env **env);
+// t_ast_node	*parse_pipeline(t_token **current, t_env **env);
+// t_ast_node	*parse_sequence(t_token **current, t_env **env);
+// t_ast_node	*parse_bracket(t_token **current, t_env **env);
 
 // get_path.c
 char	*get_path(char *cmd, t_env **env);
@@ -186,7 +190,7 @@ char	*get_path(char *cmd, t_env **env);
 // execute.c
 void	handle_fd(t_env **env);
 void	execute(t_ast_node *node, t_env **env);
-void	recursive_execute(t_ast_node *node, t_env **env);
+// void	recursive_execute(t_ast_node *node, t_env **env);
 
 //main.c
 void	print_token_name(t_token *token);

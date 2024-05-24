@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/23 20:30:50 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 15:15:40 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,7 @@ void	handle_fd(t_env **env)
 	}
 }
 
-void	execute_command(t_ast_node *node, t_env **env)
+pid_t	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
 
@@ -221,7 +221,7 @@ void	execute_command(t_ast_node *node, t_env **env)
 	if (is_builtin(node->args[0]))
 	{
 		execute_builtin(env, node->args);
-		return ;
+		return (0);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -231,14 +231,15 @@ void	execute_command(t_ast_node *node, t_env **env)
 	}
 	if (pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		execve(get_path(node->args[0], env), node->args, (*env)->envp);
 		error_msg(node->args[0], errno);
 		cleanup(env, EXIT_FAILURE);
 	}
 	else
-	{
 		wait_for_process(pid, env);
-	}
+	return (pid);
 }
 
 void	execute_redir_input(t_ast_node *node, t_env **env)
@@ -318,6 +319,24 @@ void	heredoc_output(t_ast_node *node, t_env **env)
 	restore_origin_fd(origin_fd, env);
 }
 
+int here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
+{
+	int	status;
+
+	status = 0;
+	close(fd);
+	if (g_signal)
+	{
+		(*env)->exit_status = g_signal + 128;
+		g_signal = 0;
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		status = 1;
+	}
+	restore_origin_fd(origin_fd, env);
+	return (0);
+}
+
 void	execute_here_doc(t_ast_node *node, t_env **env)
 {
 	int		fd;
@@ -331,7 +350,7 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 	line = readline("> ");
 	while (line)
 	{
-		if (ft_strcmp(line, node->args[0]) == 0)
+		if (ft_strcmp(line, node->args[0]) == 0 || g_signal)
 		{
 			ft_free_str(&line);
 			break ;
@@ -341,8 +360,8 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 		ft_free_str(&line);
 		line = readline("> ");
 	}
-	close(fd);
-	restore_origin_fd(origin_fd, env);
+	if (here_doc_signal_handler(env, fd, origin_fd))
+		return ;
 	heredoc_output(node, env);
 }
 
