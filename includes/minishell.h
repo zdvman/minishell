@@ -91,20 +91,20 @@ typedef struct s_token
 typedef struct s_env
 {
 	char			**envp;
-	char			**envp_backup;
 	int				exit_status;
 	pid_t			pid;
 	int				pipe_fd[2];
 	int				fd_in;
 	int				fd_out;
-	// int				original_stdin;
-	// int				original_stdout;
 	t_ast_node		*ast;
 	t_token			*tokens;
 	t_token			*head_token;
 	t_list			*directory_list;
 	t_list			*dir_head;
-
+	char			**loc_vars;
+	char			*user_host;
+	char			*prompt;
+	int				ls;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -201,7 +201,21 @@ int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
 void	execute_builtin(t_env **env, char **args);
-char	*get_env_variable(t_env *env, char *env_var);
+void	insert_local(t_env *env, char *var);
+int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
+
+//env_var
+void	add_var(char *var, char ***vars);
+void	assign_variable(t_env *env, char *string);
+int		export_var(t_env *env, char **args);
+char	*get_var(char *env_var, char **vars);
+char	*make_var(char *var, char *val);
+void	remove_var(char *name, char ***vars);
+int		valid_env_name(char *name);
+
+//prompt.c
+char	*prompt(t_env *env);
+void	get_host_and_user(t_env *env);
 
 #endif

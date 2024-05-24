@@ -12,109 +12,10 @@
 
 #include "../../includes/minishell.h"
 
-char	*make_var(char *var, char *val)
-{
-	char	*tmp;
-	char	*res;
-
-	tmp = ft_strjoin(var, "=");
-	res = ft_strjoin(tmp, val);
-	free (tmp);
-	return (res);
-}
-
-void	remove_var(t_env *env, int target)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (env->envp[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count);
-	while (i < target)
-	{
-		new_env[i] = env->envp[i];
-		i++;
-	}
-	while (i < count - 1)
-	{
-		new_env[i] = env->envp[i + 1];
-		i++;
-	}
-	// free (env->envp[target]);
-	free (env->envp);
-	env->envp = new_env;
-}
-
-void	add_var(t_env *env, char *var, char *val)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (env->envp[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count + 2);
-	while (i < count)
-	{
-		new_env[i] = env->envp[i];
-		i++;
-	}
-	new_env[i++] = make_var(var, val);
-	// free (env->envp[target]);
-	free (env->envp);
-	env->envp = new_env;
-}
-
-void	replace_env_var(t_env **env, char *var, char *val)
-{
-	int		i;
-
-	i = 0;
-	while ((*env)->envp[i])
-	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
-		{
-			free ((*env)->envp[i]);
-			if (val)
-				(*env)->envp[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return ;
-		}
-		i++;
-	}
-}
-
-void	replace_or_add_env_var(t_env **env, char *var, char *val)
-{
-	int		i;
-
-	i = 0;
-	while ((*env)->envp[i])
-	{
-		if (!ft_strncmp((*env)->envp[i], var, ft_strlen(var)))
-		{
-			free ((*env)->envp[i]);
-			if (val && *val)
-				(*env)->envp[i] = make_var(var, val);
-			else
-				remove_var(*env, i);
-			return ;
-		}
-		i++;
-		if (!(*env)->envp[i])
-			add_var(*env, var, val);
-	}
-}
-
 int	is_builtin(char *cmd)
 {
+	if (!ft_strcmp(cmd, "echo"))
+		return (1);
 	if (!ft_strcmp(cmd, "cd"))
 		return (1);
 	if (!ft_strcmp(cmd, "pwd"))
@@ -123,78 +24,191 @@ int	is_builtin(char *cmd)
 		return (1);
 	if (!ft_strcmp(cmd, "unset"))
 		return (1);
+	if (!ft_strcmp(cmd, "exit"))
+		return (1);
+	if (!ft_strcmp(cmd, "export"))
+		return (1);
 	return (0);
 }
 
-char	*get_env_variable(t_env *env, char *env_var)
-{
-	int		i;
-
-	i = 0;
-	while (env->envp[i])
-	{
-		if (!ft_strncmp(env->envp[i], env_var, ft_strlen(env_var)))
-			return (&env->envp[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	return (NULL);
-}
-
-void	change_dir(t_env **env, char **args)
+int	change_dir(t_env **env, char **args)
 {
 	char	*tmp;
 	char	cwd[256];
 	char	old_cwd[256];
 
 	tmp = NULL;
-	if (args[2])
-		return ((void)ft_putstr("minishell: cd: too many arguments\n"));
+	if (!args[1])
+		return (1);
+	if (args[1] && args[1][0] == '-')
+	{
+		if (!args[1][1])
+		{
+			free (args[1]);
+			args[1] = ft_strdup(get_var("OLDPWD", (*env)->envp));
+			return(change_dir(env, args));
+		}
+		ft_putstr("minishell: cd: ");
+		ft_putchar(args[1][0]);
+		ft_putchar(args[1][1]);
+		ft_putstr(": invalid option\ncd: usage: cd [-] [dir]\n");
+		return (2);
+	}	
+	if (args[1] && args[2])
+		return ((void)ft_putstr("minishell: cd: too many arguments\n"), 1);
 	if (args[1][0] == '~')
-		tmp = ft_strjoin(get_env_variable(*env, "HOME"), &args[1][1]);
+		tmp = ft_strjoin(get_var("HOME", (*env)->envp), &args[1][1]);
 	else
 		tmp = ft_strdup(args[1]);
-	if (access(tmp, R_OK))
+	if (access(tmp, F_OK))
 		return ((void)ft_putstr("minishell: cd: "), (void)ft_putstr(args[1]),
-				(void)ft_putstr(": No such file or directory\n"));
+				(void)ft_putstr(": No such file or directory\n"), 1);
+	if (access(tmp, R_OK | X_OK))
+		return ((void)ft_putstr("minishell: cd: "), (void)ft_putstr(args[1]),
+				(void)ft_putstr(": Permission denied\n"), 1);
 	free (args[1]);
 	args[1] = tmp;
 	getcwd(old_cwd, 256);
 	if ((chdir(args[1])) == -1)
-		return ;
+		return (1);
 	getcwd(cwd, 256);
-	replace_env_var(env, "OLDPWD", old_cwd);
-	replace_env_var(env, "PWD", cwd);
+	
+	remove_var("OLDPWD", &(*env)->envp);
+	remove_var("PWD", &(*env)->envp);
+	tmp = ft_strjoin("OLDPWD=", old_cwd);
+	add_var(tmp, &(*env)->envp);
+	free (tmp);
+	tmp = ft_strjoin("PWD=", cwd);
+	add_var(tmp, &(*env)->envp);
+	free (tmp);
+	return (0);
 }
 
-void	print_cwd(void)
+int	print_cwd(char *args)
 {
 	char	cwd[256];
 
+	if (args && args[0] == '-' && args[1])
+	{
+		ft_putstr("minishell: pwd: ");
+		ft_putchar(args[0]);
+		ft_putchar(args[1]);
+		ft_putstr(": invalid option\npwd: usage: pwd\n");
+		return (2);
+	}
 	getcwd(cwd, 256);
 	ft_putstr(cwd);
 	ft_putchar('\n');
+	return (0);
 }
 
-void	print_env(t_env *env)
+int	print_env(t_env *env, char *args)
 {
 	int	i;
 
 	i = 0;
-	while (env->envp[i])
+	if (args)
+	{
+		ft_putstr("minishell: env: ");
+		ft_putstr(args);
+		ft_putstr(": invalid option\nenv: usage: env\n");
+		return (125);
+	}
+	while (env->envp && env->envp[i])
 	{
 		ft_putstr(env->envp[i++]);
 		ft_putchar('\n');
 	}
+	return (0);
+}
+
+int	echo(char **args)
+{
+	int	i;
+	int	n;
+
+	i = 1;
+	if (!args[i])
+	{
+		ft_putchar('\n');
+		return (0);
+	}
+	n = (!ft_strcmp(args[i], "-n"));
+	while (args[i + n])
+	{
+		ft_putstr(args[i++ + n]);
+		if (args[i + n])
+			ft_putchar(' ');
+	}
+	if (!n)
+		ft_putchar('\n');
+	return (0);
+}
+
+int	is_assignment(char *cmd)
+{
+	int	i;
+
+	i = 0;
+	if (cmd[0] != '_' && !ft_isalpha(cmd[0]))
+		return (0);
+	i++;
+	while (cmd[i] && cmd[i] != '=')
+	{
+		if (cmd[0] != '_' && !ft_isalnum(cmd[0]))
+			return (0);
+		i++;
+	}
+	if (cmd[i] && cmd[i] == '=')
+		return (1);
+	return (0);
+}
+
+int	clean_exit(t_env **env, char **args)
+{
+	int	code;
+
+	code = EXIT_SUCCESS;
+	if (args[1] && ft_isnumber(args[1]) && args[2])
+	{
+		ft_putstr("minishell: exit: too many arguments\n");
+		return (1);
+	}
+	ft_putstr("exit\n");
+	if (args[1] && !ft_isnumber(args[1]))
+	{
+		ft_putstr("minishell: exit: ");
+		ft_putstr(args[1]);
+		ft_putstr(": numeric argument required\n");
+		cleanup(env, 0);
+		exit (2);
+	}
+	if (args[1])
+		code = ft_atoi(args[1]);
+	return (cleanup(env, code), 0);
 }
 
 void	execute_builtin(t_env **env, char **args)
 {
-	if (!ft_strcmp(args[0], "cd") && args[1][0])
-		change_dir(env, args);
-	if (!ft_strcmp(args[0], "pwd"))
-		print_cwd();
-	if (!ft_strcmp(args[0], "env"))
-		print_env(*env);
-	if (!ft_strcmp(args[0], "unset"))
-		replace_env_var(env, args[1], NULL);
+	int	exit;
+
+	exit = 0;
+	if (!ft_strcmp(args[0], "cd") && args[1] && args[1][0])
+		exit = change_dir(env, args);
+	else if (!ft_strcmp(args[0], "pwd"))
+		exit = print_cwd(args[1]);
+	else if (!ft_strcmp(args[0], "env"))
+		exit = print_env(*env, args[1]);
+	else if (!ft_strcmp(args[0], "echo"))
+		exit = echo(args);
+	else if (!ft_strcmp(args[0], "exit"))
+		exit = clean_exit(env, args);
+	else if (!ft_strcmp(args[0], "export"))
+		exit = export_var(*env, args);
+	else if (!ft_strcmp(args[0], "unset"))
+	{
+		remove_var(args[1], &(*env)->envp);
+		remove_var(args[1], &(*env)->loc_vars);
+	}
+	(*env)->exit_status = exit;
 }

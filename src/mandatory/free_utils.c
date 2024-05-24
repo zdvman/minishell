@@ -74,11 +74,35 @@ static void	ft_free_env(t_env **env)
 			}
 			i++;
 		}
-		free((*env)->envp);
+		if ((*env)->envp)
+			free((*env)->envp);
 		(*env)->envp = NULL;
 	}
 	free(*env);
 	*env = NULL;
+}
+
+static void	ft_free_loc_vars(t_env **env)
+{
+	int	i;
+
+	if (!*env)
+		return ;
+	i = 0;
+	if ((*env)->loc_vars)
+	{
+		while ((*env)->loc_vars[i])
+		{
+			if ((*env)->loc_vars[i])
+			{
+				free((*env)->loc_vars[i]);
+				(*env)->loc_vars[i] = NULL;
+			}
+			i++;
+		}
+		free((*env)->loc_vars);
+		(*env)->loc_vars = NULL;
+	}
 }
 
 void	ft_free_args(char ***args)
@@ -101,7 +125,12 @@ void	ft_free_args(char ***args)
 void	cleanup(t_env **env, int status)
 {
 	ft_free_tokens(&(*env)->tokens);
+	if ((*env)->user_host)
+		free ((*env)->user_host);
+	if ((*env)->prompt)
+		free ((*env)->prompt);
 	ft_free_ast(&(*env)->ast);
+	ft_free_loc_vars(env);
 	ft_free_env(env);
 	rl_clear_history();
 	printf("\033[?12l");

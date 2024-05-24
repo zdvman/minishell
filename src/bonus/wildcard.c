@@ -22,27 +22,25 @@ t_list	*new_dir_entry(char *entry_name)
 	return (new);
 }
 
-int	glob(char *pattern, char *file_name, int i, int j)
+int	glob(char *pattern, t_env *env, int i, int j)
 {
-	if (pattern[i] == 0 && file_name[j] == 0)
+	char	*file;
+
+	file = env->directory_list->content;
+	if (pattern[i] == 0 && file[j] == 0)
 		return (1);
-	if (pattern[i] == 0 || file_name[j] == 0)
+	if (pattern[i] == 0 || file[j] == 0)
 		return (0);
-	if (pattern[i] != '*' && pattern[i] != file_name[j])
+	if (pattern[i] != '*' && pattern[i] != file[j])
 		return (0);
-	if (pattern[0] == '*' && file_name[0] == '.')
+	if (pattern[0] == '*' && file[0] == '.')
 		return(0);
-	if (file_name[j] == 0 && pattern[i] == '*')
-		return (glob(pattern, file_name, i + 1, j));
-	if (pattern[0] == '.' && pattern[1] == '*'
-		&& !pattern[2] && file_name[0] == '.')
-		return (1);
 	if (pattern[i] == '*')
-		return (glob(pattern, file_name, i + 1, j + 1)
-			|| glob(pattern, file_name, i, j + 1)
-			|| glob(pattern, file_name, i + 1, j));
+		return (glob(pattern, env, i + 1, j + 1)
+			|| glob(pattern, env, i, j + 1)
+			|| glob(pattern, env, i + 1, j));
 	else
-		return (glob(pattern, file_name, i + 1, j + 1));
+		return (glob(pattern, env, i + 1, j + 1));
 	return (0);
 }
 
@@ -60,17 +58,21 @@ int	contains(char *str, char target)
 	return (0);
 }
 
-t_list	*expand_args(t_env **env, char *pattern)
+t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 {
 	t_list	*matched;
 	t_list	*matched_head;
 
+	if (!ft_strcmp("ls", prev->value))
+		(*env)->ls = 1;
+	else
+		(*env)->ls = 0;
 	matched = NULL;
 	matched_head = NULL;
 	(*env)->directory_list = (*env)->dir_head;
 	while ((*env)->directory_list)
 	{
-		if (glob(pattern, (*env)->directory_list->content, 0, 0))
+		if (glob(pattern, *env, 0, 0))
 		{
 			if (!matched)
 			{
@@ -150,8 +152,7 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 	if (!prev)
 		return (0);
 	get_current_dir(env);
-	(*env)->envp_backup = (*env)->envp;
-	get_args = expand_args(env, input);
+	get_args = expand_args(env, input, prev);
 	if (!get_args)
 		return (0);	
 	while (get_args)
@@ -166,6 +167,5 @@ int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 		free (tmp);
 	}
 	free_dir(env);
-	(*env)->envp = (*env)->envp_backup;
 	return (1);
 }

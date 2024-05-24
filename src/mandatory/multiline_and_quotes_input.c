@@ -80,7 +80,7 @@ char	*read_multiline(t_env **env)
 	buffer_init(&buf);
 	while (1)
 	{
-		line = readline(buf.data[0] ? "> " : "minishell> ");
+		line = readline(buf.data[0] ? "> " : prompt(*env));
 		if (g_signal)
         {
 			(*env)->exit_status = g_signal + 128;

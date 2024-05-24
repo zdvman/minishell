@@ -130,17 +130,18 @@ void print_ast_dot(t_ast_node *node, FILE *stream)
 
 void	generate_ast_diagram(t_ast_node *root)
 {
-	FILE *stream = fopen("ast.dot", "w");
-	if (stream == NULL)
-	{
-		perror("fopen");
-		return;
-	}
+	(void)root;
+	// FILE *stream = fopen("ast.dot", "w");
+	// if (stream == NULL)
+	// {
+	// 	perror("fopen");
+	// 	return;
+	// }
 
-	fprintf(stream, "digraph AST {\n");
-	print_ast_dot(root, stream);
-	fprintf(stream, "}\n");
-	fclose(stream);
+	// fprintf(stream, "digraph AST {\n");
+	// print_ast_dot(root, stream);
+	// fprintf(stream, "}\n");
+	// fclose(stream);
 }
 
 void minishell_loop(t_env **env)
@@ -169,13 +170,13 @@ void minishell_loop(t_env **env)
 			get_tokens(input, env);
 			expand_tokens(env);
 			current = (*env)->tokens;
-			while (current)
-			{
-				print_token_name(current);
-				printf(" space: %s", current->has_space ? "true ;" : "false;");
-				printf(" %s\n", current->value);
-				current = current->next;
-			}
+			// while (current)
+			// {
+			// 	print_token_name(current);
+			// 	printf(" space: %s", current->has_space ? "true ;" : "false;");
+			// 	printf(" %s\n", current->value);
+			// 	current = current->next;
+			// }
 			ast = parse_tokens(env);
 			if (ast)
 			{

@@ -19,10 +19,6 @@ char	*expand_word(t_env **env, char **input)
 	char				*current;
 	char				*start;
 
-	// if (*input[0] == '$' && *input[1] != '$')
-	// {
-	// 	return (ft_strdup(get_env_variable(*env, *input)));
-	// }
 	buffer_init(&buf);
 	start = *input;
 	current = *input;
@@ -30,9 +26,9 @@ char	*expand_word(t_env **env, char **input)
 	{
 		if (**input == '$')
 			handle_dollar_sign(input, &current, &buf, env);
-		if (**input == '\'' || **input == '\"')
+		else if (**input == '\'' || **input == '\"')
 			handle_quotes(input, &current, &buf, env);
-		if (**input != '$' && **input != '\'' && **input != '\"')
+		else if (**input != '$' && **input != '\'' && **input != '\"')
 			(*input)++;
 	}
 	if (current != *input)

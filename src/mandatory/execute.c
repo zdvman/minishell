@@ -223,6 +223,11 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 		execute_builtin(env, node->args);
 		return (0);
 	}
+	else if (is_assignment(node->args[0]) && !node->args[1])
+	{
+		assign_variable(*env, node->args[0]);
+		return (0);
+	}
 	pid = fork();
 	if (pid == -1)
 	{
@@ -231,9 +236,19 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 	}
 	if (pid == 0)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		execve(get_path(node->args[0], env), node->args, (*env)->envp);
+		if (is_assignment(node->args[0]))
+		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+			assign_variable(*env, node->args[0]);
+			execve(get_path(node->args[1], env), &node->args[1], (*env)->envp);
+		}
+		else
+		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+			execve(get_path(node->args[0], env), node->args, (*env)->envp);
+		}
 		error_msg(node->args[0], errno);
 		cleanup(env, EXIT_FAILURE);
 	}
