@@ -37,28 +37,42 @@ void	get_host_and_user(t_env *env)
 	free (res);
 }
 
+int	valid_path(char *envp, char *loc)
+{
+	if (!envp && !loc)
+		return (0);
+
+	if (envp && envp[ft_strlen(envp) - 1] == '/')
+		return (0);
+	if (loc && loc[ft_strlen(loc) - 1] == '/')
+		return (0);	 
+	return (1);
+}
+
 char	*add_cwd(t_env *env, char *user_host)
 {
 	char	dir_name[256];
 	char	*res;
 	char	*tmp;
+	char	*var;
 
 	getcwd(dir_name, 256);
-	if (!get_var("HOME", env->envp))
-	{
-		res = ft_strjoin(user_host, dir_name);
-		return (res);
-	}
-	if (ft_strncmp(dir_name, get_var("HOME", env->envp), ft_strlen(get_var("HOME", env->envp))))
+	if (!valid_path(get_var("HOME", env->envp), get_var("HOME", env->loc_vars)))
 	{
 		res = ft_strjoin(user_host, dir_name);
 		return (res);
 	}
 	if (get_var("HOME", env->envp))
-		tmp = ft_strjoin(user_host, "~");
+		var = (get_var("HOME", env->envp));
 	else
-		tmp = ft_strdup(user_host);
-	res = ft_strjoin(tmp, &dir_name[ft_strlen(get_var("HOME", env->envp))]);
+		var = (get_var("HOME", env->loc_vars));
+	if (ft_strncmp(dir_name, var, ft_strlen(var)))
+	{
+		res = ft_strjoin(user_host, dir_name);
+		return (res);
+	}
+	tmp = ft_strjoin(user_host, "~");
+	res = ft_strjoin(tmp, &dir_name[ft_strlen(var)]);
 	free (tmp);
 	return (res);
 }

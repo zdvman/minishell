@@ -155,19 +155,11 @@ void execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
 
-	// if (cmd_is_not_valid(node->args[0], env))
-	// 	return ;
 	handle_fd(env);
 	if (is_builtin(node->args[0]))
-	{
-		execute_builtin(env, node->args);
-		return ;
-	}
+		return (execute_builtin(env, node->args));
 	else if (is_assignment(node->args[0]) && !node->args[1])
-	{
-		assign_variable(*env, node->args[0]);
-		return ;
-	}
+		return (assign_variable(*env, node->args[0]));
 	pid = fork();
 	if (pid == -1)
 	{
