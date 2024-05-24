@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 16:45:00 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 18:05:24 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,19 +123,23 @@ char	**copy_args(t_token **current, t_env **env)
 
 static int	ast_output_is_valid(t_token **current, t_env **env)
 {
+	if ((*env)->syntax_error)
+	{
+		cleanup_no_exit(env);
+		return (0);
+	}
 	if (*current && (*current)->type != TOKEN_EOF)
 	{
-		printf("Unexpected token: ");
+		ft_putstr_fd("Unexpected token: ", STDERR_FILENO);
 		print_token_name(*current);
-		printf("\n");
-		ft_perror("Syntax error\n");
-		cleanup(env, 1);
+		ft_putchar_fd('\n', STDERR_FILENO);
+		cleanup_no_exit(env);
 		return (0);
 	}
 	if ((*env)->ast == NULL)
 	{
-		ft_perror("Failed to parse tokens\n");
-		cleanup(env, 1);
+		ft_putstr_fd("Failed to parse tokens\n", STDERR_FILENO);
+		cleanup_no_exit(env);
 		return (0);
 	}
 	return (1);
@@ -148,18 +152,15 @@ t_ast_node	*parse_tokens(t_env **env)
 	if (!env || !*env)
 	{
 		ft_perror("No environment to parse\n");
-		cleanup(env, EXIT_FAILURE);
+		cleanup_no_exit(env);
 	}
 	current = (*env)->tokens;
 	if (!current || current->type == TOKEN_EOF)
-	{
-		// ft_perror("No input to parse\n");
 		return (NULL);
-	}
 	(*env)->ast = parse_expression(&current, env);
 	if (ast_output_is_valid(&current, env))
 		return ((*env)->ast);
-	cleanup(env, 1);
+	cleanup_no_exit(env);
 	return (NULL);
 }
 
@@ -190,6 +191,17 @@ char	**get_redir_arg(t_token **current, t_env **env)
 {
 	char	**arg;
 
+	if (!(*current)->has_space
+		&& ft_isnumber((*current)->value)
+		&& is_redirection((*current)->next->type))
+	{
+		ft_putstr_fd("syntax error near unexpected token ", STDERR_FILENO);
+		ft_putchar_fd('\'', STDERR_FILENO);
+		ft_putstr_fd((*current)->value, STDERR_FILENO);
+		ft_putstr_fd("'\n", STDERR_FILENO);
+		(*env)->syntax_error = 1;
+		return (NULL);
+	}
 	arg = (char **)malloc(sizeof(char *) * 2);
 	if (!arg)
 	{
@@ -212,6 +224,7 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 	t_token_type	type;
 	t_ast_node		*redir_node;
 	t_ast_node		*base_node;
+	char			**arg;
 
 	base_node = NULL;
 	while (*current && is_redirection((*current)->type))
@@ -223,7 +236,10 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 			ft_perror("Expected filename for redirection\n");
 			return (NULL);
 		}
-		redir_node = create_ast_node(type, get_redir_arg(current, env), env);
+		arg = get_redir_arg(current, env);
+		if (!arg)
+			return (NULL);
+		redir_node = create_ast_node(type, arg, env);
 		if (!base_node)
 			base_node = redir_node;
 		else

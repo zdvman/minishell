@@ -90,6 +90,7 @@ typedef struct s_token
 
 typedef struct s_env
 {
+	int 			syntax_error;
 	char			**envp;
 	int				exit_status;
 	pid_t			pid;
@@ -129,6 +130,7 @@ void	ft_free_args(char ***args);
 void	cleanup_loop(char **input, t_env **env);
 void	cleanup(t_env **env, int status);
 void	ft_free_ast(t_ast_node **node);
+void	cleanup_no_exit(t_env **env);
 
 // utils.c
 void	set_sig_actions(void);

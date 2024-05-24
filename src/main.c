@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 13:03:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 18:08:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,17 +131,17 @@ void print_ast_dot(t_ast_node *node, FILE *stream)
 void	generate_ast_diagram(t_ast_node *root)
 {
 	(void)root;
-	// FILE *stream = fopen("ast.dot", "w");
-	// if (stream == NULL)
-	// {
-	// 	perror("fopen");
-	// 	return;
-	// }
+	FILE *stream = fopen("ast.dot", "w");
+	if (stream == NULL)
+	{
+		perror("fopen");
+		return;
+	}
 
-	// fprintf(stream, "digraph AST {\n");
-	// print_ast_dot(root, stream);
-	// fprintf(stream, "}\n");
-	// fclose(stream);
+	fprintf(stream, "digraph AST {\n");
+	print_ast_dot(root, stream);
+	fprintf(stream, "}\n");
+	fclose(stream);
 }
 
 void minishell_loop(t_env **env)
