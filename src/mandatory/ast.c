@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 11:55:25 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/24 16:45:00 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,11 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 			base_node = redir_node;
 		}
 		*current = (*current)->next;
+		if (*current && (*current)->type == TOKEN_WORD)
+		{
+			redir_node =  parse_command(current, env);
+			base_node->left = redir_node;
+		}
 	}
 	return (base_node);
 }
