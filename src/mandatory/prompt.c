@@ -32,7 +32,7 @@ void	get_host_and_user(t_env *env)
 		res[i + 1] = buf[i];
 		i++;
 	}
-	res[i] = ':';
+	res[i + 1] = ':';
 	env->user_host = ft_strjoin(get_var("USER", env->envp), res);
 	free (res);
 }

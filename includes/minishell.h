@@ -88,7 +88,6 @@ typedef struct s_token
 typedef struct s_env
 {
 	char			**envp;
-	char			**envp_backup;
 	int				exit_status;
 	int				pipe_fd[2];
 	int				fd_in;
@@ -101,6 +100,7 @@ typedef struct s_env
 	char			**loc_vars;
 	char			*user_host;
 	char			*prompt;
+	int				ls;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -203,6 +203,7 @@ int		is_builtin(char *cmd);
 
 //env_var
 void	add_var(char *var, char ***vars);
+void	assign_variable(t_env *env, char *string);
 int		export_var(t_env *env, char **args);
 char	*get_var(char *env_var, char **vars);
 char	*make_var(char *var, char *val);

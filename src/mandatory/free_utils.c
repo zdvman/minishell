@@ -74,7 +74,8 @@ static void	ft_free_env(t_env **env)
 			}
 			i++;
 		}
-		free((*env)->envp);
+		if ((*env)->envp)
+			free((*env)->envp);
 		(*env)->envp = NULL;
 	}
 	free(*env);

@@ -75,7 +75,10 @@ static void	handle_environment_variable(char **input, char **current,
 	}
 	else if (**input == '?')
 	{
-		env_value = ft_itoa((*env)->exit_status);
+		if ((*env)->exit_status >= 0)
+			env_value = ft_itoa((*env)->exit_status);
+		else
+			env_value = NULL;
 		buffer_append(buf, env_value, ft_strlen(env_value));
 		free(env_value);
 		(*input)++;

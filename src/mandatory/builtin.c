@@ -52,7 +52,7 @@ int	change_dir(t_env **env, char **args)
 		ft_putchar(args[1][0]);
 		ft_putchar(args[1][1]);
 		ft_putstr(": invalid option\ncd: usage: cd [-] [dir]\n");
-		return (125);
+		return (2);
 	}	
 	if (args[1] && args[2])
 		return ((void)ft_putstr("minishell: cd: too many arguments\n"), 1);
@@ -106,13 +106,6 @@ int	print_env(t_env *env, char *args)
 {
 	int	i;
 
-	if (args && args[0] == '-' && args[1])
-	{
-		ft_putstr("minishell: env: ");
-		ft_putstr(args);
-		ft_putstr(": invalid option\nenv: usage: env\n");
-		return (125);
-	}	
 	i = 0;
 	if (args)
 	{
@@ -135,6 +128,11 @@ int	echo(char **args)
 	int	n;
 
 	i = 1;
+	if (!args[i])
+	{
+		ft_putchar('\n');
+		return (0);
+	}
 	n = (!ft_strcmp(args[i], "-n"));
 	while (args[i + n])
 	{
@@ -187,8 +185,7 @@ int	clean_exit(t_env **env, char **args)
 	}
 	if (args[1])
 		code = ft_atoi(args[1]);
-	cleanup(env, 0);
-	exit (code);
+	return (cleanup(env, code), 0);
 }
 
 void	execute_builtin(t_env **env, char **args)
