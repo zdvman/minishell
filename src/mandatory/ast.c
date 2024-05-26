@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 10:15:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 18:05:24 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/26 23:25:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,30 @@ t_ast_node	*tree_grafter(t_ast_node *base_node, t_ast_node *new_node)
 	last_node = ft_last_node(new_node);
 	last_node->left = base_node;
 	base_node = new_node;
+	return (base_node);
+}
+
+t_ast_node	*reroot_tree(t_ast_node *base_node, t_ast_node *new_node)
+{
+	if (!base_node)
+		base_node = new_node;
+	else
+	{
+		new_node->left = base_node;
+		base_node = new_node;
+	}
+	return (base_node);
+}
+
+t_ast_node	*append_tree_and_return_root(t_ast_node *base_node,
+				t_ast_node *new_node)
+{
+	t_ast_node	*last_node;
+
+	if (!new_node)
+		return (base_node);
+	last_node = ft_last_node(base_node);
+	last_node->left = new_node;
 	return (base_node);
 }
 
@@ -125,6 +149,7 @@ static int	ast_output_is_valid(t_token **current, t_env **env)
 {
 	if ((*env)->syntax_error)
 	{
+		(*env)->syntax_error = 0;
 		cleanup_no_exit(env);
 		return (0);
 	}
@@ -187,10 +212,8 @@ t_ast_node	*parse_brackets(t_token **current, t_env **env)
 	return (node);
 }
 
-char	**get_redir_arg(t_token **current, t_env **env)
+int	found_fd_redirection_error(t_token **current, t_env **env)
 {
-	char	**arg;
-
 	if (!(*current)->has_space
 		&& ft_isnumber((*current)->value)
 		&& is_redirection((*current)->next->type))
@@ -200,8 +223,17 @@ char	**get_redir_arg(t_token **current, t_env **env)
 		ft_putstr_fd((*current)->value, STDERR_FILENO);
 		ft_putstr_fd("'\n", STDERR_FILENO);
 		(*env)->syntax_error = 1;
-		return (NULL);
+		return (1);
 	}
+	return (0);
+}
+
+char	**get_redir_arg(t_token **current, t_env **env)
+{
+	char	**arg;
+
+	if (found_fd_redirection_error(current, env))
+		return (NULL);
 	arg = (char **)malloc(sizeof(char *) * 2);
 	if (!arg)
 	{
@@ -222,7 +254,6 @@ char	**get_redir_arg(t_token **current, t_env **env)
 t_ast_node	*parse_redirection(t_token **current, t_env **env)
 {
 	t_token_type	type;
-	t_ast_node		*redir_node;
 	t_ast_node		*base_node;
 	char			**arg;
 
@@ -239,20 +270,11 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 		arg = get_redir_arg(current, env);
 		if (!arg)
 			return (NULL);
-		redir_node = create_ast_node(type, arg, env);
-		if (!base_node)
-			base_node = redir_node;
-		else
-		{
-			redir_node->left = base_node;
-			base_node = redir_node;
-		}
+		base_node = reroot_tree(base_node, create_ast_node(type, arg, env));
 		*current = (*current)->next;
 		if (*current && (*current)->type == TOKEN_WORD)
-		{
-			redir_node =  parse_command(current, env);
-			base_node->left = redir_node;
-		}
+			base_node = append_tree_and_return_root(base_node,
+					parse_command(current, env));
 	}
 	return (base_node);
 }

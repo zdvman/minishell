@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 17:39:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/26 23:05:19 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,9 @@ void	handle_fd(t_env **env)
 pid_t	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
+	int		origin_fd[2];
 
+	set_origin_fd(origin_fd);
 	handle_fd(env);
 	if (is_builtin(node->args[0]))
 	{
@@ -253,28 +255,11 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 		cleanup(env, EXIT_FAILURE);
 	}
 	else
-		wait_for_process(pid, env);
-	return (pid);
-}
-
-void	execute_redir_input(t_ast_node *node, t_env **env)
-{
-	int	fd;
-	int	origin_fd[2];
-
-	set_origin_fd(origin_fd);
-	fd = open(node->args[0], O_RDONLY);
-	if (fd == -1)
 	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
+		restore_origin_fd(origin_fd, env);
+		wait_for_process(pid, env);
 	}
-	if ((*env)->fd_in == -1)
-		(*env)->fd_in = fd;
-	if (node->left)
-		execute(node->left, env);
-	close(fd);
-	restore_origin_fd(origin_fd, env);
+	return (pid);
 }
 
 void	execute_redir_output(t_ast_node *node, t_env **env)
@@ -293,6 +278,11 @@ void	execute_redir_output(t_ast_node *node, t_env **env)
 		(*env)->fd_out = fd;
 	if (node->left)
 		execute(node->left, env);
+	else
+	{
+		(*env)->fd_in = -1;
+		(*env)->fd_out = -1;
+	}
 	close(fd);
 	restore_origin_fd(origin_fd, env);
 }
@@ -313,6 +303,36 @@ void	execute_redir_append(t_ast_node *node, t_env **env)
 		(*env)->fd_out = fd;
 	if (node->left)
 		execute(node->left, env);
+	else
+	{
+		(*env)->fd_in = -1;
+		(*env)->fd_out = -1;
+	}
+	close(fd);
+	restore_origin_fd(origin_fd, env);
+}
+
+void	execute_redir_input(t_ast_node *node, t_env **env)
+{
+	int	fd;
+	int	origin_fd[2];
+
+	set_origin_fd(origin_fd);
+	fd = open(node->args[0], O_RDONLY);
+	if (fd == -1)
+	{
+		error_msg(NULL, errno);
+		cleanup(env, EXIT_FAILURE);
+	}
+	if ((*env)->fd_in == -1)
+		(*env)->fd_in = fd;
+	if (node->left)
+		execute(node->left, env);
+	else
+	{
+		(*env)->fd_in = -1;
+		(*env)->fd_out = -1;
+	}
 	close(fd);
 	restore_origin_fd(origin_fd, env);
 }
@@ -329,12 +349,17 @@ void	heredoc_output(t_ast_node *node, t_env **env)
 		(*env)->fd_in = fd;
 	if (node->left)
 		execute(node->left, env);
+	else
+	{
+		(*env)->fd_in = -1;
+		(*env)->fd_out = -1;
+	}
 	close(fd);
 	unlink(".here_doc");
 	restore_origin_fd(origin_fd, env);
 }
 
-int here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
+int	here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
 {
 	int	status;
 
@@ -349,7 +374,7 @@ int here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
 		status = 1;
 	}
 	restore_origin_fd(origin_fd, env);
-	return (0);
+	return (status);
 }
 
 void	execute_here_doc(t_ast_node *node, t_env **env)
@@ -361,7 +386,6 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 	set_origin_fd(origin_fd);
 	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if_error(fd == -1, env);
-	dup2(0, STDOUT_FILENO);
 	line = readline("> ");
 	while (line)
 	{

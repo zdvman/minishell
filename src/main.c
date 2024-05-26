@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 18:08:03 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/26 23:43:33 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,6 @@ void	generate_ast_diagram(t_ast_node *root)
 		perror("fopen");
 		return;
 	}
-
 	fprintf(stream, "digraph AST {\n");
 	print_ast_dot(root, stream);
 	fprintf(stream, "}\n");
@@ -159,7 +158,7 @@ void minishell_loop(t_env **env)
 		else if (!*input && g_signal)
 		{
 			(*env)->exit_status = g_signal + 128;
-            g_signal = 0;
+			g_signal = 0;
 			continue ;
 		}
 
@@ -170,13 +169,13 @@ void minishell_loop(t_env **env)
 			get_tokens(input, env);
 			expand_tokens(env);
 			current = (*env)->tokens;
-			// while (current)
-			// {
-			// 	print_token_name(current);
-			// 	printf(" space: %s", current->has_space ? "true ;" : "false;");
-			// 	printf(" %s\n", current->value);
-			// 	current = current->next;
-			// }
+			while (current)
+			{
+				print_token_name(current);
+				printf(" space: %s", current->has_space ? "true ;" : "false;");
+				printf(" %s\n", current->value);
+				current = current->next;
+			}
 			ast = parse_tokens(env);
 			if (ast)
 			{
