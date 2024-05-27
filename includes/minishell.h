@@ -125,12 +125,17 @@ void	buffer_clear(t_dynamic_buffer *buf);
 int		buffer_append_char(t_dynamic_buffer *buf, char c);
 int		buffer_append(t_dynamic_buffer *buf, const char *str, size_t n);
 
-// free_utils.c
-void	ft_free_args(char ***args);
-void	cleanup_loop(char **input, t_env **env);
-void	cleanup(t_env **env, int status);
+// free_utils_1.c
+void	ft_free_tokens(t_token **tokens);
+void	ft_free_env(t_env **env);
 void	ft_free_ast(t_ast_node **node);
+void	cleanup(t_env **env, int status);
+
+// free_utils_2.c
+void	cleanup_loop(char **input, t_env **env);
 void	cleanup_no_exit(t_env **env);
+void	ft_free_args(char ***args);
+
 
 // utils.c
 void	set_sig_actions(void);
@@ -140,9 +145,12 @@ void	exit_minishell(t_env **env);
 void	expand_tokens(t_env **env);
 char	*expand_word(t_env **env, char **input);
 
-// multiline_and_quotes_input.c
+// multiline_input.c
 char	*read_multiline(t_env **env);
+
+// multiline_input_utils.c
 int		is_quote_open(const char *input);
+int		pipe_or_and_is_closed(char *buffer_str, int i);
 
 // handle_meta_redirs_pipe_or.c
 void	handle_greater_than_sign(t_env **env, char **input);
@@ -168,23 +176,30 @@ void	handle_meta(t_env **env, char **input);
 void	get_tokens(char *input, t_env **env);
 
 
-// ast.c
-t_ast_node	*new_ast_node(t_token_type type, char **args,
-				t_ast_node *left, t_ast_node *right);
+// ast_builder_1.c
+t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env);
 char		**copy_args(t_token **current, t_env **env);
 t_ast_node	*parse_tokens(t_env **env);
-// t_ast_node	*parse_expression(t_token **current, t_env **env);
-t_ast_node	*parse_expression(t_token **current, t_env **env);
+
+// ast_builder_2.c
+t_ast_node	*parse_brackets(t_token **current, t_env **env);
+t_ast_node	*parse_command(t_token **current, t_env **env);
 t_ast_node	*parse_term(t_token **current, t_env **env);
+t_ast_node	*parse_expression(t_token **current, t_env **env);
+
+// ast_builder_3.c
 t_ast_node	*parse_redirection(t_token **current, t_env **env);
 
-// parsing.c
+// ast_builder_utils_1.c
+t_token		**next_token(t_token **current);
+t_ast_node	*ft_last_node(t_ast_node *base_node);
+t_ast_node	*tree_grafter(t_ast_node *base_node, t_ast_node *new_node);
+t_ast_node	*reroot_tree(t_ast_node *base_node, t_ast_node *new_node);
+t_ast_node	*append_tree(t_ast_node *base_node, t_ast_node *new_node);
+
+// ast_builer_utils_2.c
 bool		is_redirection(t_token_type type);
 bool		is_control_op(t_token_type type);
-t_ast_node	*parse_command(t_token **current, t_env **env);
-// t_ast_node	*parse_pipeline(t_token **current, t_env **env);
-// t_ast_node	*parse_sequence(t_token **current, t_env **env);
-// t_ast_node	*parse_bracket(t_token **current, t_env **env);
 
 // get_path.c
 char	*get_path(char *cmd, t_env **env);
@@ -219,5 +234,8 @@ int		valid_env_name(char *name);
 //prompt.c
 char	*prompt(t_env *env);
 void	get_host_and_user(t_env *env);
+
+//utils.c
+void	error_msg(char *cmd, int error_value);
 
 #endif

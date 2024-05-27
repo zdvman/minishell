@@ -6,13 +6,33 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:42:01 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/24 17:54:05 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/27 12:19:27 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static void	env_init(t_env **env, char **envp , int env_len)
+static void	env_init_2(t_env **env)
+{
+	(*env)->syntax_error = 0;
+	(*env)->exit_status = 0;
+	(*env)->pid = 0;
+	(*env)->pipe_fd[0] = -1;
+	(*env)->pipe_fd[1] = -1;
+	(*env)->fd_in = -1;
+	(*env)->fd_out = -1;
+	(*env)->ast = NULL;
+	(*env)->tokens = NULL;
+	(*env)->head_token = NULL;
+	(*env)->directory_list = NULL;
+	(*env)->dir_head = NULL;
+	(*env)->loc_vars = NULL;
+	(*env)->user_host = NULL;
+	(*env)->prompt = NULL;
+	(*env)->ls = 0;
+}
+
+static void	env_init(t_env **env, char **envp, int env_len)
 {
 	int	i;
 
@@ -33,19 +53,8 @@ static void	env_init(t_env **env, char **envp , int env_len)
 			cleanup(env, EXIT_FAILURE);
 		}
 	}
+	env_init_2(env);
 	get_host_and_user(*env);
-	(*env)->tokens = NULL;
-	(*env)->head_token = NULL;
-	(*env)->ast = NULL;
-	(*env)->exit_status = 0;
-	(*env)->pipe_fd[0] = -1;
-	(*env)->pipe_fd[1] = -1;
-	(*env)->fd_in = -1;
-	(*env)->fd_out = -1;
-	(*env)->exit_status = 0;
-	(*env)->directory_list = NULL;
-	(*env)->dir_head = NULL;
-	(*env)->syntax_error = 0;
 }
 
 void	shell_init(t_env **env, char **envp)

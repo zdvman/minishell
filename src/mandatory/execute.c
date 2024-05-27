@@ -6,22 +6,11 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 18:00:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/26 23:05:19 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/27 11:48:05 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-void	error_msg(char *cmd, int error_value)
-{
-	if (cmd)
-	{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		write(STDERR_FILENO, ": ", 2);
-	}
-	ft_putstr_fd(strerror(error_value), STDERR_FILENO);
-	write(STDERR_FILENO, "\n", 1);
-}
 
 void	wait_for_process(pid_t pid, t_env **env)
 {
@@ -213,6 +202,25 @@ void	handle_fd(t_env **env)
 	}
 }
 
+void	execute_child(t_ast_node *node, t_env **env)
+{
+	if (is_assignment(node->args[0]))
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		assign_variable(*env, node->args[0]);
+		execve(get_path(node->args[1], env), &node->args[1], (*env)->envp);
+	}
+	else
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		execve(get_path(node->args[0], env), node->args, (*env)->envp);
+	}
+	error_msg(node->args[0], errno);
+	cleanup(env, EXIT_FAILURE);
+}
+
 pid_t	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
@@ -231,29 +239,9 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 		return (0);
 	}
 	pid = fork();
-	if (pid == -1)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
+	if_error(pid == -1, env);
 	if (pid == 0)
-	{
-		if (is_assignment(node->args[0]))
-		{
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
-			assign_variable(*env, node->args[0]);
-			execve(get_path(node->args[1], env), &node->args[1], (*env)->envp);
-		}
-		else
-		{
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
-			execve(get_path(node->args[0], env), node->args, (*env)->envp);
-		}
-		error_msg(node->args[0], errno);
-		cleanup(env, EXIT_FAILURE);
-	}
+		execute_child(node, env);
 	else
 	{
 		restore_origin_fd(origin_fd, env);
@@ -271,8 +259,8 @@ void	execute_redir_output(t_ast_node *node, t_env **env)
 	fd = open(node->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
+		error_msg(node->args[0], errno);
+		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
@@ -296,8 +284,8 @@ void	execute_redir_append(t_ast_node *node, t_env **env)
 	fd = open(node->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
+		error_msg(node->args[0], errno);
+		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_out == -1)
 		(*env)->fd_out = fd;
@@ -321,8 +309,8 @@ void	execute_redir_input(t_ast_node *node, t_env **env)
 	fd = open(node->args[0], O_RDONLY);
 	if (fd == -1)
 	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
+		error_msg(node->args[0], errno);
+		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_in == -1)
 		(*env)->fd_in = fd;

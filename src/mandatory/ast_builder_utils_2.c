@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
+/*   ast_builder_utils_2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/29 08:31:35 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/23 08:39:05 by dzuiev           ###   ########.fr       */
+/*   Created: 2024/05/27 12:41:58 by dzuiev            #+#    #+#             */
+/*   Updated: 2024/05/27 12:47:36 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ bool	is_redirection(t_token_type type)
 
 bool	is_control_op(t_token_type type)
 {
-	if ( type == TOKEN_AND_IF
+	if (type == TOKEN_AND_IF
 		|| type == TOKEN_OR_IF
 		|| type == TOKEN_SEMI
 		|| type == TOKEN_PIPE
