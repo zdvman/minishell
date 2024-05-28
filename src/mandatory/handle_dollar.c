@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/04/26 08:38:33 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/28 17:04:06 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,6 @@ static void	expand_cstyle_string(char **input, char **current,
 	*current = *input;
 }
 
-// static char	*get_process_id(void)
-// {
-// 	pid_t	pid;
-
-// 	pid = 0;
-// 	pid = getpid();
-// 	return (ft_itoa(pid));
-// }
-
 static void	handle_environment_variable(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env)
 {
@@ -65,13 +56,10 @@ static void	handle_environment_variable(char **input, char **current,
 	char	*env_value;
 
 	*current = *input;
-	if (ft_isnumber(*input))
+	if (**input == '0')
 	{
-		if (**input == '0')
-			buffer_append(buf, "minishell", 9);
-
+		buffer_append(buf, "minishell", 9);
 		(*input)++;
-		return ;
 	}
 	else if (**input == '?')
 	{
@@ -86,7 +74,7 @@ static void	handle_environment_variable(char **input, char **current,
 	else
 	{
 		while (**input && (ft_isalnum(**input) || **input == '_'))
-		 	(*input)++;
+			(*input)++;
 		env_name = ft_substr(*current, 0, *input - *current);
 		if (get_var(env_name, (*env)->envp))
 			env_value = ft_strdup(get_var(env_name, (*env)->envp));
@@ -103,7 +91,8 @@ static void	handle_environment_variable(char **input, char **current,
 	*current = *input;
 }
 
-void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_env **env)
+void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
+			t_env **env)
 {
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
@@ -112,5 +101,20 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_e
 		expand_cstyle_string(input, current, buf);
 	else if (ft_isalnum(**input) || **input == '_' || **input == '?')
 		handle_environment_variable(input, current, buf, env);
+	else
+	{
+		if (is_dollar_special_case(**input))
+		{
+			write(2, "$", 1);
+			ft_putchar_fd(**input, 2);
+			ft_putstr_fd(": not supported in this version of minishell\n", 2);
+			(*env)->syntax_error = 1;
+			return ;
+		}
+
+		buffer_append_char(buf, '$');
+		buffer_append_char(buf, **input);
+		(*input)++;
+	}
 	*current = *input;
 }

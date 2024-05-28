@@ -246,7 +246,7 @@ int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
 
 //builtin.c
 void	execute_builtin(t_env **env, char **args);
-void	insert_local(t_env *env, char *var);
+// void	insert_local(t_env *env, char *var);
 int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);
 
@@ -265,5 +265,6 @@ void	get_host_and_user(t_env *env);
 
 //utils.c
 void	error_msg(char *cmd, int error_value);
+int		is_dollar_special_case(char c);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/28 12:50:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/28 12:51:31 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/28 16:26:28 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	execute(t_ast_node *ast, t_env **env)
 		return ;
 	node = ast;
 	if (node->type == TOKEN_WORD)
-		execute_command(node, env);
+		(*env)->pid = execute_command(node, env);
 	else if (node->type == TOKEN_REDIR_INPUT)
 		execute_redir_input(node, env);
 	else if (node->type == TOKEN_REDIR_OUTPUT)
