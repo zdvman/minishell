@@ -28,7 +28,8 @@ char	*expand_word(t_env **env, char **input)
 			handle_dollar_sign(input, &current, &buf, env);
 		else if (**input == '\'' || **input == '\"')
 			handle_quotes(input, &current, &buf, env);
-		else if (**input != '$' && **input != '\'' && **input != '\"')
+		// else if ()
+		else // if (**input != '$' && **input != '\'' && **input != '\"')
 			(*input)++;
 	}
 	if (current != *input)

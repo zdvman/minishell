@@ -31,7 +31,31 @@ static void	execute_child(t_ast_node *node, t_env **env)
 	cleanup(env, EXIT_FAILURE);
 }
 
-pid_t	execute_command(t_ast_node *node, t_env **env)
+void	add_child_pid(pid_t pid, t_env **env)
+{
+	if ((*env)->pid_count < MAX_CHILDREN)
+	{
+		(*env)->pid[(*env)->pid_count++] = pid;
+	}
+}
+
+void	remove_child_pid(pid_t pid, t_env **env)
+{
+	int	i;
+
+	i = 0;
+	while (i < MAX_CHILDREN)
+	{
+		if ((*env)->pid[i] == pid)
+		{
+			(*env)->pid[i] = (*env)->pid[--(*env)->pid_count];
+			break ;
+		}
+		i++;
+	}
+}
+
+void	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
 	int		origin_fd[2];
@@ -41,12 +65,10 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 	if (is_builtin(node->args[0]))
 	{
 		execute_builtin(env, node->args);
-		return (0);
 	}
 	else if (is_assignment(node->args[0]) && !node->args[1])
 	{
 		assign_variable(*env, node->args[0]);
-		return (0);
 	}
 	pid = fork();
 	if_error(pid == -1, env);
@@ -54,10 +76,11 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 		execute_child(node, env);
 	else
 	{
+		add_child_pid(pid, env);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);
+		remove_child_pid(pid, env);
 	}
-	return (pid);
 }
 
 void	execute_pipe(t_ast_node *node, t_env **env)

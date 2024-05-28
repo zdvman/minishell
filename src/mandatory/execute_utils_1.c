@@ -18,8 +18,9 @@ void	wait_for_process(pid_t pid, t_env **env)
 
 	if (waitpid(pid, &status, 0) == -1)
 	{
+		kill(pid, SIGTERM);
 		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
+		// cleanup(env, EXIT_FAILURE);
 	}
 	if (WIFEXITED(status))
 		(*env)->exit_status = WEXITSTATUS(status);

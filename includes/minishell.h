@@ -52,6 +52,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#define	MAX_CHILDREN 1024
+
 extern volatile sig_atomic_t g_signal;
 
 typedef enum e_token_type
@@ -93,7 +95,8 @@ typedef struct s_env
 	int 			syntax_error;
 	char			**envp;
 	int				exit_status;
-	pid_t			pid;
+	pid_t			pid[MAX_CHILDREN];
+	int				pid_count;
 	int				pipe_fd[2];
 	int				fd_in;
 	int				fd_out;
@@ -135,7 +138,6 @@ void	cleanup(t_env **env, int status);
 void	cleanup_loop(char **input, t_env **env);
 void	cleanup_no_exit(t_env **env);
 void	ft_free_args(char ***args);
-
 
 // utils.c
 void	set_sig_actions(void);
@@ -212,7 +214,7 @@ void	execute_background(t_ast_node *node, t_env **env);
 void	execute(t_ast_node *ast, t_env **env);
 
 //  execute_pipes_commands.c
-pid_t	execute_command(t_ast_node *node, t_env **env);
+void	execute_command(t_ast_node *node, t_env **env);
 void	execute_pipe(t_ast_node *node, t_env **env);
 
 // execute_redirections.c
