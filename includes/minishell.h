@@ -205,9 +205,37 @@ bool		is_control_op(t_token_type type);
 char	*get_path(char *cmd, t_env **env);
 
 // execute.c
+void	execute_semi(t_ast_node *node, t_env **env);
+void	execute_and(t_ast_node *node, t_env **env);
+void	execute_or(t_ast_node *node, t_env **env);
+void	execute_background(t_ast_node *node, t_env **env);
+void	execute(t_ast_node *ast, t_env **env);
+
+//  execute_pipes_commands.c
+pid_t	execute_command(t_ast_node *node, t_env **env);
+void	execute_pipe(t_ast_node *node, t_env **env);
+
+// execute_redirections.c
+void	execute_redir_output(t_ast_node *node, t_env **env);
+void	execute_redir_append(t_ast_node *node, t_env **env);
+void	execute_redir_input(t_ast_node *node, t_env **env);
+void	execute_here_doc(t_ast_node *node, t_env **env);
+
+// execute_utils_1.c
+void	wait_for_process(pid_t pid, t_env **env);
+void	if_error(bool status, t_env **env);
+void	set_origin_fd(int *origin_fd);
+void	restore_origin_fd(int *origin_fd, t_env **env);
+int		here_doc_signal_handler(t_env **env, int fd, int *origin_fd);
+
+// execute_utils_2.c
+void	pipe_fd_handler(int *fd, t_env **env, pid_t pid);
+int		cmd_is_not_valid(char *cmd, t_env **env);
+void	handle_fd(t_env **env);
+
+
 void	handle_fd(t_env **env);
 void	execute(t_ast_node *node, t_env **env);
-// void	recursive_execute(t_ast_node *node, t_env **env);
 
 //main.c
 void	print_token_name(t_token *token);

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/07 16:31:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/08 13:02:53 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/28 13:06:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static char	*get_path_val(char *key, t_env **env)
 	if (!key
 		|| !env
 		|| !*env
-		|| !(*env)->envp)
-		// || !*((*env)->envp))
+		|| !(*env)->envp
+		|| !*((*env)->envp))
 		return (NULL);
 	key_len = ft_strlen(key);
 	current = (*env)->envp;

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:22:15 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/20 18:24:46 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/28 13:08:04 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ static void	handle_single_quotes(char **input, char **current,
 	*current = *input;
 }
 
-void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf, t_env **env)
+void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf,
+			t_env **env)
 {
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);

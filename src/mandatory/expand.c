@@ -57,8 +57,8 @@ void	expand_tokens(t_env **env)
 				next = token->next;
 				if (expand_wildcard(token->value, env, prev, next))
 				{
-					free (token->value);
-					free (token);
+					free(token->value);
+					free(token);
 					token = next;
 					continue ;
 				}
