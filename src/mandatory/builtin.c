@@ -46,6 +46,8 @@ int	change_dir(t_env **env, char **args)
 		{
 			free (args[1]);
 			args[1] = ft_strdup(get_var("OLDPWD", (*env)->envp));
+			ft_putstr(args[1]);
+			ft_putchar('\n');
 			return(change_dir(env, args));
 		}
 		ft_putstr("minishell: cd: ");
@@ -188,7 +190,7 @@ int	clean_exit(t_env **env, char **args)
 	return (cleanup(env, code), 0);
 }
 
-void	execute_builtin(t_env **env, char **args)
+int	execute_builtin(t_env **env, char **args)
 {
 	int	exit;
 
@@ -211,4 +213,5 @@ void	execute_builtin(t_env **env, char **args)
 		remove_var(args[1], &(*env)->loc_vars);
 	}
 	(*env)->exit_status = exit;
+	return (exit);
 }

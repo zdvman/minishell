@@ -39,37 +39,43 @@ char	*expand_word(t_env **env, char **input)
 	return (expanded);
 }
 
+int	check_expand_wildcard(t_env **env, t_token **token, t_token **prev)
+{
+	t_token	*next;
+	char	*expanded;
+
+	if (contains((*token)->value, '*'))
+	{
+		next = (*token)->next;
+		if (expand_wildcard((*token)->value, env, *prev, next))
+		{
+			free ((*token)->value);
+			free ((*token));
+			(*token) = next;
+			return (1);
+		}
+	}
+	else
+	{
+		expanded = expand_word(env, &(*token)->value);
+		free((*token)->value);
+		(*token)->value = expanded;
+	}
+	return (0);
+}
+
 void	expand_tokens(t_env **env)
 {
 	t_token	*token;
 	t_token	*prev;
-	t_token	*next;
-	char	*expanded;
 
 	prev = NULL;
 	token = (*env)->tokens;
 	while (token)
 	{
 		if (token->type == TOKEN_WORD)
-		{
-			if (contains(token->value, '*'))
-			{
-				next = token->next;
-				if (expand_wildcard(token->value, env, prev, next))
-				{
-					free (token->value);
-					free (token);
-					token = next;
-					continue ;
-				}
-			}
-			else
-			{
-				expanded = expand_word(env, &token->value);
-				free(token->value);
-				token->value = expanded;
-			}
-		}
+			if (check_expand_wildcard(env, &token, &prev))
+				continue ;
 		prev = token;
 		token = token->next;
 	}

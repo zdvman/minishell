@@ -69,7 +69,8 @@ static void	handle_single_quotes(char **input, char **current,
 	*current = *input;
 }
 
-void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf, t_env **env)
+void	handle_quotes(char **input, char **current,
+			t_dynamic_buffer *buf, t_env **env)
 {
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);

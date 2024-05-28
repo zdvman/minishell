@@ -12,7 +12,24 @@
 
 #include "../../includes/minishell.h"
 
-static void	env_init(t_env **env, char **envp , int env_len)
+static void	set_vals(t_env **env)
+{
+	get_host_and_user(*env);
+	(*env)->tokens = NULL;
+	(*env)->head_token = NULL;
+	(*env)->ast = NULL;
+	(*env)->exit_status = 0;
+	(*env)->pipe_fd[0] = -1;
+	(*env)->pipe_fd[1] = -1;
+	(*env)->fd_in = -1;
+	(*env)->fd_out = -1;
+	(*env)->exit_status = 0;
+	(*env)->directory_list = NULL;
+	(*env)->dir_head = NULL;
+	(*env)->syntax_error = 0;
+}
+
+static void	env_init(t_env **env, char **envp, int env_len)
 {
 	int	i;
 
@@ -33,19 +50,7 @@ static void	env_init(t_env **env, char **envp , int env_len)
 			cleanup(env, EXIT_FAILURE);
 		}
 	}
-	get_host_and_user(*env);
-	(*env)->tokens = NULL;
-	(*env)->head_token = NULL;
-	(*env)->ast = NULL;
-	(*env)->exit_status = 0;
-	(*env)->pipe_fd[0] = -1;
-	(*env)->pipe_fd[1] = -1;
-	(*env)->fd_in = -1;
-	(*env)->fd_out = -1;
-	(*env)->exit_status = 0;
-	(*env)->directory_list = NULL;
-	(*env)->dir_head = NULL;
-	(*env)->syntax_error = 0;
+	set_vals(env);
 }
 
 void	shell_init(t_env **env, char **envp)

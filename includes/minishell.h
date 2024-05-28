@@ -172,11 +172,23 @@ void	get_tokens(char *input, t_env **env);
 t_ast_node	*new_ast_node(t_token_type type, char **args,
 				t_ast_node *left, t_ast_node *right);
 char		**copy_args(t_token **current, t_env **env);
+int			ast_output_is_valid(t_token **current, t_env **env);
 t_ast_node	*parse_tokens(t_env **env);
-// t_ast_node	*parse_expression(t_token **current, t_env **env);
+t_ast_node	*tree_grafter(t_ast_node *base_node, t_ast_node *new_node);
+
+
+//ast_args.c
+char	**get_redir_arg(t_token **current, t_env **env);
+
+// t_ast_nodes	*parse_expression(t_token **current, t_env **env);
+t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env);
+t_ast_node	*ft_last_node(t_ast_node *base_node);
 t_ast_node	*parse_expression(t_token **current, t_env **env);
 t_ast_node	*parse_term(t_token **current, t_env **env);
 t_ast_node	*parse_redirection(t_token **current, t_env **env);
+
+//ast_tokens.c
+t_token	**next_token(t_token **current);
 
 // parsing.c
 bool		is_redirection(t_token_type type);
@@ -194,6 +206,28 @@ void	handle_fd(t_env **env);
 void	execute(t_ast_node *node, t_env **env);
 // void	recursive_execute(t_ast_node *node, t_env **env);
 
+//execute_fd.c
+void	set_origin_fd(int *origin_fd);
+void	restore_origin_fd(int *origin_fd, t_env **env);
+void	pipe_fd_handler(int *fd, t_env **env, pid_t pid);
+void	handle_fd(t_env **env);
+
+//execute_helpers.c
+void	error_msg(char *cmd, int error_value);
+void	wait_for_process(pid_t pid, t_env **env);
+void	if_error(bool status, t_env **env);
+int		cmd_is_not_valid(char *cmd, t_env **env);
+
+//execute_heredoc.c
+void	heredoc_output(t_ast_node *node, t_env **env);
+int here_doc_signal_handler(t_env **env, int fd, int *origin_fd);
+void	execute_here_doc(t_ast_node *node, t_env **env);
+
+//execute_redirect.c
+void	execute_redir_append(t_ast_node *node, t_env **env);
+void	execute_redir_input(t_ast_node *node, t_env **env);
+void	execute_redir_output(t_ast_node *node, t_env **env);
+
 //main.c
 void	print_token_name(t_token *token);
 
@@ -207,7 +241,7 @@ void	get_current_dir(t_env **env);
 t_list	*new_dir_entry(char *entry_name);
 
 //builtin.c
-void	execute_builtin(t_env **env, char **args);
+int		execute_builtin(t_env **env, char **args);
 void	insert_local(t_env *env, char *var);
 int		is_assignment(char *cmd);
 int		is_builtin(char *cmd);

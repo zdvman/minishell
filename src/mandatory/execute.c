@@ -12,78 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-void	error_msg(char *cmd, int error_value)
-{
-	if (cmd)
-	{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		write(STDERR_FILENO, ": ", 2);
-	}
-	ft_putstr_fd(strerror(error_value), STDERR_FILENO);
-	write(STDERR_FILENO, "\n", 1);
-}
-
-void	wait_for_process(pid_t pid, t_env **env)
-{
-	int	status;
-
-	if (waitpid(pid, &status, 0) == -1)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
-	if (WIFEXITED(status))
-		(*env)->exit_status = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		(*env)->exit_status = WTERMSIG(status);
-	else if (WIFSTOPPED(status))
-		(*env)->exit_status = WSTOPSIG(status);
-	else if (WIFCONTINUED(status))
-	{
-		ft_putstr_fd("Process continued\n", STDERR_FILENO);
-		(*env)->exit_status = 0;
-	}
-}
-
-void	if_error(bool status, t_env **env)
-{
-	if (status)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
-}
-
-void	set_origin_fd(int *origin_fd)
-{
-	origin_fd[0] = dup(STDIN_FILENO);
-	origin_fd[1] = dup(STDOUT_FILENO);
-}
-
-void	restore_origin_fd(int *origin_fd, t_env **env)
-{
-	if (origin_fd[0] != -1)
-	{
-		if (dup2(origin_fd[0], STDIN_FILENO) == -1)
-		{
-			error_msg(NULL, errno);
-			cleanup(env, EXIT_FAILURE);
-		}
-		close(origin_fd[0]);
-		origin_fd[0] = -1;
-	}
-	if (origin_fd[1] != -1)
-	{
-		if (dup2(origin_fd[1], STDOUT_FILENO) == -1)
-		{
-			error_msg(NULL, errno);
-			cleanup(env, EXIT_FAILURE);
-		}
-		close(origin_fd[1]);
-		origin_fd[1] = -1;
-	}
-}
-
 void	execute_semi(t_ast_node *node, t_env **env)
 {
 	execute(node->left, env);
@@ -125,22 +53,6 @@ void	execute_background(t_ast_node *node, t_env **env)
 	}
 }
 
-void	pipe_fd_handler(int *fd, t_env **env, pid_t pid)
-{
-	if (pid == 0)
-	{
-		close(fd[0]);
-		if_error(dup2(fd[1], STDOUT_FILENO) == -1, env);
-		close(fd[1]);
-	}
-	else
-	{
-		close(fd[1]);
-		if_error(dup2(fd[0], STDIN_FILENO) == -1, env);
-		close(fd[0]);
-	}
-}
-
 void	execute_pipe(t_ast_node *node, t_env **env)
 {
 	int		fd[2];
@@ -167,60 +79,15 @@ void	execute_pipe(t_ast_node *node, t_env **env)
 	}
 }
 
-int	cmd_is_not_valid(char *cmd, t_env **env)
-{
-	char	*path;
-
-	if (!cmd)
-		return (1);
-	if (is_builtin(cmd))
-		return (0);
-	path = NULL;
-	path = get_path(cmd, env);
-	if (!path
-		|| access(path, F_OK) == -1
-		|| access(path, X_OK) == -1)
-	{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		ft_putstr_fd(": command not found", STDERR_FILENO);
-		ft_putchar_fd('\n', STDERR_FILENO);
-		return (1);
-	}
-	return (0);
-}
-
-void	handle_fd(t_env **env)
-{
-	if ((*env)->fd_out != -1)
-	{
-		if (dup2((*env)->fd_out, STDOUT_FILENO) == -1)
-		{
-			error_msg(NULL, errno);
-			cleanup(env, EXIT_FAILURE);
-		}
-		close((*env)->fd_out);
-		(*env)->fd_out = -1;
-	}
-	if ((*env)->fd_in != -1)
-	{
-		if (dup2((*env)->fd_in, STDIN_FILENO) == -1)
-		{
-			error_msg(NULL, errno);
-			cleanup(env, EXIT_FAILURE);
-		}
-		close((*env)->fd_in);
-		(*env)->fd_in = -1;
-	}
-}
-
 pid_t	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
 
 	handle_fd(env);
+	(*env)->exit_status = -1;
 	if (is_builtin(node->args[0]))
 	{
-		execute_builtin(env, node->args);
+		(*env)->exit_status = execute_builtin(env, node->args);
 		return (0);
 	}
 	else if (is_assignment(node->args[0]) && !node->args[1])
@@ -255,129 +122,6 @@ pid_t	execute_command(t_ast_node *node, t_env **env)
 	else
 		wait_for_process(pid, env);
 	return (pid);
-}
-
-void	execute_redir_input(t_ast_node *node, t_env **env)
-{
-	int	fd;
-	int	origin_fd[2];
-
-	set_origin_fd(origin_fd);
-	fd = open(node->args[0], O_RDONLY);
-	if (fd == -1)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
-	if ((*env)->fd_in == -1)
-		(*env)->fd_in = fd;
-	if (node->left)
-		execute(node->left, env);
-	close(fd);
-	restore_origin_fd(origin_fd, env);
-}
-
-void	execute_redir_output(t_ast_node *node, t_env **env)
-{
-	int	fd;
-	int	origin_fd[2];
-
-	set_origin_fd(origin_fd);
-	fd = open(node->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
-	if ((*env)->fd_out == -1)
-		(*env)->fd_out = fd;
-	if (node->left)
-		execute(node->left, env);
-	close(fd);
-	restore_origin_fd(origin_fd, env);
-}
-
-void	execute_redir_append(t_ast_node *node, t_env **env)
-{
-	int	fd;
-	int	origin_fd[2];
-
-	set_origin_fd(origin_fd);
-	fd = open(node->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (fd == -1)
-	{
-		error_msg(NULL, errno);
-		cleanup(env, EXIT_FAILURE);
-	}
-	if ((*env)->fd_out == -1)
-		(*env)->fd_out = fd;
-	if (node->left)
-		execute(node->left, env);
-	close(fd);
-	restore_origin_fd(origin_fd, env);
-}
-
-void	heredoc_output(t_ast_node *node, t_env **env)
-{
-	int	fd;
-	int	origin_fd[2];
-
-	set_origin_fd(origin_fd);
-	fd = open(".here_doc", O_RDONLY, 0644);
-	if_error(fd == -1, env);
-	if ((*env)->fd_in == -1)
-		(*env)->fd_in = fd;
-	if (node->left)
-		execute(node->left, env);
-	close(fd);
-	unlink(".here_doc");
-	restore_origin_fd(origin_fd, env);
-}
-
-int here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
-{
-	int	status;
-
-	status = 0;
-	close(fd);
-	if (g_signal)
-	{
-		(*env)->exit_status = g_signal + 128;
-		g_signal = 0;
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		status = 1;
-	}
-	restore_origin_fd(origin_fd, env);
-	return (0);
-}
-
-void	execute_here_doc(t_ast_node *node, t_env **env)
-{
-	int		fd;
-	int		origin_fd[2];
-	char	*line;
-
-	set_origin_fd(origin_fd);
-	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if_error(fd == -1, env);
-	dup2(0, STDOUT_FILENO);
-	line = readline("> ");
-	while (line)
-	{
-		if (ft_strcmp(line, node->args[0]) == 0 || g_signal)
-		{
-			ft_free_str(&line);
-			break ;
-		}
-		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
-		ft_free_str(&line);
-		line = readline("> ");
-	}
-	if (here_doc_signal_handler(env, fd, origin_fd))
-		return ;
-	heredoc_output(node, env);
 }
 
 void	execute(t_ast_node *ast, t_env **env)
