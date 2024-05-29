@@ -43,7 +43,7 @@ void	process_input(t_env **env, char *input)
 	// t_token		*current;
 	t_ast_node	*ast;
 
-	g_signal = 0;
+	// g_signal = 0;
 	add_history(input);
 	get_tokens(input, env);
 	expand_tokens(env);

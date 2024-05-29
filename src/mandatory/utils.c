@@ -66,7 +66,9 @@ int	contains(char *str, char target)
 
 void	remove_child_pid(pid_t pid)
 {
+	int	i;
 
+	i = 0;
 	while (i < MAX_CHILDREN)
 	{
 		if (g_global.pid[i] == pid)

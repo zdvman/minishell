@@ -78,13 +78,13 @@ int	here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
 
 	status = 0;
 	close(fd);
-	unlink(".here_doc");
+	// unlink(".here_doc");
 	if (g_global.g_signal)
 	{
 		(*env)->exit_status = g_global.g_signal + 128;
 		g_global.g_signal = 0;
-		// signal(SIGINT, SIG_DFL);
-		// signal(SIGQUIT, SIG_DFL);
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		status = 1;
 	}
 	restore_origin_fd(origin_fd, env);
