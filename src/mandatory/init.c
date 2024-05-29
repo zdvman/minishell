@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:42:01 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/28 21:17:29 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/29 11:40:12 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ static void	env_init_2(t_env **env)
 {
 	(*env)->syntax_error = 0;
 	(*env)->exit_status = 0;
-	ft_bzero((*env)->pid, sizeof(pid_t) * MAX_CHILDREN);
-	(*env)->pid_count = 0;
+	g_global.pid_count = 0;
+	ft_bzero(g_global.pid, sizeof(pid_t) * MAX_CHILDREN);
 	(*env)->pipe_fd[0] = -1;
 	(*env)->pipe_fd[1] = -1;
 	(*env)->fd_in = -1;

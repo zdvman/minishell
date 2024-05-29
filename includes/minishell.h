@@ -54,7 +54,19 @@
 
 # define MAX_CHILDREN 1024
 
-extern volatile sig_atomic_t	g_signal;
+typedef struct s_global
+{
+	volatile sig_atomic_t	g_signal;
+	pid_t	pid[MAX_CHILDREN];
+	int		pid_count;
+	int		in_parent;
+	int		error_num;
+	int		stop_heredoc;
+	int		in_cmd;
+	int		in_heredoc;
+}				t_global;
+
+extern t_global	g_global;
 
 typedef enum e_token_type
 {
@@ -99,8 +111,6 @@ typedef struct s_env
 	int				syntax_error;
 	char			**envp;
 	int				exit_status;
-	pid_t			pid[MAX_CHILDREN];
-	int				pid_count;
 	int				pipe_fd[2];
 	int				fd_in;
 	int				fd_out;
@@ -184,11 +194,10 @@ void		handle_dollar_sign(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
 
 // get_tokens.c
-void		add_token(t_token_type type, char *value,
-				int space_after, t_env **env);
-int			is_meta_character(char c);
-void		handle_meta(t_env **env, char **input);
-void		get_tokens(char *input, t_env **env);
+void	add_token(t_token_type type, char *value, int space_after, t_env **env);
+int		is_meta_character(char c);
+void	handle_meta(t_env **env, char **input);
+void	get_tokens(char *input, t_env **env);
 
 // ast_builder_1.c
 t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env);
@@ -298,4 +307,8 @@ int			contains(char *str, char target);
 void		error_msg(char *cmd, int error_value);
 int			is_dollar_special_case(char c);
 void		put_3(char *s1, char *s2, char *s3);
+int		is_dollar_special_case(char c);
+void	add_child_pid(pid_t pid);
+void	remove_child_pid(pid_t pid);
+
 #endif

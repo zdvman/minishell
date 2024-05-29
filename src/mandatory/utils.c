@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 09:56:26 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/28 17:03:03 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/29 11:03:46 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,14 @@ int	is_dollar_special_case(char c)
 		|| c == '[');
 }
 
+void	add_child_pid(pid_t pid)
+{
+	if (g_global.pid_count < MAX_CHILDREN)
+	{
+		g_global.pid[g_global.pid_count++] = pid;
+	}
+}
+
 int	contains(char *str, char target)
 {
 	int	i;
@@ -54,4 +62,18 @@ int	contains(char *str, char target)
 		i++;
 	}
 	return (0);
+}
+
+void	remove_child_pid(pid_t pid)
+{
+
+	while (i < MAX_CHILDREN)
+	{
+		if (g_global.pid[i] == pid)
+		{
+			g_global.pid[i] = g_global.pid[--g_global.pid_count];
+			break ;
+		}
+		i++;
+	}
 }
