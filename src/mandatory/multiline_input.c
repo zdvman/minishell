@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 14:43:05 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/27 14:45:58 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/29 12:00:03 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,10 @@ static int	g_signal_received(char **line, t_dynamic_buffer *buf, t_env **env)
 	int	status;
 
 	status = 0;
-	if (g_signal)
+	if (g_global.g_signal)
 	{
-		(*env)->exit_status = g_signal + 128;
-		g_signal = 0;
+		(*env)->exit_status = g_global.g_signal + 128;
+		g_global.g_signal = 0;
 		ft_free_str(line);
 		buffer_clear(buf);
 		status = 1;

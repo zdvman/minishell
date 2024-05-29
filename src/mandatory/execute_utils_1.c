@@ -18,9 +18,7 @@ void	wait_for_process(pid_t pid, t_env **env)
 
 	if (waitpid(pid, &status, 0) == -1)
 	{
-		kill(pid, SIGTERM);
 		error_msg(NULL, errno);
-		// cleanup(env, EXIT_FAILURE);
 	}
 	if (WIFEXITED(status))
 		(*env)->exit_status = WEXITSTATUS(status);
@@ -80,12 +78,13 @@ int	here_doc_signal_handler(t_env **env, int fd, int *origin_fd)
 
 	status = 0;
 	close(fd);
-	if (g_signal)
+	unlink(".here_doc");
+	if (g_global.g_signal)
 	{
-		(*env)->exit_status = g_signal + 128;
-		g_signal = 0;
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		(*env)->exit_status = g_global.g_signal + 128;
+		g_global.g_signal = 0;
+		// signal(SIGINT, SIG_DFL);
+		// signal(SIGQUIT, SIG_DFL);
 		status = 1;
 	}
 	restore_origin_fd(origin_fd, env);

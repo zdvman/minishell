@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/28 17:04:06 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/29 11:05:41 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,6 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			(*env)->syntax_error = 1;
 			return ;
 		}
-
 		buffer_append_char(buf, '$');
 		buffer_append_char(buf, **input);
 		(*input)++;

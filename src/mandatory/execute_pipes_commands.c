@@ -31,30 +31,6 @@ static void	execute_child(t_ast_node *node, t_env **env)
 	cleanup(env, EXIT_FAILURE);
 }
 
-void	add_child_pid(pid_t pid, t_env **env)
-{
-	if ((*env)->pid_count < MAX_CHILDREN)
-	{
-		(*env)->pid[(*env)->pid_count++] = pid;
-	}
-}
-
-void	remove_child_pid(pid_t pid, t_env **env)
-{
-	int	i;
-
-	i = 0;
-	while (i < MAX_CHILDREN)
-	{
-		if ((*env)->pid[i] == pid)
-		{
-			(*env)->pid[i] = (*env)->pid[--(*env)->pid_count];
-			break ;
-		}
-		i++;
-	}
-}
-
 void	execute_command(t_ast_node *node, t_env **env)
 {
 	pid_t	pid;
@@ -76,10 +52,10 @@ void	execute_command(t_ast_node *node, t_env **env)
 		execute_child(node, env);
 	else
 	{
-		add_child_pid(pid, env);
+		add_child_pid(pid);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);
-		remove_child_pid(pid, env);
+		remove_child_pid(pid);
 	}
 }
 
@@ -102,9 +78,11 @@ void	execute_pipe(t_ast_node *node, t_env **env)
 	}
 	else
 	{
+		add_child_pid(pid);
 		pipe_fd_handler(fd, env, pid);
 		execute(node->right, env);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);
+		remove_child_pid(pid);
 	}
 }

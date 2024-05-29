@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/28 20:57:18 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/29 17:31:16 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,28 +152,28 @@ void minishell_loop(t_env **env)
 	input = NULL;
 	while (1)
 	{
+		g_global.g_signal = 0;
 		input = read_multiline(env);
 		if (!input)
 			exit_minishell(env);
-		else if (!*input && g_signal)
+		else if (!*input && g_global.g_signal)
 		{
-			(*env)->exit_status = g_signal + 128;
-			g_signal = 0;
+			(*env)->exit_status = g_global.g_signal + 128;
+			g_global.g_signal = 0;
 			continue ;
 		}
 
 		if (*input)
 		{
-			g_signal = 0;
 			add_history(input);
 			get_tokens(input, env);
 			expand_tokens(env);
 			current = (*env)->tokens;
 			while (current)
 			{
-				print_token_name(current);
-				printf(" space: %s", current->has_space ? "true ;" : "false;");
-				printf(" %s\n", current->value);
+				// print_token_name(current);
+				// printf(" space: %s", current->has_space ? "true ;" : "false;");
+				// printf(" %s\n", current->value);
 				current = current->next;
 			}
 			ast = parse_tokens(env);
