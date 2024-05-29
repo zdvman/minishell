@@ -12,6 +12,19 @@
 
 #include "../../includes/minishell.h"
 
+void	cut_out_var(char ***new_env, char ***vars, int *i)
+{
+	free ((*vars)[*i]);
+	while ((*vars)[*i + 1])
+	{
+		(*new_env)[*i] = (*vars)[*i + 1];
+		(*i)++;
+	}
+	(*new_env)[*i] = NULL;
+	free ((*vars));
+	(*vars) = (*new_env);
+}
+
 void	remove_var(char *name, char ***vars)
 {
 	char	**new_env;
@@ -33,18 +46,7 @@ void	remove_var(char *name, char ***vars)
 		(*vars)[i][ft_strlen(name)] != '=')
 			new_env[i] = (*vars)[i];
 		else
-		{
-			free ((*vars)[i]);
-			while ((*vars)[i + 1])
-			{
-				new_env[i] = (*vars)[i + 1];
-				i++;
-			}
-			new_env[i] = NULL;
-			free ((*vars));
-			(*vars) = new_env;
-			return ;
-		}
+			return (cut_out_var(&new_env, vars, &i));
 		i++;
 	}
 	free (new_env);
@@ -106,19 +108,15 @@ int	export_var(t_env *env, char **args)
 	if (!args[1])
 		return (1);
 	if (!valid_env_name(args[1]))
-	{
-		ft_putstr("minishell: export: \'");
-		ft_putstr(args[1]);
-		ft_putstr("\': not a valid identifier\n");
-		return (2);
-	}	
+		return (put_3("minishell: export: \'", args[1],
+				"\': not a valid identifier\n"), 2);
 	if (!is_assignment(args[1]))
 	{
 		if (get_var(args[1], env->loc_vars))
 		{
 			while (ft_strncmp(args[1], env->loc_vars[i], ft_strlen(args[1]))
 				&& env->loc_vars[i][ft_strlen(args[1])] != '=')
-			i++;
+				i++;
 			add_var(env->loc_vars[i], &env->envp);
 			remove_var(args[1], &env->loc_vars);
 		}

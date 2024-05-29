@@ -49,10 +49,29 @@ static void	expand_cstyle_string(char **input, char **current,
 	*current = *input;
 }
 
+static void	get_val(t_env **env, char **input, char **current,
+	t_dynamic_buffer *buf)
+{
+	char	*env_name;
+	char	*env_value;
+
+	while (**input && (ft_isalnum(**input) || **input == '_'))
+		(*input)++;
+	env_name = ft_substr(*current, 0, *input - *current);
+	if (get_var(env_name, (*env)->envp))
+		env_value = ft_strdup(get_var(env_name, (*env)->envp));
+	else if (get_var(env_name, (*env)->loc_vars))
+		env_value = ft_strdup(get_var(env_name, (*env)->loc_vars));
+	else
+		env_value = ft_strdup("");
+	buffer_append(buf, env_value, ft_strlen(env_value));
+	free(env_name);
+	free(env_value);
+}
+
 static void	handle_environment_variable(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env)
 {
-	char	*env_name;
 	char	*env_value;
 
 	*current = *input;
@@ -72,20 +91,7 @@ static void	handle_environment_variable(char **input, char **current,
 		(*input)++;
 	}
 	else
-	{
-		while (**input && (ft_isalnum(**input) || **input == '_'))
-			(*input)++;
-		env_name = ft_substr(*current, 0, *input - *current);
-		if (get_var(env_name, (*env)->envp))
-			env_value = ft_strdup(get_var(env_name, (*env)->envp));
-		else if (get_var(env_name, (*env)->loc_vars))
-			env_value = ft_strdup(get_var(env_name, (*env)->loc_vars));
-		else
-			env_value = ft_strdup("");
-		buffer_append(buf, env_value, ft_strlen(env_value));
-		free(env_name);
-		free(env_value);
-	}
+		get_val(env, input, current, buf);
 	if (env_value == NULL)
 		buffer_append(buf, "", 0);
 	*current = *input;
@@ -111,7 +117,6 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			(*env)->syntax_error = 1;
 			return ;
 		}
-
 		buffer_append_char(buf, '$');
 		buffer_append_char(buf, **input);
 		(*input)++;

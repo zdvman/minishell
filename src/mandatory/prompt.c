@@ -27,7 +27,7 @@ void	get_host_and_user(t_env *env)
 	close(fd);
 	res = ft_calloc(1, 253);
 	res[0] = '@';
-	while (buf[i] && buf[i] != '.')
+	while (buf[i] && buf[i] != '.' && !ft_isspace(buf[i]))
 	{
 		res[i + 1] = buf[i];
 		i++;
@@ -49,7 +49,8 @@ char	*add_cwd(t_env *env, char *user_host)
 		res = ft_strjoin(user_host, dir_name);
 		return (res);
 	}
-	if (ft_strncmp(dir_name, get_var("HOME", env->envp), ft_strlen(get_var("HOME", env->envp))))
+	if (ft_strncmp(dir_name, get_var("HOME", env->envp),
+			ft_strlen(get_var("HOME", env->envp))))
 	{
 		res = ft_strjoin(user_host, dir_name);
 		return (res);

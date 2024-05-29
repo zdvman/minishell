@@ -38,115 +38,27 @@
 # include "../includes/minishell_bonus.h"
 #endif
 
-void	print_token_name(t_token *token)
+void	process_input(t_env **env, char *input)
 {
-	if (token->type == TOKEN_WORD)
-		printf("TOKEN_WORD         :");
-	else if (token->type == TOKEN_BACKGROUND)
-		printf("TOKEN_BACKGROUND   :");
-	else if (token->type == TOKEN_REDIR_INPUT)
-		printf("TOKEN_REDIR_INPUT  :");
-	else if (token->type == TOKEN_REDIR_OUTPUT)
-		printf("TOKEN_REDIR_OUTPUT :");
-	else if (token->type == TOKEN_REDIR_APPEND)
-		printf("TOKEN_REDIR_APPEND :");
-	else if (token->type == TOKEN_HERE_DOC)
-		printf("TOKEN_HERE_DOC     :");
-	else if (token->type == TOKEN_PIPE)
-		printf("TOKEN_PIPE         :");
-	else if (token->type == TOKEN_AND_IF)
-		printf("TOKEN_AND_IF       :");
-	else if (token->type == TOKEN_OR_IF)
-		printf("TOKEN_OR_IF        :");
-	else if (token->type == TOKEN_SEMI)
-		printf("TOKEN_SEMI         :");
-	else if (token->type == TOKEN_OPEN_BRACKET)
-		printf("TOKEN_OPEN BRACKET :");
-	else if (token->type == TOKEN_CLOSE_BRACKET)
-		printf("TOKEN_CLOSE BRACKET:");
-	else if (token->type == TOKEN_EOF)
-		printf("TOKEN_EOF          :");
-}
-
-void print_escaped(FILE *stream, const char *str)
-{
-	if (!str) return;
-	while (*str)
-	{
-		switch (*str)
-		{
-			case '\n': fprintf(stream, "\\n"); break;
-			case '\"': fprintf(stream, "\\\""); break;
-			case '\\': fprintf(stream, "\\\\"); break;
-			default: fputc(*str, stream);
-		}
-		str++;
-	}
-}
-
-void print_ast_dot(t_ast_node *node, FILE *stream)
-{
-	if (node == NULL) return;
-
-	fprintf(stream, "\"%p\" [label=\"", (void*)node);
-	// Print node type
-	switch (node->type)
-	{
-		// Adjust these labels based on your specific types and what they represent
-		case TOKEN_WORD: fprintf(stream, "CMD: "); break;
-		case TOKEN_REDIR_INPUT:
-		case TOKEN_REDIR_OUTPUT:
-		case TOKEN_REDIR_APPEND:
-		case TOKEN_HERE_DOC: fprintf(stream, "REDIR: "); break;
-		case TOKEN_PIPE: fprintf(stream, "|"); break;
-		case TOKEN_BACKGROUND: fprintf(stream, "&"); break;
-		case TOKEN_AND_IF: fprintf(stream, "&&"); break;
-		case TOKEN_OR_IF: fprintf(stream, "||"); break;
-		case TOKEN_SEMI: fprintf(stream, ";"); break;
-		break;
-		default: fprintf(stream, "UNKNOWN"); break;
-	}
-	// Print all arguments for the node
-	if (node->args)
-	{
-		for (int i = 0; node->args[i] != NULL; i++)
-		{
-			if (i > 0) fprintf(stream, " "); // Add space between arguments
-			print_escaped(stream, node->args[i]);
-		}
-	}
-	fprintf(stream, "\"];\n");
-	if (node->left != NULL)
-	{
-		fprintf(stream, "\"%p\" -> \"%p\" [label=\"L\"];\n", (void*)node, (void*)node->left);
-		print_ast_dot(node->left, stream);
-	}
-	if (node->right != NULL)
-	{
-		fprintf(stream, "\"%p\" -> \"%p\" [label=\"R\"];\n", (void*)node, (void*)node->right);
-		print_ast_dot(node->right, stream);
-	}
-}
-
-void	generate_ast_diagram(t_ast_node *root)
-{
-	(void)root;
-	FILE *stream = fopen("ast.dot", "w");
-	if (stream == NULL)
-	{
-		perror("fopen");
-		return;
-	}
-	fprintf(stream, "digraph AST {\n");
-	print_ast_dot(root, stream);
-	fprintf(stream, "}\n");
-	fclose(stream);
-}
-
-void minishell_loop(t_env **env)
-{
-	t_token		*current;
+	// t_token		*current;
 	t_ast_node	*ast;
+
+	g_signal = 0;
+	add_history(input);
+	get_tokens(input, env);
+	expand_tokens(env);
+	// current = (*env)->tokens;
+	// print_tokens(current);
+	ast = parse_tokens(env);
+	if (ast)
+	{
+		generate_ast_diagram(ast);
+		execute(ast, env);
+	}
+}
+
+void	minishell_loop(t_env **env)
+{
 	char		*input;
 
 	input = NULL;
@@ -161,28 +73,8 @@ void minishell_loop(t_env **env)
 			g_signal = 0;
 			continue ;
 		}
-
 		if (*input)
-		{
-			g_signal = 0;
-			add_history(input);
-			get_tokens(input, env);
-			expand_tokens(env);
-			current = (*env)->tokens;
-			while (current)
-			{
-				print_token_name(current);
-				printf(" space: %s", current->has_space ? "true ;" : "false;");
-				printf(" %s\n", current->value);
-				current = current->next;
-			}
-			ast = parse_tokens(env);
-			if (ast)
-			{
-				generate_ast_diagram(ast);
-				execute(ast, env);
-			}
-		}
+			process_input(env, input);
 		cleanup_loop(&input, env);
 	}
 }

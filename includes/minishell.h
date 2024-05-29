@@ -52,9 +52,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#define	MAX_CHILDREN 1024
+# define MAX_CHILDREN 1024
 
-extern volatile sig_atomic_t g_signal;
+extern volatile sig_atomic_t	g_signal;
 
 typedef enum e_token_type
 {
@@ -75,10 +75,14 @@ typedef enum e_token_type
 
 typedef struct s_ast_node
 {
-	t_token_type 		type;          // Тип узла (команда, пайплайн, логический оператор)
-	char				**args;        // Аргументы команды
-	struct s_ast_node	*left;         // Левый ребенок в дереве (для операторов)
-	struct s_ast_node	*right;        // Правый ребенок в дереве (для операторов)
+	t_token_type		type;	
+	// Тип узла (команда, пайплайн, логический оператор)
+	char				**args;	
+	// Аргументы команды
+	struct s_ast_node	*left;	
+	// Левый ребенок в дереве (для операторов)
+	struct s_ast_node	*right;	
+	// Правый ребенок в дереве (для операторов)
 }				t_ast_node;
 
 typedef struct s_token
@@ -92,7 +96,7 @@ typedef struct s_token
 
 typedef struct s_env
 {
-	int 			syntax_error;
+	int				syntax_error;
 	char			**envp;
 	int				exit_status;
 	pid_t			pid[MAX_CHILDREN];
@@ -118,65 +122,73 @@ typedef struct s_dynamic_buffer
 	size_t	capacity;
 }				t_dynamic_buffer;
 
+//void	print_token_name(t_token *token)
+void		print_token_name(t_token *token);
+void		print_escaped(FILE *stream, const char *str);
+void		print_ast_dot(t_ast_node *node, FILE *stream);
+void		print_tokens(t_token *current);
+
 // init.c
-void	shell_init(t_env **env, char **envp);
+void		shell_init(t_env **env, char **envp);
 
 // dynamic_buffer.c
-void	buffer_init(t_dynamic_buffer *buf);
-void	buffer_free(t_dynamic_buffer *buf);
-void	buffer_clear(t_dynamic_buffer *buf);
-int		buffer_append_char(t_dynamic_buffer *buf, char c);
-int		buffer_append(t_dynamic_buffer *buf, const char *str, size_t n);
+void		buffer_init(t_dynamic_buffer *buf);
+void		buffer_free(t_dynamic_buffer *buf);
+void		buffer_clear(t_dynamic_buffer *buf);
+int			buffer_append_char(t_dynamic_buffer *buf, char c);
+int			buffer_append(t_dynamic_buffer *buf, const char *str, size_t n);
 
 // free_utils_1.c
-void	ft_free_tokens(t_token **tokens);
-void	ft_free_env(t_env **env);
-void	ft_free_ast(t_ast_node **node);
-void	cleanup(t_env **env, int status);
+void		ft_free_tokens(t_token **tokens);
+void		ft_free_env(t_env **env);
+void		ft_free_ast(t_ast_node **node);
+void		cleanup(t_env **env, int status);
 
 // free_utils_2.c
-void	cleanup_loop(char **input, t_env **env);
-void	cleanup_no_exit(t_env **env);
-void	ft_free_args(char ***args);
+void		cleanup_loop(char **input, t_env **env);
+void		cleanup_no_exit(t_env **env);
+void		ft_free_args(char ***args);
 
 // utils.c
-void	set_sig_actions(void);
-void	exit_minishell(t_env **env);
+void		set_sig_actions(void);
+void		exit_minishell(t_env **env);
 
 // expand.c
-void	expand_tokens(t_env **env);
-char	*expand_word(t_env **env, char **input);
+void		expand_tokens(t_env **env);
+char		*expand_word(t_env **env, char **input);
 
 // multiline_input.c
-char	*read_multiline(t_env **env);
+char		*read_multiline(t_env **env);
 
 // multiline_input_utils.c
-int		is_quote_open(const char *input);
-int		pipe_or_and_is_closed(char *buffer_str, int i);
+int			is_quote_open(const char *input);
+int			pipe_or_and_is_closed(char *buffer_str, int i);
 
 // handle_meta_redirs_pipe_or.c
-void	handle_greater_than_sign(t_env **env, char **input);
-void	handle_less_than_sign(t_env **env, char **input);
-void	handle_pipe_or(t_env **env, char **input);
-void	handle_and(t_env **env, char **input);
+void		handle_greater_than_sign(t_env **env, char **input);
+void		handle_less_than_sign(t_env **env, char **input);
+void		handle_pipe_or(t_env **env, char **input);
+void		handle_and(t_env **env, char **input);
 
 // handle_meta_brackets_semi.c
-void	handle_semicolon(t_env **env, char **input);
-void	handle_open_bracket(t_env **env, char **input);
-void	handle_close_bracket(t_env **env, char **input);
+void		handle_semicolon(t_env **env, char **input);
+void		handle_open_bracket(t_env **env, char **input);
+void		handle_close_bracket(t_env **env, char **input);
 
 // handle_quotes.c
-void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf, t_env **env);
+void		handle_quotes(char **input, char **current,
+				t_dynamic_buffer *buf, t_env **env);
 
 // handle_dollar.c
-void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf, t_env **env);
+void		handle_dollar_sign(char **input, char **current,
+				t_dynamic_buffer *buf, t_env **env);
 
 // get_tokens.c
-void	add_token(t_token_type type, char *value, int space_after, t_env **env);
-int		is_meta_character(char c);
-void	handle_meta(t_env **env, char **input);
-void	get_tokens(char *input, t_env **env);
-
+void		add_token(t_token_type type, char *value,
+				int space_after, t_env **env);
+int			is_meta_character(char c);
+void		handle_meta(t_env **env, char **input);
+void		get_tokens(char *input, t_env **env);
 
 // ast_builder_1.c
 t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env);
@@ -204,69 +216,86 @@ bool		is_redirection(t_token_type type);
 bool		is_control_op(t_token_type type);
 
 // get_path.c
-char	*get_path(char *cmd, t_env **env);
+char		*get_path(char *cmd, t_env **env);
 
 // execute.c
-void	execute_semi(t_ast_node *node, t_env **env);
-void	execute_and(t_ast_node *node, t_env **env);
-void	execute_or(t_ast_node *node, t_env **env);
-void	execute_background(t_ast_node *node, t_env **env);
-void	execute(t_ast_node *ast, t_env **env);
+void		execute_semi(t_ast_node *node, t_env **env);
+void		execute_and(t_ast_node *node, t_env **env);
+void		execute_or(t_ast_node *node, t_env **env);
+void		execute_background(t_ast_node *node, t_env **env);
+void		execute(t_ast_node *ast, t_env **env);
 
 //  execute_pipes_commands.c
-void	execute_command(t_ast_node *node, t_env **env);
-void	execute_pipe(t_ast_node *node, t_env **env);
+void		execute_command(t_ast_node *node, t_env **env);
+void		execute_pipe(t_ast_node *node, t_env **env);
 
 // execute_redirections.c
-void	execute_redir_output(t_ast_node *node, t_env **env);
-void	execute_redir_append(t_ast_node *node, t_env **env);
-void	execute_redir_input(t_ast_node *node, t_env **env);
-void	execute_here_doc(t_ast_node *node, t_env **env);
+void		execute_redir_output(t_ast_node *node, t_env **env);
+void		execute_redir_append(t_ast_node *node, t_env **env);
+void		execute_redir_input(t_ast_node *node, t_env **env);
+void		execute_here_doc(t_ast_node *node, t_env **env);
 
 // execute_utils_1.c
-void	wait_for_process(pid_t pid, t_env **env);
-void	if_error(bool status, t_env **env);
-void	set_origin_fd(int *origin_fd);
-void	restore_origin_fd(int *origin_fd, t_env **env);
-int		here_doc_signal_handler(t_env **env, int fd, int *origin_fd);
+void		wait_for_process(pid_t pid, t_env **env);
+void		if_error(bool status, t_env **env);
+void		set_origin_fd(int *origin_fd);
+void		restore_origin_fd(int *origin_fd, t_env **env);
+int			here_doc_signal_handler(t_env **env, int fd, int *origin_fd);
 
 // execute_utils_2.c
-void	pipe_fd_handler(int *fd, t_env **env, pid_t pid);
-int		cmd_is_not_valid(char *cmd, t_env **env);
-void	handle_fd(t_env **env);
+void		pipe_fd_handler(int *fd, t_env **env, pid_t pid);
+int			cmd_is_not_valid(char *cmd, t_env **env);
+void		handle_fd(t_env **env);
 
-
-void	handle_fd(t_env **env);
-void	execute(t_ast_node *node, t_env **env);
+void		handle_fd(t_env **env);
+void		execute(t_ast_node *node, t_env **env);
 
 //main.c
-void	print_token_name(t_token *token);
+void		print_token_name(t_token *token);
+
+//main_deub.c
+void		generate_ast_diagram(t_ast_node *root);
 
 //wildcard.c  for bonus but using here for testing
-int		contains(char *str, char target);
-int		expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next);
+int			contains(char *str, char target);
+int			expand_wildcard(char *input, t_env **env,
+				t_token *prev, t_token *next);
+
+//wildcard_dir.c
+t_list		*new_dir_entry(char *entry_name);
+void		free_dir(t_env **env);
+void		get_current_dir(t_env **env);
 
 //builtin.c
-void	execute_builtin(t_env **env, char **args);
-// void	insert_local(t_env *env, char *var);
-int		is_assignment(char *cmd);
-int		is_builtin(char *cmd);
+void		execute_builtin(t_env **env, char **args);
+
+//builtin_utils.c
+int			is_assignment(char *cmd);
+int			is_builtin(char *cmd);
+
+//builtin_cd.c
+int			change_dir(t_env **env, char **args);
+
+// void		insert_local(t_env *env, char *var);
+int			is_assignment(char *cmd);
+int			is_builtin(char *cmd);
 
 //env_var
-void	add_var(char *var, char ***vars);
-void	assign_variable(t_env *env, char *string);
-int		export_var(t_env *env, char **args);
-char	*get_var(char *env_var, char **vars);
-char	*make_var(char *var, char *val);
-void	remove_var(char *name, char ***vars);
-int		valid_env_name(char *name);
+void		add_var(char *var, char ***vars);
+void		assign_variable(t_env *env, char *string);
+int			export_var(t_env *env, char **args);
+char		*get_var(char *env_var, char **vars);
+char		*make_var(char *var, char *val);
+void		remove_var(char *name, char ***vars);
+int			valid_env_name(char *name);
 
 //prompt.c
-char	*prompt(t_env *env);
-void	get_host_and_user(t_env *env);
+char		*prompt(t_env *env);
+void		get_host_and_user(t_env *env);
 
 //utils.c
-void	error_msg(char *cmd, int error_value);
-int		is_dollar_special_case(char c);
-
+int			contains(char *str, char target);
+void		error_msg(char *cmd, int error_value);
+int			is_dollar_special_case(char c);
+void		put_3(char *s1, char *s2, char *s3);
 #endif

@@ -12,78 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-int	is_builtin(char *cmd)
-{
-	if (!ft_strcmp(cmd, "echo"))
-		return (1);
-	if (!ft_strcmp(cmd, "cd"))
-		return (1);
-	if (!ft_strcmp(cmd, "pwd"))
-		return (1);
-	if (!ft_strcmp(cmd, "env"))
-		return (1);
-	if (!ft_strcmp(cmd, "unset"))
-		return (1);
-	if (!ft_strcmp(cmd, "exit"))
-		return (1);
-	if (!ft_strcmp(cmd, "export"))
-		return (1);
-	return (0);
-}
-
-int	change_dir(t_env **env, char **args)
-{
-	char	*tmp;
-	char	cwd[256];
-	char	old_cwd[256];
-
-	tmp = NULL;
-	if (!args[1])
-		return (1);
-	if (args[1] && args[1][0] == '-')
-	{
-		if (!args[1][1])
-		{
-			free (args[1]);
-			args[1] = ft_strdup(get_var("OLDPWD", (*env)->envp));
-			return(change_dir(env, args));
-		}
-		ft_putstr("minishell: cd: ");
-		ft_putchar(args[1][0]);
-		ft_putchar(args[1][1]);
-		ft_putstr(": invalid option\ncd: usage: cd [-] [dir]\n");
-		return (2);
-	}	
-	if (args[1] && args[2])
-		return ((void)ft_putstr("minishell: cd: too many arguments\n"), 1);
-	if (args[1][0] == '~')
-		tmp = ft_strjoin(get_var("HOME", (*env)->envp), &args[1][1]);
-	else
-		tmp = ft_strdup(args[1]);
-	if (access(tmp, F_OK))
-		return ((void)ft_putstr("minishell: cd: "), (void)ft_putstr(args[1]),
-				(void)ft_putstr(": No such file or directory\n"), 1);
-	if (access(tmp, R_OK | X_OK))
-		return ((void)ft_putstr("minishell: cd: "), (void)ft_putstr(args[1]),
-				(void)ft_putstr(": Permission denied\n"), 1);
-	free (args[1]);
-	args[1] = tmp;
-	getcwd(old_cwd, 256);
-	if ((chdir(args[1])) == -1)
-		return (1);
-	getcwd(cwd, 256);
-	
-	remove_var("OLDPWD", &(*env)->envp);
-	remove_var("PWD", &(*env)->envp);
-	tmp = ft_strjoin("OLDPWD=", old_cwd);
-	add_var(tmp, &(*env)->envp);
-	free (tmp);
-	tmp = ft_strjoin("PWD=", cwd);
-	add_var(tmp, &(*env)->envp);
-	free (tmp);
-	return (0);
-}
-
 int	print_cwd(char *args)
 {
 	char	cwd[256];
@@ -142,25 +70,6 @@ int	echo(char **args)
 	}
 	if (!n)
 		ft_putchar('\n');
-	return (0);
-}
-
-int	is_assignment(char *cmd)
-{
-	int	i;
-
-	i = 0;
-	if (cmd[0] != '_' && !ft_isalpha(cmd[0]))
-		return (0);
-	i++;
-	while (cmd[i] && cmd[i] != '=')
-	{
-		if (cmd[0] != '_' && !ft_isalnum(cmd[0]))
-			return (0);
-		i++;
-	}
-	if (cmd[i] && cmd[i] == '=')
-		return (1);
 	return (0);
 }
 

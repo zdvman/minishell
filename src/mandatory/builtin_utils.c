@@ -12,56 +12,40 @@
 
 #include "../../includes/minishell.h"
 
-char	*make_var(char *var, char *val)
+int	is_builtin(char *cmd)
 {
-	char	*tmp;
-	char	*res;
-
-	tmp = ft_strjoin(var, "=");
-	res = ft_strjoin(tmp, val);
-	free (tmp);
-	return (res);
+	if (!ft_strcmp(cmd, "echo"))
+		return (1);
+	if (!ft_strcmp(cmd, "cd"))
+		return (1);
+	if (!ft_strcmp(cmd, "pwd"))
+		return (1);
+	if (!ft_strcmp(cmd, "env"))
+		return (1);
+	if (!ft_strcmp(cmd, "unset"))
+		return (1);
+	if (!ft_strcmp(cmd, "exit"))
+		return (1);
+	if (!ft_strcmp(cmd, "export"))
+		return (1);
+	return (0);
 }
 
-char	*get_var(char *env_var, char **vars)
-{
-	int		i;
-
-	i = 0;
-	if (!vars)
-		return (NULL);
-	while (vars[i])
-	{
-		if (!ft_strncmp(vars[i], env_var, ft_strlen(env_var))
-			&& vars[i][ft_strlen(env_var)] == '=')
-			return (&vars[i][ft_strlen(env_var) + 1]);
-		i++;
-	}
-	return (NULL);
-}
-
-char	*get_var_name(char *str)
-{
-	char	*res;
-	int		i;
-
-	i = 0;
-	while (str[i] != '=')
-		i++;
-	res = ft_substr(str, 0, i);
-	return (res);
-}
-
-int	valid_env_name(char *name)
+int	is_assignment(char *cmd)
 {
 	int	i;
 
 	i = 0;
-	if (name[i] != '_' && !ft_isalpha(name[i++]))
+	if (cmd[0] != '_' && !ft_isalpha(cmd[0]))
 		return (0);
-	while (name[i] && (name[i] == '_' || ft_isalnum(name[i])))
+	i++;
+	while (cmd[i] && cmd[i] != '=')
+	{
+		if (cmd[0] != '_' && !ft_isalnum(cmd[0]))
+			return (0);
 		i++;
-	if (!name[i] || name[i] == '=')
+	}
+	if (cmd[i] && cmd[i] == '=')
 		return (1);
 	return (0);
 }

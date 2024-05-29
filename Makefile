@@ -69,7 +69,7 @@ OBJ_BONUS_DIR = $(OBJ_DIR)/bonus
 SRC = $(wildcard $(SRC_DIR)/*.c) # All source files in current directory (main.c)
 SRC_MANDATORY = $(wildcard $(SRC_MANDATORY_DIR)/*.c)
 SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
-SRC += src/bonus/wildcard.c
+SRC += src/bonus/wildcard.c src/bonus/wildcard_dir.c
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) # All object files in current directory
 OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
