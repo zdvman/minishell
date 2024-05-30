@@ -196,7 +196,7 @@ void		handle_meta(t_env **env, char **input);
 void		get_tokens(char *input, t_env **env);
 
 // get_tokens_utils.c
-int		handle_dollar_bakctick_exception(char **input, char **current, t_env **env);
+int		handle_dollar_backtick_exception(char **input, char **current, t_env **env);
 void	handle_dollar_special_case(char *input, t_env **env);
 void	handle_backtick(char **input, t_env **env);
 

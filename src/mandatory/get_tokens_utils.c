@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:25:37 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 18:09:31 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 20:24:38 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	handle_backtick(char **input, t_env **env)
 	return ;
 }
 
-int	handle_dollar_bakctick_exception(char **input, char **current, t_env **env)
+int	handle_dollar_backtick_exception(char **input, char **current, t_env **env)
 {
 	if (**input == '$' && is_dollar_special_case(*(*input + 1))
 		&& !is_quote_open(*current))

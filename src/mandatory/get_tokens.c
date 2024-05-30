@@ -114,7 +114,7 @@ void	get_tokens(char *input, t_env **env)
 		}
 		else if (*input == '$' || *input == '`')
 		{
-			if (handle_dollar_bakctick_exception(&input, &current, env) == 1)
+			if (handle_dollar_backtick_exception(&input, &current, env) == 1)
 				return ;
 			else
 				tokenize_word(env, &input);

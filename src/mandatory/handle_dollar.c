@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 19:17:20 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 20:38:27 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,10 +101,13 @@ static void	handle_environment_variable(char **input, char **current,
 void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			t_env **env)
 {
+	int		quote;
+
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
+	quote = is_quote_open(buf->data);
 	(*input)++;
-	if (**input == '\'')
+	if (**input == '\'' && !is_quote_open(buf->data))
 		expand_cstyle_string(input, current, buf);
 	else if (ft_isalnum(**input) || **input == '_' || **input == '?')
 		handle_environment_variable(input, current, buf, env);
@@ -115,11 +118,9 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			handle_dollar_special_case(*input, env);
 			return ;
 		}
-		if (!is_quote_open(buf->data))
+		if (quote)
 			buffer_append_char(buf, '$');
 		(*input)++;
-		// buffer_append_char(buf, **input);
-		// (*input)++;
 	}
 	*current = *input;
 }
