@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 10:39:53 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/29 17:31:16 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 12:26:20 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,11 @@
 
 void	process_input(t_env **env, char *input)
 {
-	// t_token		*current;
 	t_ast_node	*ast;
 
-	// g_signal = 0;
 	add_history(input);
 	get_tokens(input, env);
 	expand_tokens(env);
-	// current = (*env)->tokens;
-	// print_tokens(current);
 	ast = parse_tokens(env);
 	if (ast)
 	{

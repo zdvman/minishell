@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 14:44:11 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/27 14:44:59 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 14:21:28 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	is_quote_open(const char *input)
 			current_quote = new_current_quote(current_quote, input[i]);
 		i++;
 	}
-	return (current_quote != 0);
+	return (current_quote);
 }
 
 int	pipe_or_and_is_closed(char *buffer_str, int i)

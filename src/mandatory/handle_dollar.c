@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/29 11:05:41 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 11:17:29 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ static void	handle_environment_variable(char **input, char **current,
 {
 	char	*env_value;
 
+	env_value = NULL;
 	*current = *input;
 	if (**input == '0')
 	{

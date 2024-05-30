@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 10:30:30 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/29 17:37:44 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 11:48:24 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static void	signal_handler(int signal)
 	{
 		while (pid_count > 0)
 			kill(pid[--pid_count], SIGTERM);
-		printf("in_child\n");
 	}
 	else
 	{

@@ -59,11 +59,6 @@ typedef struct s_global
 	volatile sig_atomic_t	g_signal;
 	pid_t					pid[MAX_CHILDREN];
 	int						pid_count;
-	int						in_parent;
-	int						error_num;
-	int						stop_heredoc;
-	int						in_cmd;
-	int						in_heredoc;
 }							t_global;
 
 extern t_global	g_global;
