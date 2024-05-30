@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 11:17:29 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/30 19:17:20 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,15 +112,14 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 	{
 		if (is_dollar_special_case(**input))
 		{
-			write(2, "$", 1);
-			ft_putchar_fd(**input, 2);
-			ft_putstr_fd(": not supported in this version of minishell\n", 2);
-			(*env)->syntax_error = 1;
+			handle_dollar_special_case(*input, env);
 			return ;
 		}
-		buffer_append_char(buf, '$');
-		buffer_append_char(buf, **input);
+		if (!is_quote_open(buf->data))
+			buffer_append_char(buf, '$');
 		(*input)++;
+		// buffer_append_char(buf, **input);
+		// (*input)++;
 	}
 	*current = *input;
 }
