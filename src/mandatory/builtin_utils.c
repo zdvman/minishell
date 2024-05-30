@@ -31,6 +31,20 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
+int	contains(char *str, char target)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == target)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	is_assignment(char *cmd)
 {
 	int	i;

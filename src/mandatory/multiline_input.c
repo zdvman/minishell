@@ -81,10 +81,8 @@ char	*read_multiline(t_env **env)
 			buffer_append_char(&buf, '\n');
 		ft_free_str(&line);
 		if (!is_quote_open(buf.data))
-		{
 			if (pipe_or_and_is_closed(buf.data, 0))
 				break ;
-		}
 	}
 	line = ft_strdup(buf.data);
 	buffer_free(&buf);

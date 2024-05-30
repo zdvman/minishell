@@ -77,6 +77,7 @@ void	minishell_loop(t_env **env)
 		if (*input)
 			process_input(env, input);
 		cleanup_loop(&input, env);
+		g_global.g_signal = 0;
 	}
 }
 

@@ -14,7 +14,7 @@
 
 t_global	g_global;
 
-static void signal_handler(int signal)
+static void	signal_handler(int signal)
 {
 	pid_t	pid[MAX_CHILDREN];
 	int		pid_count;
@@ -22,8 +22,6 @@ static void signal_handler(int signal)
 	ft_memcpy(pid, g_global.pid, sizeof(pid_t) * MAX_CHILDREN);
 	pid_count = g_global.pid_count;
 	g_global.g_signal = signal;
-
-
 	if (pid_count > 0)
 	{
 		while (pid_count > 0)

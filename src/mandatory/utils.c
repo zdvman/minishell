@@ -50,20 +50,6 @@ void	add_child_pid(pid_t pid)
 	}
 }
 
-int	contains(char *str, char target)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == target)
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
 void	remove_child_pid(pid_t pid)
 {
 	int	i;
