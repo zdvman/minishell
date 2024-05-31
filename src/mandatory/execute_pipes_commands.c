@@ -26,7 +26,10 @@ static void	execute_child(t_ast_node *node, t_env **env)
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		execve(get_path(node->args[0], env), node->args, (*env)->envp);
+		if (get_path(node->args[0], env))
+			execve(get_path(node->args[0], env), node->args, (*env)->envp);
+		else
+			execve(node->args[0], node->args, (*env)->envp);
 	}
 	error_msg(node->args[0], errno);
 	cleanup(env, EXIT_FAILURE);

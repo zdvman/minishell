@@ -14,9 +14,9 @@
 
 void	put_3(char *s1, char *s2, char *s3)
 {
-	ft_putstr(s1);
-	ft_putstr(s2);
-	ft_putstr(s3);
+	ft_putstr_fd(s1, STDERR_FILENO);
+	ft_putstr_fd(s2, STDERR_FILENO);
+	ft_putstr_fd(s3, STDERR_FILENO);
 }
 
 void	error_msg(char *cmd, int error_value)

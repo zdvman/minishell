@@ -12,28 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-static char	*get_path_val(char *key, t_env **env)
-{
-	char	**current;
-	int		key_len;
-
-	if (!key
-		|| !env
-		|| !*env
-		|| !(*env)->envp
-		|| !*((*env)->envp))
-		return (NULL);
-	key_len = ft_strlen(key);
-	current = (*env)->envp;
-	while (*current)
-	{
-		if (ft_strncmp(*current, key, key_len) == 0)
-			return (*current + key_len);
-		current++;
-	}
-	return (NULL);
-}
-
 static char	**get_path_dirs(char *path_value)
 {
 	char	**dirs;
@@ -60,16 +38,29 @@ static char	**get_path_dirs(char *path_value)
 	return (dirs);
 }
 
+char	**path_helper(t_env **env)
+{
+	char	**path_dirs;
+
+	path_dirs = get_path_dirs(get_var("PATH", (*env)->envp));
+	if (!path_dirs)
+		path_dirs = get_path_dirs(get_var("PATH", (*env)->loc_vars));
+	if (!path_dirs)
+		return (NULL);
+	return (path_dirs);
+}
+
 char	*get_path(char *cmd, t_env **env)
 {
 	char	**path_dirs;
 	char	*path;
 	int		i;
 
-	path_dirs = get_path_dirs(get_path_val("PATH=", env));
+	path_dirs = path_helper(env);
 	if (!path_dirs)
 		return (NULL);
-	path = NULL;
+	if (!access(cmd, X_OK))
+		return (cmd);
 	i = -1;
 	while (path_dirs[++i])
 	{

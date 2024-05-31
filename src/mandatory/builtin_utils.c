@@ -35,12 +35,12 @@ int	contains(char *str, char target)
 {
 	int	i;
 
-	i = 0;
-	while (str[i])
+	i = ft_strlen(str);
+	while (i >= 0)
 	{
 		if (str[i] == target)
-			return (1);
-		i++;
+			return (i + 1);
+		i--;
 	}
 	return (0);
 }

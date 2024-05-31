@@ -38,12 +38,12 @@ int	cmd_is_not_valid(char *cmd, t_env **env)
 		return (0);
 	path = NULL;
 	path = get_path(cmd, env);
-	if (!path
-		|| access(path, F_OK) == -1
-		|| access(path, X_OK) == -1)
+	if (!path)
+		path = ft_strdup(cmd);
+	if (!path || access(path, F_OK) || access(path, X_OK))
 	{
-		if (contains(cmd, '/'))
-			put_3("bash: ", cmd, ": No such file or directory");
+		if (contains(cmd, '/') || !get_path(cmd, env))
+			put_3("minishell: ", cmd, ": No such file or directory\n");
 		else
 		{
 			ft_putstr_fd(cmd, STDERR_FILENO);
