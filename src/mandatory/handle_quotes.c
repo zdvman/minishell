@@ -6,13 +6,13 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:22:15 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 10:25:02 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 13:26:49 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static void	handle_backslach(char **input, char **current,
+void	handle_backslach(char **input, char **current,
 				t_dynamic_buffer *buf)
 {
 	if (*current != *input)

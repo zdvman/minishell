@@ -190,6 +190,8 @@ void	handle_double_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
 void	handle_single_quotes(char **input, char **current,
 				t_dynamic_buffer *buf);
+void	handle_backslach(char **input, char **current,
+				t_dynamic_buffer *buf);
 
 // handle_dollar.c
 void		handle_dollar_sign(char **input, char **current,
