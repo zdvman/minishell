@@ -60,20 +60,20 @@ void	minishell_loop(t_env **env)
 	input = NULL;
 	while (1)
 	{
-		g_global.g_signal = 0;
+		g_signal = 0;
 		input = read_multiline(env);
 		if (!input)
 			exit_minishell(env);
-		else if (!*input && g_global.g_signal)
+		else if (!*input && g_signal)
 		{
-			(*env)->exit_status = g_global.g_signal + 128;
-			g_global.g_signal = 0;
+			(*env)->exit_status = g_signal + 128;
+			g_signal = 0;
 			continue ;
 		}
 		if (*input)
 			process_input(env, input);
 		cleanup_loop(&input, env);
-		g_global.g_signal = 0;
+		g_signal = 0;
 	}
 }
 

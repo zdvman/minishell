@@ -122,7 +122,7 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 	while (line)
 	{
 		signal(SIGQUIT, SIG_DFL);
-		if (ft_strcmp(line, node->args[0]) == 0 || g_global.g_signal)
+		if (ft_strcmp(line, node->args[0]) == 0 || g_signal)
 		{
 			ft_free_str(&line);
 			break ;

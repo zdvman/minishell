@@ -20,6 +20,7 @@ static void	execute_child(t_ast_node *node, t_env **env)
 		signal(SIGQUIT, SIG_DFL);
 		assign_variable(*env, node->args[0]);
 		execve(get_path(node->args[1], env), &node->args[1], (*env)->envp);
+		(*env)->exit_status = 127;
 	}
 	else
 	{
@@ -45,12 +46,15 @@ void	execute_command(t_ast_node *node, t_env **env)
 		assign_variable(*env, node->args[0]);
 		return ;
 	}
+	if (!contains(node->args[0], '/') && cmd_is_not_valid(node->args[0], env))
+		return ;
 	pid = fork();
 	if_error(pid == -1, env);
 	if (pid == 0)
 		execute_child(node, env);
 	else
 	{
+
 		pid_list(ADD, pid);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);

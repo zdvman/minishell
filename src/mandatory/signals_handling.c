@@ -12,11 +12,13 @@
 
 #include "../../includes/minishell.h"
 
-t_global	g_global;
+// t_global	g_global;
+
+volatile sig_atomic_t	g_signal;
 
 static void	signal_handler(int signal)
 {
-	g_global.g_signal = signal;
+	g_signal = signal;
 	if (!pid_list(GET_NUM, 0))
 	{
 		ioctl(STDIN_FILENO, TIOCSTI, "\n");

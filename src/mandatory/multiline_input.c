@@ -52,10 +52,10 @@ static int	g_signal_received(char **line, t_dynamic_buffer *buf, t_env **env)
 	int	status;
 
 	status = 0;
-	if (g_global.g_signal)
+	if (g_signal)
 	{
-		(*env)->exit_status = g_global.g_signal + 128;
-		g_global.g_signal = 0;
+		(*env)->exit_status = g_signal + 128;
+		g_signal = 0;
 		ft_free_str(line);
 		buffer_clear(buf);
 		status = 1;

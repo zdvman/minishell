@@ -16,8 +16,6 @@ static void	env_init_2(t_env **env)
 {
 	(*env)->syntax_error = 0;
 	(*env)->exit_status = 0;
-	g_global.pid_count = 0;
-	ft_bzero(g_global.pid, sizeof(pid_t) * MAX_CHILDREN);
 	(*env)->pipe_fd[0] = -1;
 	(*env)->pipe_fd[1] = -1;
 	(*env)->fd_in = -1;
