@@ -42,26 +42,45 @@ int	is_dollar_special_case(char c)
 		|| c == '[');
 }
 
-void	add_child_pid(pid_t pid)
-{
-	if (g_global.pid_count < MAX_CHILDREN)
-	{
-		g_global.pid[g_global.pid_count++] = pid;
-	}
-}
-
-void	remove_child_pid(pid_t pid)
+static int	kill_list(int *list, int num)
 {
 	int	i;
 
 	i = 0;
-	while (i < MAX_CHILDREN)
+	while (i < num)
 	{
-		if (g_global.pid[i] == pid)
-		{
-			g_global.pid[i] = g_global.pid[--g_global.pid_count];
-			break ;
-		}
+		kill(list[i], SIGTERM);
 		i++;
 	}
+	write(1, "\n", 1);
+	return (0);
+}
+
+int	pid_list(t_cmd function, pid_t pid)
+{
+	static pid_t	list[MAX_CHILDREN];
+	static int		num_children = 0;
+	int				i;
+
+	i = 0;
+	if (function == ADD)
+		list[num_children++] = pid;
+	else if (function == REMOVE)
+	{
+		while (i < num_children)
+		{
+			if (list[i] == pid)
+			{
+				while (i++ <= num_children)
+					list[i - 1] = list[i];
+				num_children--;
+			}
+			i++;
+		}
+	}
+	else if (function == KILL && num_children)
+		num_children = kill_list(list, num_children);
+	else if (function == GET_NUM)
+		return (num_children);
+	return (0);
 }

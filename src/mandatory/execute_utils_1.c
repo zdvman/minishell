@@ -17,10 +17,7 @@ void	wait_for_process(pid_t pid, t_env **env)
 	int	status;
 
 	status = -1;
-	if (waitpid(pid, &status, 0) == -1)
-	{
-		write(STDERR_FILENO, "\n", 1);
-	}
+	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		(*env)->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))

@@ -63,6 +63,14 @@ typedef struct s_global
 
 extern t_global	g_global;
 
+typedef	enum
+{
+	ADD,
+	REMOVE,
+	GET_NUM,
+	KILL
+}	t_cmd;
+
 typedef enum e_token_type
 {
 	TOKEN_WORD,
@@ -157,6 +165,7 @@ void		ft_free_args(char ***args);
 // utils.c
 void		set_sig_actions(void);
 void		exit_minishell(t_env **env);
+int			pid_list(t_cmd function, pid_t pid);
 
 // expand.c
 void		expand_tokens(t_env **env);
@@ -304,7 +313,7 @@ void		error_msg(char *cmd, int error_value);
 int			is_dollar_special_case(char c);
 void		put_3(char *s1, char *s2, char *s3);
 int			is_dollar_special_case(char c);
-void		add_child_pid(pid_t pid);
-void		remove_child_pid(pid_t pid);
+// void		add_child_pid(pid_t pid);
+// void		remove_child_pid(pid_t pid);
 
 #endif

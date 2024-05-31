@@ -52,6 +52,28 @@ void	remove_var(char *name, char ***vars)
 	free (new_env);
 }
 
+void	add_var(char *var, char ***vars)
+{
+	char	**new_env;
+	int		count;
+	int		i;
+
+	count = 0;
+	i = 0;
+	while (((*vars))[count])
+		count++;
+	new_env = ft_calloc(sizeof(char *), count + 2);
+	while (i < count)
+	{
+		new_env[i] = (*vars)[i];
+		i++;
+	}
+	new_env[i++] = ft_strdup(var);
+	if (*vars)
+		free (*vars);
+	(*vars) = new_env;
+}
+
 void	assign_variable(t_env *env, char *string)
 {
 	char	*var;
@@ -76,28 +98,6 @@ void	assign_variable(t_env *env, char *string)
 	else
 		add_var(string, &env->loc_vars);
 	free (var);
-}
-
-void	add_var(char *var, char ***vars)
-{
-	char	**new_env;
-	int		count;
-	int		i;
-
-	count = 0;
-	i = 0;
-	while (((*vars))[count])
-		count++;
-	new_env = ft_calloc(sizeof(char *), count + 2);
-	while (i < count)
-	{
-		new_env[i] = (*vars)[i];
-		i++;
-	}
-	new_env[i++] = ft_strdup(var);
-	if (*vars)
-		free (*vars);
-	(*vars) = new_env;
 }
 
 int	export_var(t_env *env, char **args)

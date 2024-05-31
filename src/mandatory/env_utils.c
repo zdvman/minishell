@@ -28,7 +28,7 @@ char	*get_var(char *env_var, char **vars)
 	int		i;
 
 	i = 0;
-	if (!vars)
+	if (!*vars)
 		return (NULL);
 	while (vars[i])
 	{

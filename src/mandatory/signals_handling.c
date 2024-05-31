@@ -16,23 +16,18 @@ t_global	g_global;
 
 static void	signal_handler(int signal)
 {
-	pid_t	pid[MAX_CHILDREN];
-	int		pid_count;
-
-	ft_memcpy(pid, g_global.pid, sizeof(pid_t) * MAX_CHILDREN);
-	pid_count = g_global.pid_count;
 	g_global.g_signal = signal;
-	if (pid_count > 0)
-	{
-		while (pid_count > 0)
-			kill(pid[--pid_count], SIGTERM);
-	}
-	else
+	if (!pid_list(GET_NUM, 0))
 	{
 		ioctl(STDIN_FILENO, TIOCSTI, "\n");
 		rl_redisplay();
 		rl_on_new_line();
 		rl_replace_line("", 0);
+	}
+	else
+	{
+		pid_list(KILL, 0);
+		set_sig_actions ();
 	}
 	(void)signal;
 }

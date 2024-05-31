@@ -41,17 +41,20 @@ void	execute_command(t_ast_node *node, t_env **env)
 	if (is_builtin(node->args[0]))
 		return (execute_builtin(env, node->args));
 	else if (is_assignment(node->args[0]) && !node->args[1])
-		return (assign_variable(*env, node->args[0]));
+	{
+		assign_variable(*env, node->args[0]);
+		return ;
+	}
 	pid = fork();
 	if_error(pid == -1, env);
 	if (pid == 0)
 		execute_child(node, env);
 	else
 	{
-		add_child_pid(pid);
+		pid_list(ADD, pid);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);
-		remove_child_pid(pid);
+		pid_list(REMOVE, pid);
 	}
 }
 
@@ -74,11 +77,11 @@ void	execute_pipe(t_ast_node *node, t_env **env)
 	}
 	else
 	{
-		add_child_pid(pid);
+		pid_list(ADD, pid);
 		pipe_fd_handler(fd, env, pid);
 		execute(node->right, env);
 		restore_origin_fd(origin_fd, env);
 		wait_for_process(pid, env);
-		remove_child_pid(pid);
+		pid_list(REMOVE, pid);
 	}
 }

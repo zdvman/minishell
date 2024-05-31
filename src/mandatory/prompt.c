@@ -42,24 +42,21 @@ char	*add_cwd(t_env *env, char *user_host)
 	char	dir_name[256];
 	char	*res;
 	char	*tmp;
+	char	*home;
 
 	getcwd(dir_name, 256);
-	if (!get_var("HOME", env->envp))
-	{
-		res = ft_strjoin(user_host, dir_name);
-		return (res);
-	}
-	if (ft_strncmp(dir_name, get_var("HOME", env->envp),
-			ft_strlen(get_var("HOME", env->envp))))
-	{
-		res = ft_strjoin(user_host, dir_name);
-		return (res);
-	}
-	if (get_var("HOME", env->envp))
+	home = get_var("HOME", env->envp);
+	if (!home)
+		home = get_var("HOME", env->loc_vars);
+	if (!home)
+		return (ft_strjoin(user_host, dir_name));
+	if (ft_strncmp(dir_name, home, ft_strlen(home)))
+		return (ft_strjoin(user_host, dir_name));
+	if (home)
 		tmp = ft_strjoin(user_host, "~");
 	else
 		tmp = ft_strdup(user_host);
-	res = ft_strjoin(tmp, &dir_name[ft_strlen(get_var("HOME", env->envp))]);
+	res = ft_strjoin(tmp, &dir_name[ft_strlen(home)]);
 	free (tmp);
 	return (res);
 }
