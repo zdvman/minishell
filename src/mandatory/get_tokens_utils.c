@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 16:25:37 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 20:24:38 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 10:07:24 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,20 @@ int	handle_dollar_backtick_exception(char **input, char **current, t_env **env)
 		handle_backtick(input, env);
 		return (1);
 	}
-	if (**input == '$'
-		&& *(*input + 1) == '\"'
-		&& !is_quote_open(*current))
-	{
-		(*input)++;
-		*current = *input;
-		return (0);
-	}
 	return (0);
+}
+
+void	insert_nl_t_v(char **start, char **input, t_dynamic_buffer *buf)
+{
+	if (*start != *input)
+		buffer_append(buf, *start, *input - *start);
+	(*input)++;
+	if (**input == 'n')
+		buffer_append_char(buf, '\n');
+	else if (**input == 'v')
+		buffer_append_char(buf, '\v');
+	else if (**input == 't')
+		buffer_append_char(buf, '\t');
+	(*input)++;
+	*start = *input;
 }

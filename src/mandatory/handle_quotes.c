@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:22:15 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 18:57:39 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 10:25:02 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	handle_backslach(char **input, char **current,
 	}
 }
 
-static void	handle_double_quotes(char **input, char **current,
+void	handle_double_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env)
 {
 	(*input)++;
@@ -39,19 +39,20 @@ static void	handle_double_quotes(char **input, char **current,
 	while (**input && **input != '\"')
 	{
 		if (**input == '$')
-			handle_dollar_sign(input, current, buf, env);
-		if (**input == '\\')
+			handle_dollar_sign_in_quotes(input, current, buf, env);
+		else if (**input == '\\')
 			handle_backslach(input, current, buf);
-		if (**input == '`')
+		else if (**input == '`')
 		{
 			handle_backtick(input, env);
 			return ;
 		}
-		if (**input != '$' && **input != '\\')
+		else
 			(*input)++;
 	}
 	if (**input == '\"')
 	{
+		(*env)->in_quotes = 0;
 		if (*current != *input)
 			buffer_append(buf, *current, *input - *current);
 		(*input)++;
@@ -59,7 +60,7 @@ static void	handle_double_quotes(char **input, char **current,
 	*current = *input;
 }
 
-static void	handle_single_quotes(char **input, char **current,
+void	handle_single_quotes(char **input, char **current,
 				t_dynamic_buffer *buf)
 {
 	(*input)++;
