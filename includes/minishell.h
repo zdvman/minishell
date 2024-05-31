@@ -190,7 +190,7 @@ void		handle_double_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
 void		handle_single_quotes(char **input, char **current,
 				t_dynamic_buffer *buf);
-void	handle_backslach(char **input, char **current,
+void		handle_backslach(char **input, char **current,
 				t_dynamic_buffer *buf);
 
 // handle_dollar.c
@@ -240,6 +240,7 @@ bool		is_control_op(t_token_type type);
 
 // get_path.c
 char		*get_path(char *cmd, t_env **env);
+char		**path_helper(t_env **env);
 
 // execute.c
 void		execute_semi(t_ast_node *node, t_env **env);
