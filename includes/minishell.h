@@ -54,14 +54,6 @@
 
 # define MAX_CHILDREN 1024
 
-// typedef struct s_global
-// {
-	
-// 	pid_t					pid[MAX_CHILDREN];
-// 	int						pid_count;
-// }							t_global;
-
-// extern t_global	g_global;
 extern volatile sig_atomic_t	g_signal;
 
 typedef	enum

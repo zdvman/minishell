@@ -14,39 +14,16 @@
 
 void	wait_for_process(pid_t pid, t_env **env)
 {
-	// int	status;
+	int	status;
 
-	// // status = -1;
-	// (*env)->exit_status = 0;
-	// waitpid(pid, &status, 0);
-	// if (WIFEXITED(status))
-	// 	(*env)->exit_status = status;
-	// else if (WIFSIGNALED(status))
-	// 	(*env)->exit_status = WTERMSIG(status);
-	// else if (WIFSTOPPED(status))
-	// 	(*env)->exit_status = WSTOPSIG(status);
-	// // else if (WIFCONTINUED(status))
-	// // {
-	// // 	ft_putstr_fd("Process continued\n", STDERR_FILENO);
-	// // 	(*env)->exit_status = 0;
-	// // }
-    int status;
-
-    // Initialize exit_status to 0
-    (*env)->exit_status = 0;
-
-    // Wait for the child process to change state
-    waitpid(pid, &status, 0);
-
-    // Check if the child process terminated normally
-    if (WIFEXITED(status))
-        (*env)->exit_status = WEXITSTATUS(status);
-    // Check if the child process was terminated by a signal
-    else if (WIFSIGNALED(status))
-        (*env)->exit_status = WTERMSIG(status);
-    // Check if the child process was stopped by a signal
-    else if (WIFSTOPPED(status))
-        (*env)->exit_status = WSTOPSIG(status);
+	(*env)->exit_status = 0;
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		(*env)->exit_status = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		(*env)->exit_status = WTERMSIG(status);
+	else if (WIFSTOPPED(status))
+		(*env)->exit_status = WSTOPSIG(status);
 }
 
 void	if_error(bool status, t_env **env)

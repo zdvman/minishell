@@ -84,7 +84,6 @@ static int	ast_output_is_valid(t_token **current, t_env **env)
 	if (*current && (*current)->type != TOKEN_EOF)
 	{
 		ft_putstr_fd("Unexpected token: ", STDERR_FILENO);
-		print_token_name(*current);
 		ft_putchar_fd('\n', STDERR_FILENO);
 		cleanup_no_exit(env);
 		return (0);

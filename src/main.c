@@ -48,7 +48,7 @@ void	process_input(t_env **env, char *input)
 	ast = parse_tokens(env);
 	if (ast)
 	{
-		generate_ast_diagram(ast);
+		// generate_ast_diagram(ast);
 		execute(ast, env);
 	}
 }

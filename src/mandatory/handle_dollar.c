@@ -78,8 +78,6 @@ static void	handle_environment_variable(char **input, char **current,
 	}
 	else
 		get_val(env, input, current, buf);
-	// if (env_value == NULL)
-	// 	buffer_append(buf, "", 0);
 	*current = *input;
 }
 
