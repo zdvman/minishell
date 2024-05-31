@@ -271,8 +271,8 @@ void		pipe_fd_handler(int *fd, t_env **env, pid_t pid);
 int			cmd_is_not_valid(char *cmd, t_env **env);
 void		handle_fd(t_env **env);
 
-void		handle_fd(t_env **env);
-void		execute(t_ast_node *node, t_env **env);
+int			is_a_directory(char *cmd, t_env *env);
+int			is_exec(char *name);
 
 //main.c
 void		print_token_name(t_token *token);
