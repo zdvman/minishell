@@ -46,9 +46,9 @@ int	cmd_is_not_valid(char *cmd, t_env **env)
 			put_3("bash: ", cmd, ": No such file or directory");
 		else
 		{
-		ft_putstr_fd(cmd, STDERR_FILENO);
-		ft_putstr_fd(": command not found", STDERR_FILENO);
-		ft_putchar_fd('\n', STDERR_FILENO);
+			ft_putstr_fd(cmd, STDERR_FILENO);
+			ft_putstr_fd(": command not found", STDERR_FILENO);
+			ft_putchar_fd('\n', STDERR_FILENO);
 		}
 		(*env)->exit_status = 127;
 		return (127);
