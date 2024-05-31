@@ -6,26 +6,11 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 11:17:29 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 10:36:56 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static void	insert_nl_t_v(char **start, char **input, t_dynamic_buffer *buf)
-{
-	if (*start != *input)
-		buffer_append(buf, *start, *input - *start);
-	(*input)++;
-	if (**input == 'n')
-		buffer_append_char(buf, '\n');
-	else if (**input == 'v')
-		buffer_append_char(buf, '\v');
-	else if (**input == 't')
-		buffer_append_char(buf, '\t');
-	(*input)++;
-	*start = *input;
-}
 
 static void	expand_cstyle_string(char **input, char **current,
 				t_dynamic_buffer *buf)
@@ -98,6 +83,24 @@ static void	handle_environment_variable(char **input, char **current,
 	*current = *input;
 }
 
+void	handle_dollar_sign_in_quotes(char **input, char **current,
+			t_dynamic_buffer *buf, t_env **env)
+{
+	if (*current != *input)
+		buffer_append(buf, *current, *input - *current);
+	(*input)++;
+	if (ft_isalnum(**input) || **input == '_' || **input == '?')
+		handle_environment_variable(input, current, buf, env);
+	else if (is_dollar_special_case(**input))
+	{
+		handle_dollar_special_case(*input, env);
+		return ;
+	}
+	if (*current != *input)
+		buffer_append(buf, *current, *input - *current);
+	*current = *input;
+}
+
 void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			t_env **env)
 {
@@ -106,21 +109,16 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 	(*input)++;
 	if (**input == '\'')
 		expand_cstyle_string(input, current, buf);
+	else if (**input == '\"')
+		handle_double_quotes(input, current, buf, env);
 	else if (ft_isalnum(**input) || **input == '_' || **input == '?')
 		handle_environment_variable(input, current, buf, env);
-	else
+	else if (is_dollar_special_case(**input))
 	{
-		if (is_dollar_special_case(**input))
-		{
-			write(2, "$", 1);
-			ft_putchar_fd(**input, 2);
-			ft_putstr_fd(": not supported in this version of minishell\n", 2);
-			(*env)->syntax_error = 1;
-			return ;
-		}
-		buffer_append_char(buf, '$');
-		buffer_append_char(buf, **input);
-		(*input)++;
+		handle_dollar_special_case(*input, env);
+		return ;
 	}
+	if (*current != *input)
+		buffer_append(buf, *current, *input - *current);
 	*current = *input;
 }

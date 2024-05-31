@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/19 18:42:01 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/29 11:40:12 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 08:58:58 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ static void	env_init_2(t_env **env)
 	(*env)->user_host = NULL;
 	(*env)->prompt = NULL;
 	(*env)->ls = 0;
+	(*env)->in_quotes = 0;
 }
 
 static void	env_init(t_env **env, char **envp, int env_len)
