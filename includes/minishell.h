@@ -56,7 +56,7 @@
 
 extern volatile sig_atomic_t	g_signal;
 
-typedef	enum
+typedef enum s_cmd
 {
 	ADD,
 	REMOVE,
@@ -186,9 +186,9 @@ void		handle_close_bracket(t_env **env, char **input);
 // handle_quotes.c
 void		handle_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
-void	handle_double_quotes(char **input, char **current,
+void		handle_double_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
-void	handle_single_quotes(char **input, char **current,
+void		handle_single_quotes(char **input, char **current,
 				t_dynamic_buffer *buf);
 void	handle_backslach(char **input, char **current,
 				t_dynamic_buffer *buf);
@@ -207,10 +207,11 @@ void		handle_meta(t_env **env, char **input);
 void		get_tokens(char *input, t_env **env);
 
 // get_tokens_utils.c
-int		handle_dollar_backtick_exception(char **input, char **current, t_env **env);
-void	handle_dollar_special_case(char *input, t_env **env);
-void	handle_backtick(char **input, t_env **env);
-void	insert_nl_t_v(char **start, char **input, t_dynamic_buffer *buf);
+int			handle_dollar_backtick_exception(char **input, char **current,
+				t_env **env);
+void		handle_dollar_special_case(char *input, t_env **env);
+void		handle_backtick(char **input, t_env **env);
+void		insert_nl_t_v(char **start, char **input, t_dynamic_buffer *buf);
 
 // ast_builder_1.c
 t_ast_node	*create_ast_node(t_token_type type, char **args, t_env **env);
