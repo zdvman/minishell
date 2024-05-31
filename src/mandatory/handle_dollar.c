@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 10:36:56 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/05/31 14:27:58 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ void	handle_dollar_sign_in_quotes(char **input, char **current,
 		handle_dollar_special_case(*input, env);
 		return ;
 	}
+	else
+		(*input)++;
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
 	*current = *input;
@@ -116,6 +118,8 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 		handle_dollar_special_case(*input, env);
 		return ;
 	}
+	else
+		(*input)++;
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
 	*current = *input;

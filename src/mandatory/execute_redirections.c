@@ -22,6 +22,7 @@ void	execute_redir_output(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		(*env)->exit_status = 1;
 		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_out == -1)
@@ -47,6 +48,7 @@ void	execute_redir_append(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		(*env)->exit_status = 1;
 		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_out == -1)
@@ -72,6 +74,7 @@ void	execute_redir_input(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		(*env)->exit_status = 1;
 		cleanup_no_exit(env);
 	}
 	if ((*env)->fd_in == -1)
