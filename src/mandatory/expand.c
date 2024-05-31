@@ -12,18 +12,14 @@
 
 #include "../../includes/minishell.h"
 
-void	handle_backslach_out_of_quotes(char **input, char **current,
+int	handle_backslach_out_of_quotes(char **input, char **current,
 	t_dynamic_buffer *buf)
 {
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
-	*current = *input;
 	(*input)++;
 	*current = *input;
-	if (**input == '\\')
-	{
-		buffer_append_char(buf, **input);
-	}
+	buffer_append_char(buf, **input);
+	(*input)++;
+	return (1);
 }
 
 char	*expand_word(t_env **env, char **input)
@@ -39,13 +35,25 @@ char	*expand_word(t_env **env, char **input)
 	while (**input)
 	{
 		if (**input == '$')
+		{
 			handle_dollar_sign(input, &current, &buf, env);
+			// if (handle_dollar_sign(input, &current, &buf, env))
+			// 	continue ;
+		}
 		else if (**input == '\'' || **input == '\"')
 			handle_quotes(input, &current, &buf, env);
 		else if (**input == '\\')
+		{
 			handle_backslach_out_of_quotes(input, &current, &buf);
+			// if (handle_backslach_out_of_quotes(input, &current, &buf))
+			// 	continue ;
+		}
 		else
+		{
+			buffer_append_char(&buf, **input);
 			(*input)++;
+			current = *input;
+		}
 	}
 	if (current != *input)
 		buffer_append(&buf, current, *input - current);
