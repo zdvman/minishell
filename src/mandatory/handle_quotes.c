@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:22:15 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 13:26:49 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/01 12:06:37 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,21 @@
 void	handle_backslach(char **input, char **current,
 				t_dynamic_buffer *buf)
 {
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
-	*current = *input;
 	(*input)++;
+	*current = *input;
 	if (**input == '\"'
 		|| **input == '\n'
 		|| **input == '\\'
 		|| **input == '$'
 		|| **input == '`')
-	{
 		buffer_append_char(buf, **input);
-		(*input)++;
-		*current = *input;
+	else
+	{
+		buffer_append_char(buf, '\\');
+		buffer_append_char(buf, **input);
 	}
+	(*input)++;
+	*current = *input;
 }
 
 void	handle_double_quotes(char **input, char **current,
@@ -48,15 +49,14 @@ void	handle_double_quotes(char **input, char **current,
 			return ;
 		}
 		else
+		{
+			buffer_append_char(buf, **input);
 			(*input)++;
+			*current = *input;
+		}
 	}
 	if (**input == '\"')
-	{
-		(*env)->in_quotes = 0;
-		if (*current != *input)
-			buffer_append(buf, *current, *input - *current);
 		(*input)++;
-	}
 	*current = *input;
 }
 
@@ -71,19 +71,17 @@ void	handle_single_quotes(char **input, char **current,
 	{
 		if (*current != *input)
 			buffer_append(buf, *current, *input - *current);
-		(*input)++;
 	}
+	if (**input == '\"')
+		(*input)++;
 	*current = *input;
 }
 
 void	handle_quotes(char **input, char **current, t_dynamic_buffer *buf,
 			t_env **env)
 {
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
 	if (**input == '\"')
 		handle_double_quotes(input, current, buf, env);
 	else if (**input == '\'')
 		handle_single_quotes(input, current, buf);
-	*current = *input;
 }

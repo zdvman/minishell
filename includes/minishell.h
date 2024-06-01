@@ -119,7 +119,6 @@ typedef struct s_env
 	char			*user_host;
 	char			*prompt;
 	int				ls;
-	int				in_quotes;
 }				t_env;
 
 typedef struct s_dynamic_buffer
@@ -198,6 +197,8 @@ void		handle_dollar_sign(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
 void		handle_dollar_sign_in_quotes(char **input, char **current,
 				t_dynamic_buffer *buf, t_env **env);
+void		handle_backslach_out_of_quotes(char **input, char **current,
+				t_dynamic_buffer *buf);
 
 // get_tokens.c
 void		add_token(t_token_type type, char *value,

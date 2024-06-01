@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 14:27:58 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/01 12:11:53 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ static void	expand_cstyle_string(char **input, char **current,
 	}
 	if (*current != *input)
 		buffer_append(buf, *current, *input - *current);
-	if (**input == '\'')
-		(*input)++;
 	*current = *input;
 }
 
@@ -84,9 +82,8 @@ static void	handle_environment_variable(char **input, char **current,
 void	handle_dollar_sign_in_quotes(char **input, char **current,
 			t_dynamic_buffer *buf, t_env **env)
 {
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
 	(*input)++;
+	*current = *input;
 	if (ft_isalnum(**input) || **input == '_' || **input == '?')
 		handle_environment_variable(input, current, buf, env);
 	else if (is_dollar_special_case(**input))
@@ -95,18 +92,17 @@ void	handle_dollar_sign_in_quotes(char **input, char **current,
 		return ;
 	}
 	else
-		(*input)++;
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
-	*current = *input;
+	{
+		buffer_append_char(buf, '$');
+		return ;
+	}
 }
 
 void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			t_env **env)
 {
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
 	(*input)++;
+	*current = *input;
 	if (**input == '\'')
 		expand_cstyle_string(input, current, buf);
 	else if (**input == '\"')
@@ -119,8 +115,8 @@ void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 		return ;
 	}
 	else
-		(*input)++;
-	if (*current != *input)
-		buffer_append(buf, *current, *input - *current);
-	*current = *input;
+	{
+		buffer_append_char(buf, '$');
+		return ;
+	}
 }
