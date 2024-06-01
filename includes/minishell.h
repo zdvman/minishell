@@ -119,6 +119,7 @@ typedef struct s_env
 	char			*user_host;
 	char			*prompt;
 	int				ls;
+	char			**input;
 }				t_env;
 
 typedef struct s_dynamic_buffer

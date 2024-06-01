@@ -61,6 +61,7 @@ void	minishell_loop(t_env **env)
 	{
 		g_signal = 0;
 		input = read_multiline(env);
+		(*env)->input = &input;
 		if (!input)
 			exit_minishell(env);
 		else if (!*input && g_signal)

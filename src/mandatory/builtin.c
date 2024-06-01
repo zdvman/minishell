@@ -89,11 +89,15 @@ int	clean_exit(t_env **env, char **args)
 		ft_putstr("minishell: exit: ");
 		ft_putstr(args[1]);
 		ft_putstr(": numeric argument required\n");
+		if ((*env)->input && *(*env)->input)
+			free ((*(*env)->input));
 		cleanup(env, 0);
 		exit (2);
 	}
 	if (args[1])
 		code = ft_atoi(args[1]);
+	if ((*env)->input && *(*env)->input)
+		free ((*(*env)->input));
 	return (cleanup(env, code), 0);
 }
 

@@ -61,16 +61,16 @@ char	*expand_word(t_env **env, char **input)
 	return (expanded);
 }
 
-int	insert_vals(t_env **env, t_token *token, t_token *prev)
+int	insert_vals(t_env **env, t_token **token, t_token *prev)
 {
 	t_token	*next;
 
-	next = token->next;
-	if (expand_wildcard(token->value, env, prev, next))
+	next = (*token)->next;
+	if (expand_wildcard((*token)->value, env, prev, next))
 	{
-		free(token->value);
-		free(token);
-		token = next;
+		free((*token)->value);
+		free((*token));
+		(*token) = next;
 		return (1);
 	}
 	return (0);
@@ -90,7 +90,7 @@ void	expand_tokens(t_env **env)
 		{
 			if (contains(token->value, '*'))
 			{
-				if (insert_vals(env, token, prev))
+				if (insert_vals(env, &token, prev))
 					continue ;
 			}
 			else
