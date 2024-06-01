@@ -28,31 +28,51 @@ void	pipe_fd_handler(int *fd, t_env **env, pid_t pid)
 	}
 }
 
+int	cmd_is_not_valid_no_path(char *cmd, t_env **env)
+{
+	if (!access(cmd, F_OK) && access(cmd, X_OK) == -1)
+	{
+		put_3("minishell: ", cmd, ": Permission denied\n");
+		(*env)->exit_status = 126;
+		return (1);
+	}
+	if (access(cmd, F_OK))
+	{
+		put_3("minshell: ", cmd, ": No such file or directory\n");
+		(*env)->exit_status = 127;
+		return (1);
+	}
+	if (((access(cmd, F_OK)) == -1)
+		|| ((access(cmd, F_OK)) == 0 && access(cmd, X_OK)))
+	{
+		put_3(cmd, ": command not found", "\n");
+		(*env)->exit_status = 127;
+		return (1);
+	}
+	return (0);
+}
+
 int	cmd_is_not_valid(char *cmd, t_env **env)
 {
 	char	*path;
 
-	if (!cmd)
+	if (!cmd || is_a_directory(cmd, *env))
 		return (1);
 	if (is_builtin(cmd))
 		return (0);
-	path = NULL;
+	if (!path_helper(env))
+		return (cmd_is_not_valid_no_path(cmd, env));
 	path = get_path(cmd, env);
-	if (!path)
-		path = ft_strdup(cmd);
-	if (!path || access(path, F_OK) || access(path, X_OK))
-	{
-		if (contains(cmd, '/') || !get_path(cmd, env))
-			put_3("minishell: ", cmd, ": No such file or directory\n");
-		else
-		{
-			ft_putstr_fd(cmd, STDERR_FILENO);
-			ft_putstr_fd(": command not found", STDERR_FILENO);
-			ft_putchar_fd('\n', STDERR_FILENO);
-		}
-		(*env)->exit_status = 127;
-		return (127);
-	}
+	if ((!access(path, F_OK) && is_exec(path) && access(path, X_OK) == -1))
+		return (put_3("minishell: ", cmd, ": Permission denied\n"),
+			(*env)->exit_status = 126, 1);
+	if (access(cmd, F_OK) && !path)
+		return (put_3("minshell: ", cmd, ": No such file or directory\n"),
+			(*env)->exit_status = 127, 1);
+	if (((access(path, F_OK)) == -1 || ((access(path, F_OK)) == 0
+				&& path && !is_exec(path))))
+		return (put_3(cmd, ": command not found", "\n"),
+			(*env)->exit_status = 127, 1);
 	return (0);
 }
 
