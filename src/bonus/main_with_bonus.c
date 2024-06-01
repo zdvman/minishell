@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   main_with_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/01 13:42:33 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/01 14:48:32 by dzuiev           ###   ########.fr       */
+/*   Created: 2024/06/01 13:43:26 by dzuiev            #+#    #+#             */
+/*   Updated: 2024/06/01 14:49:52 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,39 +38,23 @@
 # include "../includes/minishell_bonus.h"
 #endif
 
-static int	bonus_loop_check(t_token **tmp, t_env **env)
-{
-	if ((*tmp)->type == TOKEN_BACKGROUND
-		|| (*tmp)->type == TOKEN_OPEN_BRACKET
-		|| (*tmp)->type == TOKEN_CLOSE_BRACKET
-		|| (*tmp)->type == TOKEN_OR_IF
-		|| (*tmp)->type == TOKEN_AND_IF
-		|| (*tmp)->type == TOKEN_SEMI)
-	{
-		ft_putstr_fd((*tmp)->value, 2);
-		ft_putstr_fd(" : is not supported\n", 2);
-		cleanup_no_exit(env);
-		return (1);
-	}
-	if (contains((*tmp)->value, '*'))
-	{
-		ft_putstr_fd("* : is not supported\n", 2);
-		cleanup_no_exit(env);
-		return (1);
-	}
-	return (0);
-}
-
 static int	bonus_check(t_env **env)
 {
 	t_token			*tmp;
+	t_token_type	type;
 
 	tmp = NULL;
 	tmp = (*env)->tokens;
 	while (tmp)
 	{
-		if (bonus_loop_check(&tmp, env))
+		type = tmp->type;
+		if (tmp->type == TOKEN_BACKGROUND)
+		{
+			ft_putstr_fd(tmp->value, 2);
+			ft_putstr_fd(" : is not supported\n", 2);
+			cleanup_no_exit(env);
 			return (1);
+		}
 		tmp = tmp->next;
 	}
 	return (0);

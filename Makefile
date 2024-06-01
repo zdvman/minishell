@@ -6,7 +6,7 @@
 #    By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 10:31:12 by dzuiev            #+#    #+#              #
-#    Updated: 2024/04/15 11:41:51 by dzuiev           ###   ########.fr        #
+#    Updated: 2024/06/01 14:05:03 by dzuiev           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,6 @@ LIBFT = $(LIBFT_DIR)/libft.a # Libft library
 # **************************************************************************** #
 # Directories with source files and libraries
 LIBFT_DIR = libft
-LIBFT_DIR = libft
 INCLUDES = -I./includes -I$(LIBFT_DIR) -I/usr/include/readline
 LDFLAGS = -L$(LIBFT_DIR) -lft -lreadline # -L/usr/local/lib , ldconfig -p | grep readline
 SRC_DIR = src
@@ -69,7 +68,7 @@ OBJ_BONUS_DIR = $(OBJ_DIR)/bonus
 SRC = $(wildcard $(SRC_DIR)/*.c) # All source files in current directory (main.c)
 SRC_MANDATORY = $(wildcard $(SRC_MANDATORY_DIR)/*.c)
 SRC_BONUS = $(wildcard $(SRC_BONUS_DIR)/*.c)
-SRC += src/bonus/wildcard.c src/bonus/wildcard_dir.c
+# SRC += src/bonus/wildcard.c src/bonus/wildcard_dir.c
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) # All object files in current directory
 OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
@@ -114,8 +113,8 @@ $(OBJ_BONUS_DIR)/%.o: $(SRC_BONUS_DIR)/%.c
 
 # Bonus part compilation
 bonus: CFLAGS += -DBONUS # Add a flag to the compiler
-bonus:  $(OBJ_BONUS) $(LIBFT) $(OBJ) $(OBJ_MANDATORY)
-	@$(CC) -o $(NAME) $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
+bonus:  $(OBJ_BONUS) $(LIBFT) $(OBJ_MANDATORY)
+	@$(CC) -o $(NAME) $(LIBFT) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled with bonus part$(RESET)"
 # **************************************************************************** #
 # Cleaning up
