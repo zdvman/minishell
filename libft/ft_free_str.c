@@ -14,9 +14,12 @@
 
 void	ft_free_str(char **str)
 {
-	if (*str)
+	if (str)
 	{
-		free(*str);
-		*str = NULL;
+		if (*str)
+		{
+			free(*str);
+			*str = NULL;
+		}
 	}
 }

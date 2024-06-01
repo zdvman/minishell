@@ -64,9 +64,9 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 		*current = (*current)->next;
 		if (!*current || (*current)->type != TOKEN_WORD)
 		{
-			ft_putstr_fd("syntax error near unexpected token `newline'\n",
-				STDERR_FILENO);
+			ft_putstr_fd("syntax error near unexpected token `newline'\n", 2);
 			(*env)->syntax_error = 1;
+			(*env)->exit_status = 2;
 			return (NULL);
 		}
 		arg = get_redir_arg(current, env);

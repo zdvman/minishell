@@ -49,7 +49,7 @@ void	execute_command(t_ast_node *node, t_env **env)
 		assign_variable(*env, node->args[0]);
 		return ;
 	}
-	if (cmd_is_not_valid(node->args[0], env))
+	if (!is_builtin(node->args[0]) && cmd_is_not_valid(node->args[0], env))
 		return ;
 	pid = fork();
 	if_error(pid == -1, env);

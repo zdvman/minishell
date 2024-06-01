@@ -18,6 +18,7 @@ void	handle_dollar_special_case(char *input, t_env **env)
 	ft_putchar_fd(*input, 2);
 	ft_putstr_fd(": not supported in this version of minishell\n", 2);
 	(*env)->syntax_error = 1;
+	(*env)->exit_status = 2;
 	return ;
 }
 
@@ -26,6 +27,7 @@ void	handle_backtick(char **input, t_env **env)
 	ft_putchar_fd(**input, 2);
 	ft_putstr_fd(": not supported in this version of minishell\n", 2);
 	(*env)->syntax_error = 1;
+	(*env)->exit_status = 2;
 	return ;
 }
 

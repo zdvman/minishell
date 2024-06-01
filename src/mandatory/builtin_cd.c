@@ -68,12 +68,12 @@ int	change_dir(t_env **env, char **args)
 	else
 		tmp = ft_strdup(args[1]);
 	if (check_access(tmp, args))
-		return (1);
+		return (free (tmp), 1);
 	free (args[1]);
 	args[1] = tmp;
 	getcwd(old_cwd, 256);
 	if ((chdir(args[1])) == -1)
-		return (1);
+		return (free (tmp), 1);
 	update_env(env, old_cwd, &tmp);
 	free (tmp);
 	return (0);

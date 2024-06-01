@@ -15,11 +15,14 @@
 int	is_a_directory(char *cmd, t_env *env)
 {
 	struct stat	statbuf;
+	char		**path;
 
+	statbuf.st_mode = 0;
 	stat(cmd, &statbuf);
 	if (S_ISDIR(statbuf.st_mode))
 	{
-		if (cmd[ft_strlen(cmd) - 1] == '/' || cmd[0] == '/')
+		path = path_helper(&env);
+		if (cmd[ft_strlen(cmd) - 1] == '/' || cmd[0] == '/' || !path)
 		{
 			put_3("minishell: ", cmd, ": Is a directory\n");
 			env->exit_status = 126;
@@ -29,6 +32,8 @@ int	is_a_directory(char *cmd, t_env *env)
 			put_3(cmd, ": command not found", "\n");
 			env->exit_status = 127;
 		}
+		if (path)
+			ft_free_arr_of_str (&path);
 		return (1);
 	}
 	return (0);
