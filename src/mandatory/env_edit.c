@@ -82,8 +82,6 @@ void	assign_variable(t_env *env, char *string)
 	i = 0;
 	while (string[i] != '=')
 		i++;
-	while (string[i] != '=')
-		i++;
 	var = ft_substr(string, 0, i);
 	if (get_var(var, env->envp))
 	{
@@ -93,10 +91,10 @@ void	assign_variable(t_env *env, char *string)
 	else if (get_var(var, env->loc_vars))
 	{
 		remove_var(var, &env->loc_vars);
-		add_var(string, &env->loc_vars);
+		add_var(string, &env->envp);
 	}
 	else
-		add_var(string, &env->loc_vars);
+		add_var(string, &env->envp);
 	free (var);
 }
 
