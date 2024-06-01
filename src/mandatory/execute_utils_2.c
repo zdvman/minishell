@@ -46,7 +46,7 @@ int	cmd_is_not_valid_no_path(char *cmd, t_env **env)
 		|| ((access(cmd, F_OK)) == 0 && access(cmd, X_OK)))
 	{
 		put_3(cmd, ": command not found", "\n");
-		(*env)->exit_status = 127;
+		(*env)->exit_status = 126;
 		return (1);
 	}
 	return (0);
@@ -58,21 +58,21 @@ int	cmd_is_not_valid(char *cmd, t_env **env)
 
 	if (!cmd || is_a_directory(cmd, *env))
 		return (1);
-	if (is_builtin(cmd))
-		return (0);
-	if (!path_helper(env))
-		return (cmd_is_not_valid_no_path(cmd, env));
 	path = get_path(cmd, env);
-	if ((!access(path, F_OK) && is_exec(path) && access(path, X_OK) == -1))
+	if (!path)
+		return (cmd_is_not_valid_no_path(cmd, env));
+	else if ((!access(path, F_OK) && is_exec(path) && access(path, X_OK) == -1))
 		return (put_3("minishell: ", cmd, ": Permission denied\n"),
-			(*env)->exit_status = 126, 1);
-	if (access(cmd, F_OK) && !path)
+			(*env)->exit_status = 126, free (path), 1);
+	else if (access(cmd, F_OK) && !path)
 		return (put_3("minshell: ", cmd, ": No such file or directory\n"),
-			(*env)->exit_status = 127, 1);
-	if (((access(path, F_OK)) == -1 || ((access(path, F_OK)) == 0
+			(*env)->exit_status = 127, free (path), 1);
+	else if (((access(path, F_OK)) == -1 || ((access(path, F_OK)) == 0
 				&& path && !is_exec(path))))
 		return (put_3(cmd, ": command not found", "\n"),
 			(*env)->exit_status = 127, 1);
+	else
+		free (path);
 	return (0);
 }
 

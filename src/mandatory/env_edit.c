@@ -117,11 +117,12 @@ int	export_var(t_env *env, char **args)
 			while (ft_strncmp(args[1], env->loc_vars[i], ft_strlen(args[1]))
 				&& env->loc_vars[i][ft_strlen(args[1])] != '=')
 				i++;
+			remove_var(args[1], &env->envp);
 			add_var(env->loc_vars[i], &env->envp);
 			remove_var(args[1], &env->loc_vars);
 		}
 	}
 	else
-		add_var(args[1], &env->envp);
+		assign_variable(env, args[1]);
 	return (0);
 }

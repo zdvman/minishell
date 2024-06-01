@@ -72,6 +72,7 @@ char	*read_multiline(t_env **env)
 	while (1)
 	{
 		line = get_line_with_prompt(buf, env);
+		(*env)->input = &line;
 		if (g_signal_received(&line, &buf, env))
 			break ;
 		if (line == NULL || (line[0] == '\0' && buf.data[0] == '\0'))
