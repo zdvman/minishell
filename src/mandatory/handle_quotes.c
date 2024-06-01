@@ -6,13 +6,13 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:22:15 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 19:17:32 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/01 12:06:37 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	handle_backslach(char **input, char **current,
+void	handle_backslach(char **input, char **current,
 				t_dynamic_buffer *buf)
 {
 	(*input)++;
@@ -22,17 +22,14 @@ int	handle_backslach(char **input, char **current,
 		|| **input == '\\'
 		|| **input == '$'
 		|| **input == '`')
-	{
 		buffer_append_char(buf, **input);
-		return (0);
-	}
 	else
 	{
 		buffer_append_char(buf, '\\');
 		buffer_append_char(buf, **input);
 	}
 	(*input)++;
-	return (1);
+	*current = *input;
 }
 
 void	handle_double_quotes(char **input, char **current,
@@ -58,6 +55,8 @@ void	handle_double_quotes(char **input, char **current,
 			*current = *input;
 		}
 	}
+	if (**input == '\"')
+		(*input)++;
 	*current = *input;
 }
 
@@ -73,6 +72,8 @@ void	handle_single_quotes(char **input, char **current,
 		if (*current != *input)
 			buffer_append(buf, *current, *input - *current);
 	}
+	if (**input == '\"')
+		(*input)++;
 	*current = *input;
 }
 

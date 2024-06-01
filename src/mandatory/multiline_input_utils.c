@@ -6,11 +6,26 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 14:44:11 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/30 19:55:26 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/01 11:46:16 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+int	return_current_quote(const char *input, int *i, char *current_quote)
+{
+	*current_quote = input[*i];
+	(*i)++;
+	while (input[*i] && input[*i] != *current_quote)
+	{
+		if (*current_quote == '\"' && input[*i] == '\\')
+			(*i)++;
+		(*i)++;
+	}
+	if (input[*i] == *current_quote)
+		*current_quote = 0;
+	return (*current_quote);
+}
 
 int	is_quote_open(const char *input)
 {
@@ -21,19 +36,13 @@ int	is_quote_open(const char *input)
 	current_quote = 0;
 	while (input[i] != '\0')
 	{
-		if (input[i] == '\'' || input[i] == '\"')
+		if (input[i] == '\\' && (input[i + 1] == '\'' || input[i + 1] == '\"'))
 		{
-			current_quote = input[i];
-			i++;
-			while (input[i] && input[i] != current_quote)
-			{
-				if (current_quote == '\"' && input[i] == '\\')
-					i++;
-				i++;
-			}
-			if (input[i] == current_quote)
-				current_quote = 0;
+			i += 2;
+			continue ;
 		}
+		if (input[i] && (input[i] == '\'' || input[i] == '\"'))
+			current_quote = return_current_quote(input, &i, &current_quote);
 		i++;
 	}
 	return (current_quote);

@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/26 08:24:02 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/31 18:19:34 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/01 12:11:53 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static void	handle_environment_variable(char **input, char **current,
 	*current = *input;
 }
 
-int	handle_dollar_sign_in_quotes(char **input, char **current,
+void	handle_dollar_sign_in_quotes(char **input, char **current,
 			t_dynamic_buffer *buf, t_env **env)
 {
 	(*input)++;
@@ -89,17 +89,16 @@ int	handle_dollar_sign_in_quotes(char **input, char **current,
 	else if (is_dollar_special_case(**input))
 	{
 		handle_dollar_special_case(*input, env);
-		return (0);
+		return ;
 	}
 	else
 	{
 		buffer_append_char(buf, '$');
-		return (1);
+		return ;
 	}
-	return (0);
 }
 
-int	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
+void	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 			t_env **env)
 {
 	(*input)++;
@@ -113,12 +112,11 @@ int	handle_dollar_sign(char **input, char **current, t_dynamic_buffer *buf,
 	else if (is_dollar_special_case(**input))
 	{
 		handle_dollar_special_case(*input, env);
-		return (0);
+		return ;
 	}
 	else
 	{
 		buffer_append_char(buf, '$');
-		return (1);
+		return ;
 	}
-	return (0);
 }

@@ -12,14 +12,31 @@
 
 #include "../../includes/minishell.h"
 
-int	handle_backslach_out_of_quotes(char **input, char **current,
+void	handle_backslach_out_of_quotes(char **input, char **current,
 	t_dynamic_buffer *buf)
 {
 	(*input)++;
 	*current = *input;
 	buffer_append_char(buf, **input);
 	(*input)++;
-	return (1);
+	*current = *input;
+}
+
+static void	expand_loop(char **input, char **current,
+				t_dynamic_buffer *buf, t_env **env)
+{
+	if (**input == '$')
+		handle_dollar_sign(input, current, buf, env);
+	else if (**input == '\'' || **input == '\"')
+		handle_quotes(input, current, buf, env);
+	else if (**input == '\\')
+		handle_backslach_out_of_quotes(input, current, buf);
+	else
+	{
+		buffer_append_char(buf, **input);
+		(*input)++;
+		*current = *input;
+	}
 }
 
 char	*expand_word(t_env **env, char **input)
@@ -34,26 +51,7 @@ char	*expand_word(t_env **env, char **input)
 	current = *input;
 	while (**input)
 	{
-		if (**input == '$')
-		{
-			handle_dollar_sign(input, &current, &buf, env);
-			// if (handle_dollar_sign(input, &current, &buf, env))
-			// 	continue ;
-		}
-		else if (**input == '\'' || **input == '\"')
-			handle_quotes(input, &current, &buf, env);
-		else if (**input == '\\')
-		{
-			handle_backslach_out_of_quotes(input, &current, &buf);
-			// if (handle_backslach_out_of_quotes(input, &current, &buf))
-			// 	continue ;
-		}
-		else
-		{
-			buffer_append_char(&buf, **input);
-			(*input)++;
-			current = *input;
-		}
+		expand_loop(input, &current, &buf, env);
 	}
 	if (current != *input)
 		buffer_append(&buf, current, *input - current);
