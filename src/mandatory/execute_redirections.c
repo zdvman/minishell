@@ -121,7 +121,6 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 	set_origin_fd(origin_fd);
 	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if_error(fd == -1, env);
-	dup2((*env)->stdin, STDIN_FILENO);
 	dup2((*env)->stdout, STDOUT_FILENO);
 	line = readline("> ");
 	while (line)
@@ -137,10 +136,7 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 		ft_free_str(&line);
 		line = readline("> ");
 	}
-	set_sig_actions ();
 	if (here_doc_signal_handler(env, fd, origin_fd))
 		return ;
-	close(fd);
-	restore_origin_fd(origin_fd, env);
 	heredoc_output(node, env);
 }

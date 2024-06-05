@@ -16,8 +16,8 @@ bool	is_redirection(t_token_type type)
 {
 	if (type == TOKEN_REDIR_INPUT
 		|| type == TOKEN_REDIR_OUTPUT
-		|| type == TOKEN_REDIR_APPEND)
-		// || type == TOKEN_HERE_DOC)
+		|| type == TOKEN_REDIR_APPEND
+		|| type == TOKEN_HERE_DOC)
 		return (true);
 	else
 		return (false);
