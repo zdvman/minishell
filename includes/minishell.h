@@ -305,13 +305,9 @@ int			is_builtin(char *cmd);
 //builtin_cd.c
 int			change_dir(t_env **env, char **args);
 
-// void		insert_local(t_env *env, char *var);
-int			is_assignment(char *cmd);
-int			is_builtin(char *cmd);
-
 //env_var
 void		add_var(char *var, char ***vars);
-void		assign_variable(t_env *env, char *string);
+void		assign_variable(t_env *env, char ***vars, char *string);
 int			export_var(t_env *env, char **args);
 char		*get_var(char *env_var, char **vars);
 char		*make_var(char *var, char *val);

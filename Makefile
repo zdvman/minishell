@@ -83,11 +83,19 @@ OBJ_BONUS = $(SRC_BONUS:$(SRC_BONUS_DIR)/%.c=$(OBJ_BONUS_DIR)/%.o)
 
 # **************************************************************************** #
 # Main target
+ifeq ($(MAKECMDGOALS), bonus)
+OBJ_MANDATORY += $(OBJ_BONUS)
+else
+OBJ_MANDATORY += $(OBJ)
+endif
+
+bonus: $(NAME)
+
 all: $(NAME)
 
 # Linking the executable
-$(NAME): $(LIBFT) $(OBJ) $(OBJ_MANDATORY)
-	@$(CC) -o $@ $(LIBFT) $(OBJ) $(OBJ_MANDATORY) $(LDFLAGS)
+$(NAME): $(LIBFT) $(OBJ_MANDATORY)
+	@$(CC) -o $@ $(LIBFT) $(OBJ_MANDATORY) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled$(RESET)"
 
 # -o $@ - output file name $(NAME), $@ = $(NAME)
@@ -118,10 +126,10 @@ $(OBJ_BONUS_DIR)/%.o: $(SRC_BONUS_DIR)/%.c
 # **************************************************************************** #
 
 # Bonus part compilation
-bonus: CFLAGS += -DBONUS # Add a flag to the compiler
-bonus:  $(OBJ_BONUS) $(LIBFT) $(OBJ_MANDATORY)
-	@$(CC) -o $(NAME) $(LIBFT) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
-	@echo "$(GREEN)$(NAME) compiled with bonus part$(RESET)"
+# bonus:  # Add a flag to the compiler
+# bonus:  $(OBJ_BONUS) $(LIBFT) $(OBJ_MANDATORY)
+# 	@$(CC) -o $(NAME) $(LIBFT) $(OBJ_MANDATORY) $(OBJ_BONUS) $(LDFLAGS)
+# 	@echo "$(GREEN)$(NAME) compiled with bonus part$(RESET)"
 # **************************************************************************** #
 # Cleaning up
 clean:

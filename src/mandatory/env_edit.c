@@ -74,14 +74,12 @@ void	add_var(char *var, char ***vars)
 	(*vars) = new_env;
 }
 
-void	assign_variable(t_env *env, char *string)
+void	assign_variable(t_env *env, char ***vars, char *string)
 {
 	char	*var;
 	int		i;
 
 	i = 0;
-	while (string[i] != '=')
-		i++;
 	while (string[i] != '=')
 		i++;
 	var = ft_substr(string, 0, i);
@@ -96,7 +94,7 @@ void	assign_variable(t_env *env, char *string)
 		add_var(string, &env->loc_vars);
 	}
 	else
-		add_var(string, &env->loc_vars);
+		add_var(string, vars);
 	free (var);
 }
 
@@ -123,6 +121,6 @@ int	export_var(t_env *env, char **args)
 		}
 	}
 	else
-		assign_variable(env, args[1]);
+		assign_variable(env, &env->envp, args[1]);
 	return (0);
 }
