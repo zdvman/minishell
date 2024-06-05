@@ -120,6 +120,9 @@ typedef struct s_env
 	char			*prompt;
 	int				ls;
 	char			**input;
+	int				stdout;
+	int				stdin;
+	int				stderr;
 }				t_env;
 
 typedef struct s_dynamic_buffer
