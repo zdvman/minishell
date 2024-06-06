@@ -70,12 +70,8 @@ void	execute_pipe(t_ast_node *node, t_env **env)
 	pid_t	pid;
 
 	set_origin_fd(origin_fd);
-	if(pipe(fd) == -1)
-	{
-		error_msg("pipe", errno);
-		restore_origin_fd(origin_fd, env);
-		return ;
-	}
+	if (pipe(fd) == -1)
+		return (error_msg("pipe", errno), restore_origin_fd(origin_fd, env));
 	pid = fork();
 	if_error(pid == -1, env);
 	if (pid == 0)

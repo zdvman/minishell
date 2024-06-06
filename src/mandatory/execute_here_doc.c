@@ -72,21 +72,10 @@ static void	heredoc_output(t_ast_node *node, t_env **env)
 	unlink(".here_doc");
 }
 
-void	execute_here_doc(t_ast_node *node, t_env **env)
+void	get_here_doc_input(t_env **env, t_ast_node *node, int fd)
 {
-	int		fd;
-	int		origin_fd[2];
 	char	*line;
 
-	set_origin_fd(origin_fd);
-	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		error_msg(".here_doc", errno);
-		restore_origin_fd(origin_fd, env);
-		(*env)->exit_status = 1;
-		return ;
-	}
 	dup2((*env)->stdout, STDOUT_FILENO);
 	line = readline("> ");
 	while (line)
@@ -102,6 +91,23 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 		ft_free_str(&line);
 		line = readline("> ");
 	}
+}
+
+void	execute_here_doc(t_ast_node *node, t_env **env)
+{
+	int		fd;
+	int		origin_fd[2];
+
+	set_origin_fd(origin_fd);
+	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		error_msg(".here_doc", errno);
+		restore_origin_fd(origin_fd, env);
+		(*env)->exit_status = 1;
+		return ;
+	}
+	get_here_doc_input(env, node, fd);
 	if (here_doc_signal_handler(env, fd, origin_fd))
 		return ;
 	restore_origin_fd(origin_fd, env);
