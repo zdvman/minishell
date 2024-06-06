@@ -27,6 +27,7 @@ void	add_token(t_token_type type, char *value, int space_after, t_env **env)
 	token->value = value;
 	token->has_space = space_after;
 	token->next = NULL;
+	token->prev = NULL;
 	if ((*env)->tokens == NULL)
 		(*env)->tokens = token;
 	else
@@ -35,6 +36,7 @@ void	add_token(t_token_type type, char *value, int space_after, t_env **env)
 		while (current->next != NULL)
 			current = current->next;
 		current->next = token;
+		token->prev = current;
 	}
 }
 

@@ -18,6 +18,7 @@ t_list	*new_dir_entry(char *entry_name)
 
 	new = ft_calloc(sizeof(t_list), 1);
 	new->content = ft_strdup(entry_name);
+	new->next = NULL;
 	return (new);
 }
 
@@ -64,4 +65,30 @@ void	get_current_dir(t_env **env)
 		entry = readdir(current);
 	}
 	closedir(current);
+}
+
+void	args_to_tokens(t_list *args, t_token *next, t_token **head)
+{
+	t_token	*new;
+	t_list	*tmp;
+
+	new = NULL;
+	while (args)
+	{
+		tmp = args;
+		if (!new)
+		{
+			new = new_word_token(args->content);
+			*head = new;
+		}
+		else
+		{
+			new->next = new_word_token(args->content);
+			new = new->next;
+		}
+		free (args->content);
+		args = args->next;
+		free (tmp);
+	}
+	new->next = next;
 }

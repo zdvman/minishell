@@ -61,38 +61,44 @@ char	*expand_word(t_env **env, char **input)
 	return (expanded);
 }
 
-int	insert_vals(t_env **env, t_token **token, t_token *prev)
+t_token	*insert_vals(t_env **env, t_token **token)
 {
+	t_token	*prev;
 	t_token	*next;
+	t_token	*new;
 
+	prev = (*token)->prev;
 	next = (*token)->next;
-	if (expand_wildcard((*token)->value, env, prev, next))
+	new = expand_wildcard((*token)->value, env, prev, next);
+	if (!new)
+		return (NULL);
+	free ((*token)->value);
+	free (*token);
+	if (prev)
 	{
-		free((*token)->value);
-		free((*token));
-		(*token) = next;
-		return (1);
+		prev->next = new;
+		return (new);
 	}
-	return (0);
+	(*env)->head_token = new;
+	(*env)->tokens = (*env)->head_token;
+	return (new);
 }
 
-void	expand_tokens(t_env **env)
+void	expand_tokens(t_env **env, t_token *token, t_token *prev)
 {
-	t_token	*token;
-	t_token	*prev;
+	t_token	*tmp;
 	char	*expanded;
 
-	prev = NULL;
+	prev = (*env)->tokens->prev;
 	token = (*env)->tokens;
 	while (token)
 	{
+		tmp = NULL;
 		if (token->type == TOKEN_WORD)
 		{
-			if (contains(token->value, '*'))
-			{
-				if (insert_vals(env, &token, prev))
-					continue ;
-			}
+			if (contains(token->value, '*')
+				&& (!prev || !is_redirection(prev->type)))
+				tmp = insert_vals(env, &token);
 			else
 			{
 				expanded = expand_word(env, &token->value);
@@ -100,6 +106,8 @@ void	expand_tokens(t_env **env)
 				token->value = expanded;
 			}
 		}
+		if (tmp)
+			token = tmp;
 		prev = token;
 		token = token->next;
 	}

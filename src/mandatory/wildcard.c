@@ -12,11 +12,8 @@
 
 #include "../../includes/minishell.h"
 
-static int	glob(char *pattern, t_env *env, int i, int j)
+static int	glob(char *pattern, char *file, int i, int j)
 {
-	char	*file;
-
-	file = env->directory_list->content;
 	if (pattern[i] == 0 && file[j] == 0)
 		return (1);
 	if (pattern[i] == 0 || file[j] == 0)
@@ -25,12 +22,14 @@ static int	glob(char *pattern, t_env *env, int i, int j)
 		return (0);
 	if (pattern[0] == '*' && file[0] == '.')
 		return (0);
+	if (pattern[0] == '.' && pattern[1] == '*' && file[0] == '.')
+		return (1);
 	if (pattern[i] == '*')
-		return (glob(pattern, env, i + 1, j + 1)
-			|| glob(pattern, env, i, j + 1)
-			|| glob(pattern, env, i + 1, j));
+		return (glob(pattern, file, i + 1, j + 1)
+			|| glob(pattern, file, i + 1, j)
+			|| glob(pattern, file, i, j + 1));
 	else
-		return (glob(pattern, env, i + 1, j + 1));
+		return (glob(pattern, file, i + 1, j + 1));
 	return (0);
 }
 
@@ -52,8 +51,13 @@ t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 {
 	t_list	*matched;
 	t_list	*matched_head;
+	int		i;
 
-	if (!ft_strcmp("ls", prev->value))
+	i = 0;
+	if (pattern[0] && pattern[0] == '*' && pattern[1])
+		while (pattern[i + 1] && pattern[i + 1] == '*')
+			i++;
+	if (prev && !ft_strcmp("ls", prev->value))
 		(*env)->ls = 1;
 	else
 		(*env)->ls = 0;
@@ -62,9 +66,12 @@ t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 	(*env)->directory_list = (*env)->dir_head;
 	while ((*env)->directory_list)
 	{
-		if (glob(pattern, *env, 0, 0))
+		if (glob(pattern, (*env)->directory_list->content, i, 0))
 			update_matched(env, &matched, &matched_head);
 		(*env)->directory_list = (*env)->directory_list->next;
+		if (matched_head && prev && (!ft_strcmp("ls", prev->value)
+			|| !ft_strcmp("echo", prev->value)))
+			break ;
 	}
 	return (matched_head);
 }
@@ -80,29 +87,18 @@ t_token	*new_word_token(char *str)
 	return (new);
 }
 
-int	expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
+t_token	*expand_wildcard(char *input, t_env **env, t_token *prev, t_token *next)
 {
-	t_list		*get_args;
-	t_list		*tmp;
+	t_list		*args;
 	t_token		*new;
+	t_token		*head;
 
-	if (!prev)
-		return (0);
+	new = NULL;
+	head = NULL;
 	get_current_dir(env);
-	get_args = expand_args(env, input, prev);
-	if (!get_args)
-		return (0);
-	while (get_args)
-	{
-		tmp = get_args;
-		new = new_word_token(get_args->content);
-		prev->next = new;
-		prev = new;
-		new->next = next;
-		free (get_args->content);
-		get_args = get_args->next;
-		free (tmp);
-	}
+	args = expand_args(env, input, prev);
+	if (args)
+		args_to_tokens(args, next, &head);
 	free_dir(env);
-	return (1);
+	return (head);
 }

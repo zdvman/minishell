@@ -65,7 +65,7 @@ void	process_input(t_env **env, char *input)
 	get_tokens(input, env);
 	if (bonus_check(env))
 		return ;
-	expand_tokens(env);
+	expand_tokens(env, (*env)->tokens, (*env)->tokens->prev);
 	ast = parse_tokens(env);
 	if (ast)
 	{
