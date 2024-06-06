@@ -290,6 +290,7 @@ int			contains(char *str, char target);
 t_token		*expand_wildcard(char *input, t_env **env,
 				t_token *prev, t_token *next);
 t_token		*new_word_token(char *str);
+t_list		*expand_args(t_env **env, char *pattern, t_token *prev);
 
 //wildcard_utils.c
 t_list		*new_dir_entry(char *entry_name);

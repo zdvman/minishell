@@ -69,7 +69,8 @@ t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 		if (glob(pattern, (*env)->directory_list->content, i, 0))
 			update_matched(env, &matched, &matched_head);
 		(*env)->directory_list = (*env)->directory_list->next;
-		if (matched_head && !(*env)->ls)
+		if (matched_head && prev && (!ft_strcmp("ls", prev->value)
+			|| !ft_strcmp("echo", prev->value)))
 			break ;
 	}
 	return (matched_head);

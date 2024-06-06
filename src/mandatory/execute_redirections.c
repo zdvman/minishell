@@ -12,6 +12,43 @@
 
 #include "../../includes/minishell.h"
 
+void	free_list(t_list **list)
+{
+	t_list	*tmp;
+
+	while (*list)
+	{
+		tmp = *list;
+		free ((*list)->content);
+		*list = (*list)->next;
+		free (tmp);
+	}
+}
+
+int	check_for_wildcard(t_env **env, char **input)
+{
+	t_list	*args;
+
+	if (!contains(*input, '*'))
+		return (0);
+	get_current_dir(env);
+	args = expand_args(env, *input, NULL);
+	free_dir(env);
+	if (!args)
+	{
+		return (put_3("minshell: ", *input, ": No such file or directory\n"), 1);
+	}
+	if (args && args->next)
+	{
+		free_list (&args);
+		return (put_3("minshell: ", *input, ": Ambiguous redirect\n"), 1);
+	}
+	free (*input);
+	*input = ft_strdup(args->content);
+	free_list (&args);
+	return (0);
+}
+
 void	execute_redir_output(t_ast_node *node, t_env **env)
 {
 	int	fd;
@@ -60,6 +97,12 @@ void	execute_redir_input(t_ast_node *node, t_env **env)
 	int	origin_fd[2];
 
 	set_origin_fd(origin_fd);
+	if (check_for_wildcard(env, &node->args[0]))
+	{
+		restore_origin_fd(origin_fd, env);
+		(*env)->exit_status = 1;
+		return ;		
+	}
 	fd = open(node->args[0], O_RDONLY);
 	if (fd == -1)
 	{
