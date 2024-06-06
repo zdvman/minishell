@@ -165,7 +165,7 @@ void		exit_minishell(t_env **env);
 int			pid_list(t_cmd function, pid_t pid);
 
 // expand.c
-void		expand_tokens(t_env **env);
+void		expand_tokens(t_env **env, t_token *token, t_token *prev);
 char		*expand_word(t_env **env, char **input);
 
 // multiline_input.c
@@ -287,13 +287,15 @@ void		generate_ast_diagram(t_ast_node *root);
 
 //wildcard.c  for bonus but using here for testing
 int			contains(char *str, char target);
-int			expand_wildcard(char *input, t_env **env,
+t_token		*expand_wildcard(char *input, t_env **env,
 				t_token *prev, t_token *next);
+t_token		*new_word_token(char *str);
 
-//wildcard_dir.c
+//wildcard_utils.c
 t_list		*new_dir_entry(char *entry_name);
 void		free_dir(t_env **env);
 void		get_current_dir(t_env **env);
+void		args_to_tokens(t_list *args, t_token *next, t_token **head);
 
 //builtin.c
 void		execute_builtin(t_env **env, char **args);
