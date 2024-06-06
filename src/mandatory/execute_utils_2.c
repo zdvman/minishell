@@ -70,7 +70,7 @@ int	cmd_is_not_valid(char *cmd, t_env **env)
 	else if (((access(path, F_OK)) == -1 || ((access(path, F_OK)) == 0
 				&& path && !is_exec(path))))
 		return (put_3(cmd, ": command not found", "\n"),
-			(*env)->exit_status = 127, 1);
+			(*env)->exit_status = 127, free (path), 1);
 	else
 		free (path);
 	return (0);

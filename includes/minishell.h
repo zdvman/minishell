@@ -271,7 +271,6 @@ void		free_list(t_list **list);
 int			check_for_wildcard(t_env **env, char **input);
 void		execute_here_doc(t_ast_node *node, t_env **env);
 
-
 // execute_utils_1.c
 void		wait_for_process(pid_t pid, t_env **env);
 void		if_error(bool status, t_env **env);

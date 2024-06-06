@@ -60,7 +60,7 @@ char	*get_path(char *cmd, t_env **env)
 	if (!path_dirs)
 		return (NULL);
 	if (!access(cmd, X_OK))
-		return (ft_strdup(cmd));
+		return (ft_free_arr_of_str(&path_dirs), ft_strdup(cmd));
 	i = -1;
 	while (path_dirs[++i])
 	{

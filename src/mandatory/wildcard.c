@@ -79,6 +79,7 @@ t_token	*new_word_token(char *str)
 	new->type = TOKEN_WORD;
 	new->value = ft_strdup(str);
 	new->next = NULL;
+	new->wildcard = 0;
 	return (new);
 }
 

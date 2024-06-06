@@ -14,7 +14,7 @@
 
 void	buffer_init(t_dynamic_buffer *buf)
 {
-	buf->data = malloc(64);
+	buf->data = ft_calloc(64, 1);
 	buf->len = 0;
 	if (buf->data)
 	{

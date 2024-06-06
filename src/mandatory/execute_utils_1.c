@@ -16,6 +16,7 @@ void	wait_for_process(pid_t pid, t_env **env)
 {
 	int	status;
 
+	status = 0;
 	(*env)->exit_status = 0;
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
