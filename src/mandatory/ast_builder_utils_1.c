@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 12:42:43 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/27 12:42:54 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 13:15:28 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ t_ast_node	*ft_last_node(t_ast_node *base_node)
 {
 	t_ast_node	*last_node;
 
+	if (!base_node)
+		return (NULL);
 	last_node = base_node;
 	while (last_node->left)
 		last_node = last_node->left;
@@ -59,8 +61,11 @@ t_ast_node	*append_tree(t_ast_node *base_node,
 {
 	t_ast_node	*last_node;
 
+	last_node = NULL;
 	if (!new_node)
 		return (base_node);
+	if (!base_node)
+		return (new_node);
 	last_node = ft_last_node(base_node);
 	last_node->left = new_node;
 	return (base_node);

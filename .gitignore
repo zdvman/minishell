@@ -57,5 +57,5 @@ dkms.conf
 #vscode files
 .vscode/*.*
 
-#AST .dor file
+#AST .dot graphiz file for visualizer
 *.dot

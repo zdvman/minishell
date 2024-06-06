@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_bonus.c                                       :+:      :+:    :+:   */
+/*   wildcard.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 11:53:04 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/04/10 12:01:34 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 14:26:26 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell_bonus.h"
+#include "../../includes/minishell.h"
 
-int	glob(char *pattern, t_env *env, int i, int j)
+static int	glob(char *pattern, t_env *env, int i, int j)
 {
 	char	*file;
 

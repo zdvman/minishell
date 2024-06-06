@@ -22,20 +22,15 @@ void	execute_redir_output(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		restore_origin_fd(origin_fd, env);
 		(*env)->exit_status = 1;
-		cleanup_no_exit(env);
+		return ;
 	}
-	if ((*env)->fd_out == -1)
-		(*env)->fd_out = fd;
+	dup2(fd, STDOUT_FILENO);
 	if (node->left)
 		execute(node->left, env);
-	else
-	{
-		(*env)->fd_in = -1;
-		(*env)->fd_out = -1;
-	}
-	close(fd);
 	restore_origin_fd(origin_fd, env);
+	close(fd);
 }
 
 void	execute_redir_append(t_ast_node *node, t_env **env)
@@ -48,20 +43,15 @@ void	execute_redir_append(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		restore_origin_fd(origin_fd, env);
 		(*env)->exit_status = 1;
-		cleanup_no_exit(env);
+		return ;
 	}
-	if ((*env)->fd_out == -1)
-		(*env)->fd_out = fd;
+	dup2(fd, STDOUT_FILENO);
 	if (node->left)
 		execute(node->left, env);
-	else
-	{
-		(*env)->fd_in = -1;
-		(*env)->fd_out = -1;
-	}
-	close(fd);
 	restore_origin_fd(origin_fd, env);
+	close(fd);
 }
 
 void	execute_redir_input(t_ast_node *node, t_env **env)
@@ -74,20 +64,15 @@ void	execute_redir_input(t_ast_node *node, t_env **env)
 	if (fd == -1)
 	{
 		error_msg(node->args[0], errno);
+		restore_origin_fd(origin_fd, env);
 		(*env)->exit_status = 1;
-		cleanup_no_exit(env);
+		return ;
 	}
-	if ((*env)->fd_in == -1)
-		(*env)->fd_in = fd;
+	dup2(fd, STDIN_FILENO);
 	if (node->left)
 		execute(node->left, env);
-	else
-	{
-		(*env)->fd_in = -1;
-		(*env)->fd_out = -1;
-	}
-	close(fd);
 	restore_origin_fd(origin_fd, env);
+	close(fd);
 }
 
 static void	heredoc_output(t_ast_node *node, t_env **env)
@@ -97,19 +82,19 @@ static void	heredoc_output(t_ast_node *node, t_env **env)
 
 	set_origin_fd(origin_fd);
 	fd = open(".here_doc", O_RDONLY, 0644);
-	if_error(fd == -1, env);
-	if ((*env)->fd_in == -1)
-		(*env)->fd_in = fd;
+	if (fd == -1)
+	{
+		error_msg(".here_doc", errno);
+		restore_origin_fd(origin_fd, env);
+		(*env)->exit_status = 1;
+		return ;
+	}
+	dup2(fd, STDIN_FILENO);
 	if (node->left)
 		execute(node->left, env);
-	else
-	{
-		(*env)->fd_in = -1;
-		(*env)->fd_out = -1;
-	}
+	restore_origin_fd(origin_fd, env);
 	close(fd);
 	unlink(".here_doc");
-	restore_origin_fd(origin_fd, env);
 }
 
 void	execute_here_doc(t_ast_node *node, t_env **env)
@@ -120,7 +105,13 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 
 	set_origin_fd(origin_fd);
 	fd = open(".here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if_error(fd == -1, env);
+	if (fd == -1)
+	{
+		error_msg(".here_doc", errno);
+		restore_origin_fd(origin_fd, env);
+		(*env)->exit_status = 1;
+		return ;
+	}
 	dup2((*env)->stdout, STDOUT_FILENO);
 	line = readline("> ");
 	while (line)
@@ -138,5 +129,7 @@ void	execute_here_doc(t_ast_node *node, t_env **env)
 	}
 	if (here_doc_signal_handler(env, fd, origin_fd))
 		return ;
+	restore_origin_fd(origin_fd, env);
+	close(fd);
 	heredoc_output(node, env);
 }

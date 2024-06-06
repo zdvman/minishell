@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 12:34:01 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/05/27 12:40:43 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 13:06:08 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ t_ast_node	*parse_redirection(t_token **current, t_env **env)
 		arg = get_redir_arg(current, env);
 		if (!arg)
 			return (NULL);
-		base_node = reroot_tree(base_node, create_ast_node(type, arg, env));
+		base_node = append_tree(base_node, create_ast_node(type, arg, env));
 		*current = (*current)->next;
 		if (*current && (*current)->type == TOKEN_WORD)
 			base_node = append_tree(base_node, parse_command(current, env));
