@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/01 13:42:33 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/01 14:48:32 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 14:32:13 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@
 /*  │   ├── Makefile             Makefile to build the libft library          */
 /*  │   └── ...                  Libft source files and headers               */
 /*  ├── src/                     Source files for Minishell core functionality*/
+/*  │   ├── ast_visualizer/      Source files for graphiz extension           */
 /*  │   ├── mandatory/           Source files from mandatory sources          */
 /*  │   ├── bonus/               Source files from bonus sources              */
 /*  │   └── main.c               Main file for the Minishell project          */
 /*  ├── includes/                Header files for all Minishell parts         */
-/*  │   ├── minishell.h          Main headers for the project                 */
-/*  │   └── minishell_bonus.h    Bonus headers for the project                */
+/*  │   └── minishell.h          Main headers for the project                 */
 /*  ├── obj/                     Object files for all Minishell parts         */
 /*  │   ├── mandatory/           Object files from mandatory sources          */
 /*  │   ├── bonus/               Object files from bonus sources              */
@@ -34,9 +34,6 @@
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#ifdef BONUS
-# include "../includes/minishell_bonus.h"
-#endif
 
 static int	bonus_loop_check(t_token **tmp, t_env **env)
 {

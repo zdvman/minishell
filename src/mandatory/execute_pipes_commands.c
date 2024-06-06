@@ -41,7 +41,6 @@ void	execute_command(t_ast_node *node, t_env **env)
 	int		origin_fd[2];
 
 	set_origin_fd(origin_fd);
-	handle_fd(env);
 	if (is_builtin(node->args[0]))
 		return (execute_builtin(env, node->args));
 	else if (is_assignment(node->args[0]) && !node->args[1])
@@ -71,8 +70,12 @@ void	execute_pipe(t_ast_node *node, t_env **env)
 	pid_t	pid;
 
 	set_origin_fd(origin_fd);
-	handle_fd(env);
-	if_error(pipe(fd) == -1, env);
+	if(pipe(fd) == -1)
+	{
+		error_msg("pipe", errno);
+		restore_origin_fd(origin_fd, env);
+		return ;
+	}
 	pid = fork();
 	if_error(pid == -1, env);
 	if (pid == 0)

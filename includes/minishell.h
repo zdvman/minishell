@@ -326,7 +326,12 @@ void		error_msg(char *cmd, int error_value);
 int			is_dollar_special_case(char c);
 void		put_3(char *s1, char *s2, char *s3);
 int			is_dollar_special_case(char c);
-// void		add_child_pid(pid_t pid);
-// void		remove_child_pid(pid_t pid);
+
+// ast_visualizer.c
+/*
+void		print_escaped(FILE *stream, const char *str);
+void		print_ast_dot(t_ast_node *node, FILE *stream);
+void		generate_ast_diagram(t_ast_node *root);
+*/
 
 #endif
