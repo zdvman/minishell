@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 16:04:10 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/06 18:26:43 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 19:30:33 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	star_check_in_token(char *token_value)
 			current_quote = is_quote_open(value);
 			if (*value == '\\'
 				&& *(value + 1) == '*'
-				&& (!current_quote || current_quote == '\"'))
+				&& !current_quote)
 			{
 				value += 2;
 				continue ;
