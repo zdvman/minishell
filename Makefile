@@ -70,7 +70,7 @@ SRC_MANDATORY = $(addprefix $(SRC_MANDATORY_DIR)/, \
 				ast_builder_1.c        builtin.c         env_vars_1.c              execute_utils_3.c  get_tokens_utils.c            init.c           utils.c \
 				ast_builder_2.c        builtin_cd.c      execute.c                 expand.c           handle_dollar.c               init_mandatory.c         wildcard.c \
 				ast_builder_3.c        builtin_utils.c   execute_pipes_commands.c  free_utils_1.c     handle_meta_brackets_semi.c   multiline_input.c        wildcard_utils.c \
-				ast_builder_utils_1.c  dynamic_buffer.c  execute_redirections.c    free_utils_2.c     handle_meta_redirs_pipe_or.c  multiline_input_utils.c \
+				ast_builder_utils_1.c  dynamic_buffer.c  execute_redirections.c    free_utils_2.c     handle_meta_redirs_pipe_or.c  multiline_input_utils.c  execute_here_doc.c \
 				ast_builder_utils_2.c  env_edit.c        execute_utils_1.c         get_path.c         handle_quotes.c               prompt.c \
 				env_utils.c            execute_utils_2.c get_tokens.c              signals_handling.c expand_utils.c)
 SRC_BONUS = $(addprefix $(SRC_BONUS_DIR)/,main_with_bonus.c)

@@ -21,6 +21,7 @@ void	put_3(char *s1, char *s2, char *s3)
 
 void	error_msg(char *cmd, int error_value)
 {
+	ft_putstr("minishell: ");
 	if (cmd)
 	{
 		ft_putstr_fd(cmd, STDERR_FILENO);
