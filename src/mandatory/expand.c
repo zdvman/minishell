@@ -96,15 +96,14 @@ void	expand_tokens(t_env **env, t_token *token, t_token *prev)
 		tmp = NULL;
 		if (token->type == TOKEN_WORD)
 		{
-			if (star_check_in_token(token->value)//(contains(token->value, '*')
+			if (star_check_in_token(token->value)
 				&& (!prev || !is_redirection(prev->type)))
+				token->wildcard = 1;
+			expanded = expand_word(env, &token->value);
+			free(token->value);
+			token->value = expanded;
+			if (token->wildcard)
 				tmp = insert_vals(env, &token);
-			else
-			{
-				expanded = expand_word(env, &token->value);
-				free(token->value);
-				token->value = expanded;
-			}
 		}
 		if (tmp)
 			token = tmp;

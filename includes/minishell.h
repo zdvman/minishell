@@ -98,6 +98,7 @@ typedef struct s_token
 	t_token_type	type;
 	char			*value;
 	int				has_space;
+	int				wildcard;
 	struct s_token	*next;
 	struct s_token	*prev;
 }				t_token;
