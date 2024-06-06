@@ -22,6 +22,8 @@ static int	glob(char *pattern, char *file, int i, int j)
 		return (0);
 	if (pattern[0] == '*' && file[0] == '.')
 		return (0);
+	if (pattern[0] == '.' && pattern[1] == '*' && file[0] == '.')
+		return (1);
 	if (pattern[i] == '*')
 		return (glob(pattern, file, i + 1, j + 1)
 			|| glob(pattern, file, i + 1, j)
