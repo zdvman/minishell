@@ -6,7 +6,7 @@
 #    By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 10:31:12 by dzuiev            #+#    #+#              #
-#    Updated: 2024/06/06 14:29:52 by dzuiev           ###   ########.fr        #
+#    Updated: 2024/06/06 18:36:42 by dzuiev           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -72,7 +72,7 @@ SRC_MANDATORY = $(addprefix $(SRC_MANDATORY_DIR)/, \
 				ast_builder_3.c        builtin_utils.c   execute_pipes_commands.c  free_utils_1.c     handle_meta_brackets_semi.c   multiline_input.c        wildcard_utils.c \
 				ast_builder_utils_1.c  dynamic_buffer.c  execute_redirections.c    free_utils_2.c     handle_meta_redirs_pipe_or.c  multiline_input_utils.c \
 				ast_builder_utils_2.c  env_edit.c        execute_utils_1.c         get_path.c         handle_quotes.c               prompt.c \
-				env_utils.c       execute_utils_2.c         get_tokens.c           signals_handling.c )
+				env_utils.c            execute_utils_2.c get_tokens.c              signals_handling.c expand_utils.c)
 SRC_BONUS = $(addprefix $(SRC_BONUS_DIR)/,main_with_bonus.c)
 # SRC += src/bonus/wildcard.c src/bonus/wildcard_dir.c
 

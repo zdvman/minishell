@@ -168,6 +168,9 @@ int			pid_list(t_cmd function, pid_t pid);
 void		expand_tokens(t_env **env, t_token *token, t_token *prev);
 char		*expand_word(t_env **env, char **input);
 
+// expand_utils.c
+int			star_check_in_token(char *token_value);
+
 // multiline_input.c
 char		*read_multiline(t_env **env);
 

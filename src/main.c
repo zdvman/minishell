@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/01 13:42:33 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/06 15:35:50 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/06 18:27:14 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,33 +34,6 @@
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-int	star_check_in_token(char *token_value)
-{
-	char *value;
-	char current_quote;
-
-	value = token_value;
-	current_quote = 0;
-	if (contains(value, '*'))
-	{
-		while (*value)
-		{
-			current_quote = is_quote_open(value);
-			if (*value == '\\'
-				&& *(value + 1) == '*'
-				&& (!current_quote || current_quote == '\"'))
-			{
-				value += 2;
-				continue ;
-			}
-			if (*value == '*' && !current_quote)
-				return (1);
-			value++;
-		}
-	}
-	return (0);
-}
 
 static int	bonus_loop_check(t_token **tmp, t_env **env)
 {
