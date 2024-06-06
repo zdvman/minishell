@@ -61,12 +61,14 @@ void print_ast_dot(t_ast_node *node, FILE *stream)
 	fprintf(stream, "\"];\n");
 	if (node->left != NULL)
 	{
-		fprintf(stream, "\"%p\" -> \"%p\" [label=\"L\"];\n", (void*)node, (void*)node->left);
+		fprintf(stream, "\"%p\" -> \"%p\" [label=\"L\"];\n",
+				(void*)node, (void*)node->left);
 		print_ast_dot(node->left, stream);
 	}
 	if (node->right != NULL)
 	{
-		fprintf(stream, "\"%p\" -> \"%p\" [label=\"R\"];\n", (void*)node, (void*)node->right);
+		fprintf(stream, "\"%p\" -> \"%p\" [label=\"R\"];\n",
+				(void*)node, (void*)node->right);
 		print_ast_dot(node->right, stream);
 	}
 }

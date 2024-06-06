@@ -14,8 +14,8 @@
 
 int	star_check_in_token(char *token_value)
 {
-	char *value;
-	char current_quote;
+	char	*value;
+	char	current_quote;
 
 	value = token_value;
 	current_quote = 0;
