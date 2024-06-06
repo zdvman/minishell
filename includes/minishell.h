@@ -118,7 +118,6 @@ typedef struct s_env
 	char			**loc_vars;
 	char			*user_host;
 	char			*prompt;
-	int				ls;
 	char			**input;
 	int				stdout;
 	int				stdin;
@@ -262,7 +261,12 @@ void		execute_pipe(t_ast_node *node, t_env **env);
 void		execute_redir_output(t_ast_node *node, t_env **env);
 void		execute_redir_append(t_ast_node *node, t_env **env);
 void		execute_redir_input(t_ast_node *node, t_env **env);
+
+// execute_here_doc.
+void		free_list(t_list **list);
+int			check_for_wildcard(t_env **env, char **input);
 void		execute_here_doc(t_ast_node *node, t_env **env);
+
 
 // execute_utils_1.c
 void		wait_for_process(pid_t pid, t_env **env);

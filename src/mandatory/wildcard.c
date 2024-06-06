@@ -57,10 +57,6 @@ t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 	if (pattern[0] && pattern[0] == '*' && pattern[1])
 		while (pattern[i + 1] && pattern[i + 1] == '*')
 			i++;
-	if (prev && !ft_strcmp("ls", prev->value))
-		(*env)->ls = 1;
-	else
-		(*env)->ls = 0;
 	matched = NULL;
 	matched_head = NULL;
 	(*env)->directory_list = (*env)->dir_head;
@@ -69,8 +65,8 @@ t_list	*expand_args(t_env **env, char *pattern, t_token *prev)
 		if (glob(pattern, (*env)->directory_list->content, i, 0))
 			update_matched(env, &matched, &matched_head);
 		(*env)->directory_list = (*env)->directory_list->next;
-		if (matched_head && prev && (!ft_strcmp("ls", prev->value)
-			|| !ft_strcmp("echo", prev->value)))
+		if (matched_head && !prev) // (!ft_strcmp("ls", prev->value)
+				// || ft_strcmp("echo", prev->value)))
 			break ;
 	}
 	return (matched_head);

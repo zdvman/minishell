@@ -36,17 +36,17 @@ int	cmd_is_not_valid_no_path(char *cmd, t_env **env)
 		(*env)->exit_status = 126;
 		return (1);
 	}
-	if (access(cmd, F_OK))
-	{
-		put_3("minshell: ", cmd, ": No such file or directory\n");
-		(*env)->exit_status = 127;
-		return (1);
-	}
 	if (((access(cmd, F_OK)) == -1)
 		|| ((access(cmd, F_OK)) == 0 && access(cmd, X_OK)))
 	{
 		put_3(cmd, ": command not found", "\n");
 		(*env)->exit_status = 126;
+		return (1);
+	}
+	if (access(cmd, F_OK))
+	{
+		put_3("minshell: ", cmd, ": No such file or directory\n");
+		(*env)->exit_status = 127;
 		return (1);
 	}
 	return (0);
