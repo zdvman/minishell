@@ -6,7 +6,7 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/01 13:42:33 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/06 18:27:14 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/20 11:12:12 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void	process_input(t_env **env, char *input)
 	ast = parse_tokens(env);
 	if (ast)
 	{
+		generate_ast_diagram(ast);
 		execute(ast, env);
 	}
 }

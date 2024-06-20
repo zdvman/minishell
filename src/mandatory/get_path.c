@@ -76,5 +76,5 @@ char	*get_path(char *cmd, t_env **env)
 		ft_free_str(&path);
 	}
 	ft_free_arr_of_str(&path_dirs);
-	return (cmd);
+	return (NULL);
 }

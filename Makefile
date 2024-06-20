@@ -6,7 +6,7 @@
 #    By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 10:31:12 by dzuiev            #+#    #+#              #
-#    Updated: 2024/06/06 18:36:42 by dzuiev           ###   ########.fr        #
+#    Updated: 2024/06/20 11:30:21 by dzuiev           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,6 +61,8 @@ SRC_MANDATORY_DIR = $(SRC_DIR)/mandatory
 OBJ_MANDATORY_DIR = $(OBJ_DIR)/mandatory
 SRC_BONUS_DIR = $(SRC_DIR)/bonus
 OBJ_BONUS_DIR = $(OBJ_DIR)/bonus
+SRC_AST_VISUALIZER_DIR = $(SRC_DIR)/ast_visualizer
+OBJ_AST_VISUALIZER_DIR = $(OBJ_DIR)/ast_visualizer
 # **************************************************************************** #
 
 # **************************************************************************** #
@@ -74,11 +76,14 @@ SRC_MANDATORY = $(addprefix $(SRC_MANDATORY_DIR)/, \
 				ast_builder_utils_2.c  env_edit.c        execute_utils_1.c         get_path.c         handle_quotes.c               prompt.c \
 				env_utils.c            execute_utils_2.c get_tokens.c              signals_handling.c expand_utils.c)
 SRC_BONUS = $(addprefix $(SRC_BONUS_DIR)/,main_with_bonus.c)
+
+SRC_AST_VISUALIZER = $(addprefix $(SRC_AST_VISUALIZER_DIR)/,ast_visualizer.c)
 # SRC += src/bonus/wildcard.c src/bonus/wildcard_dir.c
 
 OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o) # All object files in current directory
 OBJ_MANDATORY = $(SRC_MANDATORY:$(SRC_MANDATORY_DIR)/%.c=$(OBJ_MANDATORY_DIR)/%.o)
 OBJ_BONUS = $(SRC_BONUS:$(SRC_BONUS_DIR)/%.c=$(OBJ_BONUS_DIR)/%.o)
+OBJ_AST_VISUALIZER = $(SRC_AST_VISUALIZER:$(SRC_AST_VISUALIZER_DIR)/%.c=$(OBJ_AST_VISUALIZER_DIR)/%.o)
 # **************************************************************************** #
 
 # **************************************************************************** #
@@ -94,8 +99,8 @@ bonus: $(NAME)
 all: $(NAME)
 
 # Linking the executable
-$(NAME): $(LIBFT) $(OBJ_MANDATORY)
-	@$(CC) -o $@ $(LIBFT) $(OBJ_MANDATORY) $(LDFLAGS)
+$(NAME): $(LIBFT) $(OBJ_MANDATORY) $(OBJ_AST_VISUALIZER)
+	@$(CC) -o $@ $(LIBFT) $(OBJ_MANDATORY) $(OBJ_AST_VISUALIZER) $(LDFLAGS)
 	@echo "$(GREEN)$(NAME) compiled$(RESET)"
 
 # -o $@ - output file name $(NAME), $@ = $(NAME)
@@ -121,6 +126,10 @@ $(OBJ_BONUS_DIR)/%.o: $(SRC_BONUS_DIR)/%.c
 	@mkdir -p $(OBJ_BONUS_DIR)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(OBJ_AST_VISUALIZER_DIR)/%.o: $(SRC_AST_VISUALIZER_DIR)/%.c
+	@mkdir -p $(OBJ_AST_VISUALIZER_DIR)
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 # -c $< -o $@ - compile source file $< into object file $@,
 # $< = source file, $@ = object file
 # **************************************************************************** #
@@ -143,6 +152,7 @@ clean:
 fclean: clean
 	@$(MAKE) -C $(LIBFT_DIR) fclean
 	@rm -f $(NAME)
+	@rm -f ast.dot
 	@echo "$(RED)$(NAME) removed$(RESET)"
 # rm -rf - remove the directory with all its content
 # -r - remove directories and their contents recursively

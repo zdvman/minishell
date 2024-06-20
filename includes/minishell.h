@@ -84,13 +84,9 @@ typedef enum e_token_type
 typedef struct s_ast_node
 {
 	t_token_type		type;	
-	// Тип узла (команда, пайплайн, логический оператор)
 	char				**args;	
-	// Аргументы команды
 	struct s_ast_node	*left;	
-	// Левый ребенок в дереве (для операторов)
 	struct s_ast_node	*right;	
-	// Правый ребенок в дереве (для операторов)
 }				t_ast_node;
 
 typedef struct s_token
@@ -131,12 +127,6 @@ typedef struct s_dynamic_buffer
 	size_t	len;
 	size_t	capacity;
 }				t_dynamic_buffer;
-
-//void	print_token_name(t_token *token)
-void		print_token_name(t_token *token);
-void		print_escaped(FILE *stream, const char *str);
-void		print_ast_dot(t_ast_node *node, FILE *stream);
-void		print_tokens(t_token *current);
 
 // init.c
 void		shell_init(t_env **env, char **envp);
@@ -336,10 +326,6 @@ void		put_3(char *s1, char *s2, char *s3);
 int			is_dollar_special_case(char c);
 
 // ast_visualizer.c
-/*
-void		print_escaped(FILE *stream, const char *str);
-void		print_ast_dot(t_ast_node *node, FILE *stream);
 void		generate_ast_diagram(t_ast_node *root);
-*/
 
 #endif

@@ -6,14 +6,13 @@
 /*   By: dzuiev <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 14:10:32 by dzuiev            #+#    #+#             */
-/*   Updated: 2024/06/06 14:18:54 by dzuiev           ###   ########.fr       */
+/*   Updated: 2024/06/20 11:18:05 by dzuiev           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
-void	print_escaped(FILE *stream, const char *str)
+static void	print_escaped(FILE *stream, const char *str)
 {
 	if (!str)
 		return ;
@@ -30,7 +29,7 @@ void	print_escaped(FILE *stream, const char *str)
 	}
 }
 
-void print_ast_dot(t_ast_node *node, FILE *stream)
+static void print_ast_dot(t_ast_node *node, FILE *stream)
 {
 	if (node == NULL) return;
 
@@ -87,4 +86,3 @@ void	generate_ast_diagram(t_ast_node *root)
 	fprintf(stream, "}\n");
 	fclose(stream);
 }
-*/
