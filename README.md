@@ -1,6 +1,6 @@
 # Minishell
 
-Minishell is a custom Unix shell developed as part of the 42 School curriculum. This project challenges students to create a functional command-line interpreter from scratch — implementing both essential shell behaviors and more advanced features that mirror the real Bash shell.
+Minishell is a custom Unix shell developed as part of the 42 School curriculum. This project challenges students to create a functional command-line interpreter from scratch - implementing both essential shell behaviors and more advanced features that mirror the real Bash shell.
 
 We are proud to share that we **exceeded all mandatory requirements** and implemented advanced features, successfully defending our project with a **score of 125%**.
 
@@ -31,7 +31,7 @@ Our shell supports:
   - Dollar expansion within double quotes only
 - **Escape Character (`\`)**:
   - Full support for escaping meta-characters
-  - **Multiline support** with backslash `\` at the end of a line — implemented to **behave exactly like in Bash**
+  - **Multiline support** with backslash `\` at the end of a line - implemented to **behave exactly like in Bash**
 - **Brackets and Parentheses**:
   - **Parentheses `()`** for grouped and nested command structures
   - Full logical expression evaluation with `&&`, `||` including priority via nesting
@@ -51,7 +51,7 @@ The shell was built from scratch in C and structured around these core modules:
 - **Executor**: Handles execution logic, process creation, pipes, redirection, and built-in dispatch.
 - **Signal Manager**: Custom signal handling for interactive responsiveness.
 - **Expander**: Handles environment and parameter expansion with correct quote context.
-- **Memory Management**: All memory manually managed — tested for zero leaks.
+- **Memory Management**: All memory manually managed - tested for zero leaks.
 
 ## 🧠 Technologies and Tools
 
@@ -77,7 +77,7 @@ This project was completed by:
 - **Dmytro Zuiev** ([GitHub](https://github.com/zdvman))
 - **Samuel Moore** ([GitHub](https://github.com/s4moore))
 
-We worked collaboratively on all aspects of this project — from planning and parser design to deep debugging and memory tracing. Every component reflects teamwork, iterative improvement, and a shared passion for deep system-level programming.
+We worked collaboratively on all aspects of this project - from planning and parser design to deep debugging and memory tracing. Every component reflects teamwork, iterative improvement, and a shared passion for deep system-level programming.
 
 ## 🛠 Usage
 
@@ -89,6 +89,8 @@ make
 ```
 
 ## 📷 Screenshots / Demos
+
+![image](https://github.com/user-attachments/assets/daa94894-e2cf-4405-98e4-f2d3e236b4c7)
 
 Coming soon: Terminal demo and feature highlights.
 
